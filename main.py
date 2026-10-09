@@ -16,7 +16,7 @@ def bell_circuit():
 
 def run_local(qc):
     """Exact probabilities, no simulator needed (works locally and on Qollab)."""
-    probs = {k: round(float(v), 3) for k, v in Statevector(qc).probabilities_dict().items()}
+    probs = {str(k): round(float(v), 3) for k, v in Statevector(qc).probabilities_dict().items()}
     print("Exact probabilities:", probs)
 
 
