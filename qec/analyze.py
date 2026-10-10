@@ -76,6 +76,7 @@ def analyze_one(m, counts):
     ideal = m["ideal_p1"]
     out = {
         "index": m["index"], "lesson": m["lesson"], "name": m["name"], "kind": m["kind"], "label": m["label"],
+        "bases": list(bases),
         "ideal_p1": ideal,
         "n_total": n_total,
         "n_flagged": n_flagged,

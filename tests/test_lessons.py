@@ -1,6 +1,6 @@
 import pytest
 
-from qec.lessons import build_all, IDEAL_P1_ROTATED
+from qec.lessons import build_all, IDEAL_P1_ROTATED, IDEAL_P1_T
 
 NO_INJECT = {"shots": 100, "inject": None}
 
@@ -52,6 +52,7 @@ def test_metadata_fields_and_recipes():
     assert by[(4, "enc_Y")]["bases"] == ["Z", "Y"] and by[(4, "enc_Y")]["keep_if_zero"] == [0]
     assert by[(4, "enc_Y")]["value_blocks"] == [1]
     assert by[(4, "bare_X")]["bases"] == ["Z", "X"] and by[(4, "bare_X")]["keep_if_zero"] == [0]
+    assert by[(4, "enc_X")]["ideal_p1"] == by[(4, "bare_Y")]["ideal_p1"] == IDEAL_P1_T
 
 
 def test_injection_only_touches_lesson_one():

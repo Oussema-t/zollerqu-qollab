@@ -70,11 +70,20 @@ def test_face_fire_rates_reported_per_block():
     res = by_name(run({"shots": 200, "inject": {"pauli": "X", "qubit": 0}}, 200))
     r = res[(1, "enc_Z")]
     assert len(r["blocks"]) == 1
+    assert r["bases"] == ["Z"]
     faces = r["blocks"][0]
     assert set(faces) == {"x_face", "z_top", "z_bottom", "zzzz_anc"}
     assert faces["z_top"] == 1.0 and faces["zzzz_anc"] == 1.0 and faces["x_face"] == 0.0 and faces["z_bottom"] == 0.0
     r = res[(2, "enc_XX")]
     assert len(r["blocks"]) == 2
+    assert res[(2, "enc_XX")]["bases"] == ["X", "X"]
+
+
+def test_lesson_four_shows_the_t_gate():
+    res = by_name(run({"shots": 4000, "inject": None}, 4000))
+    for name in ("enc_X", "enc_Y", "bare_X", "bare_Y"):
+        assert res[(4, name)]["p1_accepted"] == pytest.approx(0.25, abs=0.03)
+        assert res[(4, name)]["kept_fraction"] == pytest.approx(0.5, abs=0.03)
 
 
 def test_noisy_table_is_informational():

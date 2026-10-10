@@ -5,6 +5,7 @@ from qec import code412 as c
 
 THETA = math.pi / 4
 IDEAL_P1_ROTATED = math.sin(math.pi / 8) ** 2   # 0.146..., same for every rotated readout we use
+IDEAL_P1_T = 0.25                               # T applied to ry(pi/4)|0>: <X> = <Y> = 1/2
 
 
 def _meta(lesson, name, kind, label, nblocks, bases, value_blocks, ideal_p1, keep_if_zero=()):
@@ -104,22 +105,22 @@ def _lesson4():
     out = []
     for basis in ("X", "Y"):
         qc = c.new_circuit(2)
-        qc.h(c.data(0, 0))
-        c.encode(qc, 0)                 # A = |+_L>
+        qc.ry(THETA, c.data(0, 0))
+        c.encode(qc, 0)                 # A = psi = ry(pi/4)|0>
         qc.h(c.data(1, 0))
         qc.t(c.data(1, 0))
         c.encode(qc, 1)                 # B = |T_L>
         c.transversal_cx(qc, 1, 0)      # B controls A
         c.finish(qc, 2, ["Z", basis])
-        out.append((qc, _meta(4, f"enc_{basis}", "enc", basis, 2, ["Z", basis], [1], IDEAL_P1_ROTATED, keep_if_zero=[0])))
+        out.append((qc, _meta(4, f"enc_{basis}", "enc", basis, 2, ["Z", basis], [1], IDEAL_P1_T, keep_if_zero=[0])))
     for basis in ("X", "Y"):
         qc = c.new_bare(2)
-        qc.h(0)
+        qc.ry(THETA, 0)
         qc.h(1)
         qc.t(1)
         qc.cx(1, 0)
         c.finish_bare(qc, ["Z", basis])
-        out.append((qc, _meta(4, f"bare_{basis}", "bare", basis, 2, ["Z", basis], [1], IDEAL_P1_ROTATED, keep_if_zero=[0])))
+        out.append((qc, _meta(4, f"bare_{basis}", "bare", basis, 2, ["Z", basis], [1], IDEAL_P1_T, keep_if_zero=[0])))
     return out
 
 
