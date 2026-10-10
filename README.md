@@ -20,7 +20,7 @@ Cost of a placement S with |S| = k (any other bit count is infeasible):
 | crowding | penalty per pair of open sites closer than tau minutes | tau 10 min, 10 per pair |
 | warehouse | best warehouse, sum of its minutes to the open sites | 0.1 per minute |
 
-Defaults were chosen so the landscape is not trivial: with k = 4 and m = 10 the local search from 30 random starts finds 5 distinct local minima and greedy misses the optimum by 1.8 cost units. Every weight is a slider on the page and the classical answers update instantly.
+Defaults were chosen so the landscape is not trivial: with k = 4 and m = 10 the local search from 20 random starts finds 5 distinct local minima and greedy misses the optimum by 1.8 cost units. Every weight is a slider on the page and the classical answers update instantly.
 
 ## Classical baseline
 
@@ -30,9 +30,11 @@ Defaults were chosen so the landscape is not trivial: with k = 4 and m = 10 the 
 
 ## Quantum part
 
-Durr and Hoyer's algorithm finds the minimum of an N-entry table with O(sqrt N) oracle calls. Each round runs a Grover search for an entry below the current threshold T (the oracle marks x with cost(x) < T), with the number of Grover iterations chosen by the Boyer-Brassard-Hoyer-Tapp exponential schedule because the number of marked entries is unknown. A sample below T becomes the new threshold. The rounds, thresholds and cumulative oracle calls are shown live on the page and on the map.
+Durr and Hoyer's algorithm finds the minimum of an N-entry table with O(sqrt N) oracle calls. Each round runs a Grover search for an entry below the current threshold T (the oracle marks x with cost(x) < T), with the number of Grover iterations j chosen by the Boyer-Brassard-Hoyer-Tapp exponential schedule because the number of marked entries is unknown, and takes one measurement. If the measured placement is below T it becomes the new threshold. Oracle calls are counted as the paper counts them: one per Grover iteration plus one for scoring the measured sample, so a round costs j + 1. The loop stops after three rounds without improvement at the largest iteration budget (a project heuristic, not the paper's time bound) or after 80 rounds. Rounds, thresholds, the current best placement and the cumulative count are shown live on the page and on the map.
 
-Before the loop, the page runs a theory-match sweep: three fixed thresholds that mark M = 1, 4 and 16 placements, Grover iterations j = 0, 1, ..., J, 1,000 shots each. The measured probability of sampling a marked placement is plotted against sin^2((2j+1) theta) with sin theta = sqrt(M/N). This is the check that the circuits do what the theory says. The sweep is one batched job, so it runs on IonQ backends too (one job per run); the Durr-Hoyer loop needs many short jobs and runs live only on local simulators, otherwise it is shown from the recorded take.
+Before the loop, the page runs a theory-match sweep: three fixed thresholds that mark M = 1, 4 and 16 placements, Grover iterations j = 0, 1, ..., J, 1,000 shots each. The measured probability of sampling a marked placement is plotted against sin^2((2j+1) theta) with sin theta = sqrt(M/N). This is the check that the circuits do what the theory says. The sweep is one batched job, so it runs on IonQ backends too (one job per run); the Durr-Hoyer loop needs one short job per round and runs live only on local simulators, otherwise it is shown from the recorded take.
+
+Scaling. The recorded take also contains a small study: the loop run from 20 random seeds at m = 6, 8 and 10 (and 5 seeds at m = 12 when the simulator allows), with one measurement per round. The page plots the mean number of oracle calls against sqrt N next to the line N. This is the check that the call count grows like the theory says, at the sizes we can simulate.
 
 The oracle. The threshold oracle is a diagonal gate compiled from the classical cost table: phase -1 on every placement with cost below T. That is a lookup table, not an arithmetic circuit. A reversible circuit that computes the cost from 158 block populations does not fit in 29 qubits, which is the largest simulator Qollab offers. The theory and all counters on the page count oracle calls, which is the quantity the quadratic speedup is about; nothing here measures wall clock. The compiled oracle costs about 1,350 CNOTs per Grover iteration at m = 10 and 4,660 at m = 12, so m = 12 is slow and marked as such.
 
@@ -46,10 +48,19 @@ The oracle. The threshold oracle is a diagonal gate compiled from the classical 
 
 1. Move the sliders. The map shows the exact best placement, the table shows the three classical methods, their costs and evaluations.
 2. "Run quantum search" submits the sweep (one job). The plot shows measured points on the theory curves; the card gives the largest deviation in percentage points.
-3. On a local simulator the Durr-Hoyer loop then runs round by round. The map follows the current best placement, the counter shows oracle calls so far against N, and the result card compares the final cost with the exact one.
+3. On a local simulator the Durr-Hoyer loop then runs round by round with one measurement per round. The map follows the current best placement, the counter shows oracle calls so far against N, and the result card compares the final cost with the exact one. A single loop can stop short of the minimum (the paper guarantees success with probability at least 1/2 within its budget); the study card shows how often it reaches it.
 4. "Load recorded take" shows a run recorded earlier (Aer locally; replaced by an IonQ Forte simulator run when available).
 
-The shipped local take (Aer, m = 10, defaults, seed 7): the sweep's largest deviation from theory is 2.5 percentage points over 33 circuits at 1,000 shots; the Durr-Hoyer loop reached the exact minimum (cost 62.73, sites 2, 3, 4, 7) in 27 rounds with 107 oracle calls against N = 1,024.
+The shipped local take (Aer, m = 10, defaults): the sweep's largest deviation from theory is 2.5 percentage points over 33 circuits at 1,000 shots. The seed-7 loop with one measurement per round reached the exact minimum (cost 62.73, sites 2, 3, 4, 7) using 318 oracle calls (237 Grover iterations over 81 rounds) against N = 1,024. The scaling study in the same take, one measurement per round, per-round simulator seeds:
+
+| m | N | sqrt N | seeds | mean oracle calls (min..max) | reached the exact minimum |
+|---|---|---|---|---|---|
+| 6 | 64 | 8 | 20 | 55 (32..89) | 20 of 20 |
+| 8 | 256 | 16 | 20 | 105 (64..144) | 20 of 20 |
+| 10 | 1,024 | 32 | 20 | 237 (167..327) | 20 of 20 |
+| 12 | 4,096 | 64 | 5 | 407 (297..506) | 5 of 5 |
+
+Mean calls divided by sqrt N stay between 6.4 and 7.4 across the four sizes, while N grows 64-fold. The stop rule (three idle rounds at the largest iteration budget) decides when to give up, so the exact-minimum fraction is a property of this implementation, not the paper's bound.
 
 ## Running it
 
