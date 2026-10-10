@@ -2,11 +2,12 @@ import * as bridge from 'qec.bridge';
 import { LESSONS } from './ui/lessons.js';
 import { renderPatches } from './ui/patches.js';
 import { renderCards, renderCharts } from './ui/charts.js';
-import { renderSpacetime } from './ui/spacetime.js';
+import { openStory } from './ui/story.js';
 
 const $ = (id) => document.getElementById(id);
-// settings and results always change together (in explore); lastRun is the latest live job, kept for export.
-const state = { settings: null, results: null, source: '', lesson: 1, backendName: '', isIonq: false, submitLocked: false, lastRun: null, spacetime: null, spacetimeToken: 0 };
+// settings, meta, results and sources always change together (in explore); lastRun is the latest live job, kept for export.
+// sources: lesson -> 'live' | 'recorded' (a lesson too big for this backend is filled from the recorded take).
+const state = { settings: null, meta: null, results: null, source: '', sources: {}, lesson: 1, backendName: '', maxQubits: 24, isIonq: false, submitLocked: false, busy: false, lastRun: null, story: null };
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
 const toPlain = (x) => {
   if (!(x && typeof x.toJs === 'function')) return x;
@@ -32,9 +33,15 @@ async function sleep(ms) {
 }
 
 function setBusy(on) {
+  state.busy = on;
   $('submit').disabled = on || state.submitLocked;
   $('load-recorded').disabled = on;
   $('export').disabled = on;
+}
+
+// Qubit ceilings of the Qollab backends (ceilings, not guarantees).
+function maxQubitsFor(name) {
+  return /forte|harness|aer/i.test(name) ? 29 : /aria|braket/i.test(name) ? 25 : 24;
 }
 
 function backendLabel() {
@@ -45,9 +52,22 @@ function backendLabel() {
 function setBanner(text, cls = '') { const b = $('banner'); b.textContent = text; b.className = 'banner ' + cls; }
 function setStatus(text) { $('status').textContent = text; }
 function showBackendBanner() {
-  setBanner(state.isIonq
+  setBanner((state.isIonq
     ? `Backend: ${state.backendName}. IonQ backends accept one job per run, so all 16 circuits go in one submission.`
-    : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`, state.isIonq ? 'warn' : '');
+    : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`)
+    + (state.maxQubits < 27 ? ' Lesson 3 needs 27 qubits, so on this backend it is shown from the recorded take; pick a Forte simulator to run it live.' : ''),
+  state.isIonq ? 'warn' : '');
+}
+
+// Status line for the lesson on screen: what is shown, and why a lesson comes from the recorded take.
+function lessonStatus() {
+  let s = `Showing ${state.source}. Shots per circuit: ${state.settings.shots}.`;
+  if (state.sources[state.lesson] === 'recorded') {
+    const need = Math.max(...state.meta.filter((m) => m.lesson === state.lesson).map((m) => m.nqubits));
+    s += ` Lesson ${state.lesson} needs ${need} qubits; this backend offers ${state.maxQubits}. Showing the recorded take for this lesson.`;
+  }
+  if (state.submitLocked) s += ' ' + IONQ_AGAIN;
+  return s;
 }
 
 function readSettings() {
@@ -58,6 +78,7 @@ function readSettings() {
 }
 
 async function submit() {
+  closeStory();
   const settings = readSettings();
   let submitted = false;
   let run = null;   // this submission's settings, metadata and counts once collected
@@ -67,8 +88,17 @@ async function submit() {
     // Kept local until the run succeeds, so a failed run leaves the last good results intact.
     const metaJson = await bridge.build.callPromising(JSON.stringify(settings));
     const meta = JSON.parse(metaJson);
-    const circuits = await bridge.circuits.callPromising();
-    setStatus(`Submitting one job with 16 circuits, ${settings.shots} shots each, to ${state.backendName}...`);
+    // Circuits wider than the backend stay out of the job; their counts come from the recorded take.
+    const included = [], excluded = [];
+    meta.forEach((m, i) => (m.nqubits <= state.maxQubits ? included : excluded).push(i));
+    let take = null;
+    if (excluded.length) {
+      try { take = JSON.parse(await bridge.load_recorded.callPromising()); } catch (e) { console.log('Recorded take not available:', errText(e)); }
+    }
+    const circuits = excluded.length
+      ? await bridge.circuits_subset.callPromising(JSON.stringify(included))
+      : await bridge.circuits.callPromising();
+    setStatus(`Submitting one job with ${included.length} of ${meta.length} circuits, ${settings.shots} shots each, to ${state.backendName}...`);
     submitted = true;
     const job = await backend.run(circuits, { shots: settings.shots });
     // Proxies to the same Python enum member are not === in JS, so compare by name.
@@ -101,18 +131,26 @@ async function submit() {
     }
     if (!['done', 'completed'].some((k) => status.toLowerCase().includes(k))) throw new Error('Job ended with status ' + status);
     const result = await job.result();
-    const counts = [];
-    for (let i = 0; i < meta.length; i++) {
-      counts.push(toPlain(await result.get_counts(i)));
+    const counts = meta.map(() => ({}));
+    for (let k = 0; k < included.length; k++) {
+      counts[included[k]] = toPlain(await result.get_counts(k));   // k indexes the circuits passed to run
+    }
+    const sources = {};
+    meta.forEach((m) => { if (m.kind === 'enc') sources[m.lesson] = 'live'; });
+    for (const i of excluded) {
+      const t = take && take.meta && take.meta[i];
+      if (t && t.name === meta[i].name && t.lesson === meta[i].lesson) counts[i] = take.counts[i];
+      else console.log(`No recorded counts for circuit ${i} (lesson ${meta[i].lesson}, ${meta[i].name}); left empty.`);
+      if (meta[i].kind === 'enc') sources[meta[i].lesson] = 'recorded';
     }
     run = { settings, metaJson, countsJson: JSON.stringify(counts) };
     state.lastRun = run;
     $('export').hidden = false;   // exportable even if the analysis below fails
     showBackendBanner();
-    await explore(settings, metaJson, run.countsJson, `live run on ${state.backendName}`);
+    await explore(settings, metaJson, run.countsJson, `live run on ${state.backendName}`, sources);
     state.submitLocked = state.isIonq;
     setBusy(false);
-    if (state.isIonq) setStatus('Done. ' + IONQ_AGAIN);
+    if (state.isIonq) setStatus('Done. ' + lessonStatus());
   } catch (e) {
     setBanner('Run failed: ' + errText(e), 'err');
     if (run) console.log('Counts of the failed run, so the job is not lost:', run.countsJson);
@@ -123,6 +161,7 @@ async function submit() {
 }
 
 async function loadRecorded() {
+  closeStory();
   setBusy(true);
   setStatus('Loading recorded take...');
   try {
@@ -140,20 +179,22 @@ async function loadRecorded() {
   }
 }
 
-async function explore(settings, metaJson, countsJson, source) {
+async function explore(settings, metaJson, countsJson, source, sources = {}) {
   setStatus('Analysing...');
   const results = JSON.parse(await bridge.analyze.callPromising(metaJson, countsJson));
-  Object.assign(state, { settings, results, source });   // together, so a tab click never mixes old results with new settings
+  const meta = JSON.parse(metaJson);
+  Object.assign(state, { settings, meta, results, source, sources });   // together, so a tab click never mixes old results with new settings
   $('tabs').hidden = false;
   $('panel').hidden = false;
   showLesson(state.lesson);
-  setStatus(`Showing ${state.source}. Shots per circuit: ${state.settings.shots}.`);
+  setStatus(lessonStatus());
   $('setup').open = false;
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   $('panel').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
 }
 
 function showLesson(n) {
+  closeStory();   // a story never shows a stale lesson
   state.lesson = n;
   document.querySelectorAll('[role="tab"]').forEach((t) => {
     const on = Number(t.dataset.lesson) === n;
@@ -168,23 +209,42 @@ function showLesson(n) {
   renderCharts($('charts'), rows);
   $('circuit-img').innerHTML = '';
   $('circuit-details').open = false;
-  mountSpacetime(n, rows);
 }
 
-async function mountSpacetime(lesson, rows) {
-  const token = ++state.spacetimeToken;
-  if (state.spacetime) { state.spacetime.dispose(); state.spacetime = null; }
-  const root = $('spacetime');
-  const row = rows.find((r) => r.kind === 'enc');
-  if (!row) { root.replaceChildren(); return; }
-  root.textContent = 'Building the spacetime view...';
+function storyClosed(refocus = true) {
+  $('story').hidden = true;
+  document.body.style.overflow = '';
+  state.story = null;
+  if (refocus) $('story-open').focus();
+}
+
+function closeStory() {
+  if (!state.story) return;
+  const hadFocus = $('story').contains(document.activeElement);
+  state.story.close();   // empties the story root; the story itself calls onClose only from its Back button and Escape
+  storyClosed(hadFocus);
+}
+
+async function watchStory() {
+  closeStory();
+  const lesson = state.lesson;
+  const row = state.results.find((r) => r.lesson === lesson && r.kind === 'enc');
+  const btn = $('story-open');
+  btn.disabled = true;
+  setStatus(`Building the story for lesson ${lesson}...`);
   try {
-    const L = JSON.parse(await bridge.spacetime.callPromising(row.index));
-    if (token !== state.spacetimeToken) return;   // the tab changed meanwhile
-    state.spacetime = await renderSpacetime(root, L, row);
-    if (token !== state.spacetimeToken) { state.spacetime.dispose(); state.spacetime = null; }
+    const layout = JSON.parse(await bridge.spacetime.callPromising(row.index));
+    if (state.lesson !== lesson) return;   // the tab changed while loading
+    state.story = openStory($('story'), {
+      lesson, rows: state.results.filter((r) => r.lesson === lesson), layout, settings: state.settings, onClose: storyClosed,
+    });
+    $('story').hidden = false;
+    document.body.style.overflow = 'hidden';
   } catch (e) {
-    if (token === state.spacetimeToken) root.textContent = 'Spacetime view unavailable: ' + errText(e);
+    setBanner('Story unavailable: ' + errText(e), 'err');
+  } finally {
+    btn.disabled = false;
+    if (!state.busy) setStatus(lessonStatus());
   }
 }
 
@@ -223,22 +283,25 @@ async function exportRun() {
 
 function wire() {
   state.backendName = backendLabel();
+  state.maxQubits = maxQubitsFor(state.backendName);
   state.isIonq = /ionq|aria|forte/i.test(state.backendName);
   showBackendBanner();
   $('submit').addEventListener('click', submit);
   $('load-recorded').addEventListener('click', loadRecorded);
   $('export').addEventListener('click', exportRun);
   $('circuit-details').addEventListener('toggle', drawCircuit);
+  $('story-open').addEventListener('click', watchStory);
+  const pick = (n) => { showLesson(n); if (!state.busy) setStatus(lessonStatus()); };
   const tabs = [...document.querySelectorAll('[role="tab"]')];
   tabs.forEach((t, i) => {
-    t.addEventListener('click', () => showLesson(Number(t.dataset.lesson)));
+    t.addEventListener('click', () => pick(Number(t.dataset.lesson)));
     t.addEventListener('keydown', (e) => {
       const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
       if (!dir) return;
       e.preventDefault();
       const next = tabs[(i + dir + tabs.length) % tabs.length];
       next.focus();
-      showLesson(Number(next.dataset.lesson));
+      pick(Number(next.dataset.lesson));
     });
   });
   setStatus('Choose shots, optionally inject an error for lesson 1, then submit. Or load the recorded take.');

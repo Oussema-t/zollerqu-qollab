@@ -46,7 +46,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .circuit img { max-width: 100%; background: #fff; border-radius: 8px; }
 .note { border-left: 3px solid var(--x); padding-left: 10px; color: var(--muted); }
 @media (prefers-reduced-motion: no-preference) { .face { transition: fill-opacity 200ms; } }
-.spacetime { margin-top: 16px; }
 /* story */
 .story { position: fixed; inset: 0; overflow: auto; z-index: 50; padding: 16px 16px 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif;
   --qa: #ffb454; --qb: #4fd1c5; --qc: #c084fc; }

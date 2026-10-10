@@ -1,7 +1,7 @@
 <div class="app" id="app">
   <header class="hdr">
     <h1>Logical teleportation on a tiny surface code</h1>
-    <p class="sub">Three logical qubits, each a 2x2 patch of the [[4,1,2]] code. One job, four lessons, no feed-forward needed.</p>
+    <p class="sub">Three logical qubits, each a 3x3 patch of the rotated surface code, distance 3. One job, four lessons, no feed-forward needed.</p>
     <p class="banner" id="banner" aria-live="polite"></p>
   </header>
 
@@ -16,11 +16,11 @@
           </select>
         </label>
         <label>on data qubit
-          <select id="inject-qubit"><option>0</option><option>1</option><option>2</option><option>3</option></select>
+          <select id="inject-qubit"><option>0</option><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>
         </label>
       </div>
       <div class="row">
-        <button id="submit" class="primary">Submit one job with all 16 circuits</button>
+        <button id="submit" class="primary">Submit one job with all circuits that fit</button>
         <button id="load-recorded">Load recorded take</button>
         <button id="export" hidden>Export this run as JSON</button>
       </div>
@@ -36,11 +36,11 @@
   </nav>
 
   <section class="panel" id="panel" role="tabpanel" aria-labelledby="tab-1" hidden>
+    <div class="row" style="justify-content: flex-end"><button id="story-open" class="primary">Watch the story</button></div>
     <div class="grid">
       <div class="patches" id="patches"></div>
       <div class="text" id="lesson-text"></div>
     </div>
-    <section class="spacetime" id="spacetime" aria-label="Circuit in spacetime"></section>
     <div class="cards" id="cards"></div>
     <div class="charts" id="charts"></div>
     <details class="circuit" id="circuit-details">
@@ -48,6 +48,8 @@
       <div id="circuit-img"></div>
     </details>
   </section>
+
+  <section id="story" class="story" hidden aria-label="Story"></section>
 
   <footer class="foot">
     <p>Distance 2 detects any single error and corrects none. Accepted shots are post-selected. The encoder is not fault tolerant.</p>

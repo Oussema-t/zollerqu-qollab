@@ -9,6 +9,7 @@ const fn = (name, as) => ({ callPromising: (...args) => call(name, args, as) });
 
 export const build = fn('build');
 export const circuits = fn('circuits', 'json');
+export const circuits_subset = fn('circuits_subset', 'json');
 export const analyze = fn('analyze');
 export const draw = fn('draw', 'blob');          // Blob of SVG, so URL.createObjectURL works as on Qollab
 export const load_recorded = fn('load_recorded');

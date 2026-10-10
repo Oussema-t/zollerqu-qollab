@@ -47,6 +47,8 @@ def api(fn, args):
         return "application/json", json.dumps(run(*args)).encode()
     if fn == "circuits":
         return "application/json", json.dumps(len(bridge.circuits())).encode()
+    if fn == "circuits_subset":   # run() still executes every built circuit; the harness fits all of them
+        return "application/json", json.dumps(len(bridge.circuits_subset(*args))).encode()
     if fn == "draw":
         buf = io.BytesIO()
         bridge.draw(*args).savefig(buf, format="svg", bbox_inches="tight")

@@ -23,6 +23,10 @@ def circuits():
     return _LAST["circuits"]
 
 
+def circuits_subset(indices_json):
+    return [_LAST["circuits"][i] for i in json.loads(indices_json)]
+
+
 def analyze(meta_json, counts_json):
     return json.dumps(analyze_all(json.loads(meta_json), json.loads(counts_json)))
 

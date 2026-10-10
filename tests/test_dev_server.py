@@ -46,6 +46,8 @@ def test_build_run_analyze_round_trip(base):
     assert len(meta) == 16
     _, n = post(base, "circuits")
     assert json.loads(n) == 16
+    _, n = post(base, "circuits_subset", "[0, 8]")
+    assert json.loads(n) == 2
     _, counts = post(base, "run", 4)        # few shots: the 27-qubit lesson 3 circuits run on MPS
     counts = json.loads(counts)
     assert len(counts) == 16 and all(sum(c.values()) == 4 for c in counts)
