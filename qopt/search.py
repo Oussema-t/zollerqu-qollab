@@ -95,7 +95,7 @@ LAM = 6 / 5
 def dh_init(cost, rng):
     x = int(rng.choice(np.flatnonzero(np.isfinite(cost))))
     return {"N": len(cost), "T": float(cost[x]), "best_index": x, "mstep": 1.0,
-            "stagnant": 0, "j": None, "oracle_calls": 0, "rounds": []}
+            "stagnant": 0, "j": None, "grover_iterations": 0, "oracle_calls": 0, "rounds": []}
 
 
 def dh_next(cost, state, rng):
@@ -105,9 +105,13 @@ def dh_next(cost, state, rng):
 
 
 def dh_feed(cost, state, counts):
-    """Take the best sample of the last circuit's counts; returns the round record."""
+    """Take the best sample of the last circuit's counts; returns the round record.
+
+    Oracle calls per round = j Grover iterations + 1 classical query scoring the measured sample.
+    """
     j = state["j"]
-    state["oracle_calls"] += j
+    state["grover_iterations"] += j
+    state["oracle_calls"] += j + 1
     idx = min((index_from_key(k) for k in counts), key=lambda i: cost[i])
     sample = float(cost[idx])
     improved = sample < state["T"]
@@ -125,7 +129,7 @@ def dh_feed(cost, state, counts):
     return record
 
 
-def dh_done(state, max_rounds=30, max_oracle_calls=None):
+def dh_done(state, max_rounds=80, max_oracle_calls=None):
     """Stop after 3 consecutive non-improving rounds at mstep = sqrt(N), or on a budget."""
     return (state["stagnant"] >= 3 or len(state["rounds"]) >= max_rounds
             or (max_oracle_calls is not None and state["oracle_calls"] >= max_oracle_calls))
@@ -133,11 +137,11 @@ def dh_done(state, max_rounds=30, max_oracle_calls=None):
 
 def dh_result(cost, state):
     return {"best_index": state["best_index"], "best_cost": state["T"], "rounds": state["rounds"],
-            "oracle_calls": state["oracle_calls"], "N": state["N"],
+            "grover_iterations": state["grover_iterations"], "oracle_calls": state["oracle_calls"], "N": state["N"],
             "converged": marked_count(cost, state["T"], strict=True) == 0}
 
 
-def find_min(cost, run, rng, shots=100, max_rounds=30, max_oracle_calls=None):
+def find_min(cost, run, rng, shots=1, max_rounds=80, max_oracle_calls=None):
     state = dh_init(cost, rng)
     while not dh_done(state, max_rounds, max_oracle_calls):
         circuit = dh_next(cost, state, rng)

@@ -44,3 +44,13 @@ def test_milp_travel_part_matches_brute_force_on_travel():
     best_travel = min(cost_terms(data, {}, [i, j])["travel"] for i in range(6) for j in range(i + 1, 6))
     assert np.isclose(res["travel"], best_travel)
     assert len(res["sites"]) == 2 and res["scope"] == "travel part only"
+
+
+def test_milp_returns_none_when_solver_raises(monkeypatch):
+    import scipy.optimize
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("HiGHS failed")
+
+    monkeypatch.setattr(scipy.optimize, "milp", boom)
+    assert milp(random_data(25, 6, seed=4), {"k": 2}, 6) is None

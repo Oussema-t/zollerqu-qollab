@@ -44,32 +44,35 @@ def local_search(cost, m, k, restarts, rng):
 
 
 def milp(data, params, m):
-    """p-median MIP on the travel term only (scipy HiGHS). None if milp is unavailable."""
+    """p-median MIP on the travel term only (scipy HiGHS). None if milp is unavailable or fails."""
     try:
         from scipy.optimize import Bounds, LinearConstraint, milp as scipy_milp
     except ImportError:
         return None
-    k = {**DEFAULTS, **params}["k"]
-    pop = np.array([b["pop"] for b in data["blocks"]], dtype=float)
-    tb = np.asarray(data["t_block_site"], dtype=float)[:, :m]
-    nb = len(pop)
-    # variables: y_0..y_{m-1}, then x_{b,i} row-major
-    c = np.concatenate([np.zeros(m), (pop[:, None] * tb).ravel() / pop.sum()])
-    n = m + nb * m
-    assign = np.zeros((nb, n))
-    link = np.zeros((nb * m, n))
-    for b in range(nb):
-        assign[b, m + b * m: m + (b + 1) * m] = 1
-        for i in range(m):
-            link[b * m + i, m + b * m + i] = 1
-            link[b * m + i, i] = -1
-    count = np.concatenate([np.ones(m), np.zeros(nb * m)])[None, :]
-    constraints = [LinearConstraint(assign, 1, 1), LinearConstraint(link, -np.inf, 0),
-                   LinearConstraint(count, k, k)]
-    integrality = np.concatenate([np.ones(m), np.zeros(nb * m)])
-    res = scipy_milp(c, constraints=constraints, integrality=integrality, bounds=Bounds(0, 1))
-    if not res.success:
+    try:
+        k = {**DEFAULTS, **params}["k"]
+        pop = np.array([b["pop"] for b in data["blocks"]], dtype=float)
+        tb = np.asarray(data["t_block_site"], dtype=float)[:, :m]
+        nb = len(pop)
+        # variables: y_0..y_{m-1}, then x_{b,i} row-major
+        c = np.concatenate([np.zeros(m), (pop[:, None] * tb).ravel() / pop.sum()])
+        n = m + nb * m
+        assign = np.zeros((nb, n))
+        link = np.zeros((nb * m, n))
+        for b in range(nb):
+            assign[b, m + b * m: m + (b + 1) * m] = 1
+            for i in range(m):
+                link[b * m + i, m + b * m + i] = 1
+                link[b * m + i, i] = -1
+        count = np.concatenate([np.ones(m), np.zeros(nb * m)])[None, :]
+        constraints = [LinearConstraint(assign, 1, 1), LinearConstraint(link, -np.inf, 0),
+                       LinearConstraint(count, k, k)]
+        integrality = np.concatenate([np.ones(m), np.zeros(nb * m)])
+        res = scipy_milp(c, constraints=constraints, integrality=integrality, bounds=Bounds(0, 1))
+        if not res.success:
+            return None
+        sites = [i for i in range(m) if res.x[i] > 0.5]
+        return {"sites": sites, "index": sum(1 << i for i in sites), "travel": float(res.fun),
+                "scope": "travel part only"}
+    except Exception:
         return None
-    sites = [i for i in range(m) if res.x[i] > 0.5]
-    return {"sites": sites, "index": sum(1 << i for i in sites), "travel": float(res.fun),
-            "scope": "travel part only"}

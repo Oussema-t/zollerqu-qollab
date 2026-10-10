@@ -68,8 +68,10 @@ def test_dh_loop():
         rounds += 1
         assert set(out["round"]) >= {"T", "j", "best_sample_cost", "improved", "oracle_calls_cum"}
         done = out["done"]
-        assert rounds <= 30
+        assert rounds <= 80
     res = out["result"]
+    assert res["grover_iterations"] == sum(r["j"] for r in res["rounds"])
+    assert res["oracle_calls"] == res["grover_iterations"] + rounds
     table = cost_table(random_data(30, 12, seed=11), PARAMS, 6)
     assert res["best_index"] == brute_force(table)[0]
     assert res["converged"] is True and len(res["rounds"]) == rounds
@@ -90,3 +92,14 @@ def test_export_take_round_trips():
 def test_load_recorded_parses():
     take = json.loads(bridge.load_recorded())
     assert take["source"] == "local-aer" and take["params"] == {"m": 10}
+
+
+def test_load_recorded_returns_given_text_unchanged():
+    text = '{"source": "qollab-run",  "x": [1, 2]}'
+    assert bridge.load_recorded(text) == text
+
+
+def test_load_recorded_rejects_invalid_text():
+    import pytest
+    with pytest.raises(json.JSONDecodeError):
+        bridge.load_recorded("not json")

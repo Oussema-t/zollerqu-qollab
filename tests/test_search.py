@@ -101,9 +101,11 @@ def test_find_min_reaches_brute_force_optimum():
         def run(circuits, shots):
             return aer_run(circuits, shots, seed=next(aer_seeds))
 
-        res = find_min(table, run, np.random.default_rng(seed))
+        res = find_min(table, run, np.random.default_rng(seed))  # default: one shot per round
         assert res["N"] == 2 ** m and res["rounds"] and res["oracle_calls"] > 0
-        assert res["oracle_calls"] == sum(r["j"] for r in res["rounds"])
+        assert res["grover_iterations"] == sum(r["j"] for r in res["rounds"])
+        assert res["oracle_calls"] == res["grover_iterations"] + len(res["rounds"])
+        assert res["rounds"][-1]["oracle_calls_cum"] == res["oracle_calls"]
         assert res["best_cost"] == table[res["best_index"]]
         hits += res["best_index"] == brute_force(table)[0]
     assert hits >= 9
@@ -118,3 +120,29 @@ def test_find_min_round_records():
     assert "converged" in res
     assert all(isinstance(r["best_index"], int) for r in res["rounds"])
     assert res["rounds"][-1]["best_index"] == res["best_index"]
+
+
+def test_find_min_defaults_one_shot_and_80_rounds():
+    import inspect
+    from qopt.search import dh_done
+    sig = inspect.signature(find_min).parameters
+    assert sig["shots"].default == 1 and sig["max_rounds"].default == 80
+    assert inspect.signature(dh_done).parameters["max_rounds"].default == 80
+
+
+def test_find_min_counts_one_call_per_round():
+    table = random_table(6, 3, seed=5)
+    shots_seen = []
+
+    def run(circuits, shots):
+        shots_seen.append(shots)
+        return aer_run(circuits, shots, seed=len(shots_seen))
+
+    res = find_min(table, run, np.random.default_rng(1))
+    assert set(shots_seen) == {1}
+    cum = 0
+    for r in res["rounds"]:
+        cum += r["j"] + 1
+        assert r["oracle_calls_cum"] == cum
+    assert res["oracle_calls"] == cum
+    assert res["grover_iterations"] == cum - len(res["rounds"])

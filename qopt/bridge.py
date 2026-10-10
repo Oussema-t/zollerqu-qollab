@@ -4,7 +4,7 @@ params_json: {"m": 10, "k": 4, "c": ..., "staff_cost": ..., "tau": ..., "lam": .
 every key is optional (m defaults to 10, the rest to qopt.cost.DEFAULTS:
 k=4, c=15000, staff_cost=3.0, tau=10.0, lam=10.0, wh_weight=0.1).
 
-load_recorded() returns the text of data/recorded_local.json; export_take(...) returns (and, inside Qollab,
+load_recorded(text=None) returns text unchanged (after JSON validation) if given, else the text of data/recorded_local.json; export_take(...) returns (and, inside Qollab,
 downloads) a JSON take {source, backend, date, params, plan, sweep_counts, dh}.
 """
 import json
@@ -114,7 +114,10 @@ def placement_sites(index):
     return json.dumps(_sites(int(index)))
 
 
-def load_recorded():
+def load_recorded(text=None):
+    if text is not None:
+        json.loads(text)
+        return text
     path = Path(RECORDED)
     if not path.exists():
         path = Path(__file__).resolve().parents[1] / RECORDED
