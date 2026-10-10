@@ -114,13 +114,15 @@ Pauli frame applied in analysis: Z readout of C is XORed with Z_B; X readout of 
 
 ### Lesson 4: logical T by magic-state teleportation
 
-Block A = |+_L>. Block B = |T_L>: h q0; t q0; encode. Transversal CNOT with B as control and A as target. A read in Z. Shots with Z_A = 1 are **discarded** (they would need a logical S correction, which needs feed-forward). B read in X or Y.
+Block A = |psi_L> with psi = ry(pi/4)|0>, the same state as lesson 3. Block B = |T_L>: h q0; t q0; encode. Transversal CNOT with B as control and A as target. A read in Z. Shots with Z_A = 1 are **discarded** (they would need a logical S correction, which needs feed-forward). B read in X or Y.
 
 | Circuit | B readout | Ideal P(1) among kept shots |
 |---|---|---|
-| enc_X | X | 0.146 |
-| enc_Y | Y | 0.146 |
-| bare_X, bare_Y | same on 2 qubits | 0.146 |
+| enc_X | X | 0.25 |
+| enc_Y | Y | 0.25 |
+| bare_X, bare_Y | same on 2 qubits | 0.25 |
+
+The input is deliberately not |+>: T|+> is the magic state itself, so with |+> the output would look identical whether or not the gadget acted. With psi, the readouts give 0.25 in X and Y, against 0.146 and 0.5 without the T gate.
 
 The page shows the discarded fraction (ideal 0.5) separately from the flagged fraction.
 
@@ -132,6 +134,7 @@ The page shows the discarded fraction (ideal 0.5) separately from the flagged fr
 - Bare deviation: the same quantity for the bare reference circuit.
 - Lesson 4 adds the kept fraction after post-selection on Z_A.
 - Per block: fire rate of each of the three stabilizer faces (from the two ancillas and the readout checks), used to light up the patch drawing.
+- Per block readout bases, so the page can mark checks that the chosen basis cannot read as not measured.
 
 ## 6. Architecture
 

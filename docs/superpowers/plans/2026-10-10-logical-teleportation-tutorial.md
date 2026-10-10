@@ -351,7 +351,7 @@ git commit -m "Add [[4,1,2]] code building blocks with statevector tests"
 ```python
 import pytest
 
-from qec.lessons import build_all, IDEAL_P1_ROTATED
+from qec.lessons import build_all, IDEAL_P1_ROTATED, IDEAL_P1_T
 
 NO_INJECT = {"shots": 100, "inject": None}
 
@@ -403,6 +403,7 @@ def test_metadata_fields_and_recipes():
     assert by[(4, "enc_Y")]["bases"] == ["Z", "Y"] and by[(4, "enc_Y")]["keep_if_zero"] == [0]
     assert by[(4, "enc_Y")]["value_blocks"] == [1]
     assert by[(4, "bare_X")]["bases"] == ["Z", "X"] and by[(4, "bare_X")]["keep_if_zero"] == [0]
+    assert by[(4, "enc_X")]["ideal_p1"] == by[(4, "bare_Y")]["ideal_p1"] == IDEAL_P1_T
 
 
 def test_injection_only_touches_lesson_one():
@@ -439,6 +440,7 @@ from qec import code412 as c
 
 THETA = math.pi / 4
 IDEAL_P1_ROTATED = math.sin(math.pi / 8) ** 2   # 0.146..., same for every rotated readout we use
+IDEAL_P1_T = 0.25                               # T applied to ry(pi/4)|0>: <X> = <Y> = 1/2
 
 
 def _meta(lesson, name, kind, label, nblocks, bases, value_blocks, ideal_p1, keep_if_zero=()):
@@ -538,22 +540,22 @@ def _lesson4():
     out = []
     for basis in ("X", "Y"):
         qc = c.new_circuit(2)
-        qc.h(c.data(0, 0))
-        c.encode(qc, 0)                 # A = |+_L>
+        qc.ry(THETA, c.data(0, 0))
+        c.encode(qc, 0)                 # A = psi = ry(pi/4)|0>
         qc.h(c.data(1, 0))
         qc.t(c.data(1, 0))
         c.encode(qc, 1)                 # B = |T_L>
         c.transversal_cx(qc, 1, 0)      # B controls A
         c.finish(qc, 2, ["Z", basis])
-        out.append((qc, _meta(4, f"enc_{basis}", "enc", basis, 2, ["Z", basis], [1], IDEAL_P1_ROTATED, keep_if_zero=[0])))
+        out.append((qc, _meta(4, f"enc_{basis}", "enc", basis, 2, ["Z", basis], [1], IDEAL_P1_T, keep_if_zero=[0])))
     for basis in ("X", "Y"):
         qc = c.new_bare(2)
-        qc.h(0)
+        qc.ry(THETA, 0)
         qc.h(1)
         qc.t(1)
         qc.cx(1, 0)
         c.finish_bare(qc, ["Z", basis])
-        out.append((qc, _meta(4, f"bare_{basis}", "bare", basis, 2, ["Z", basis], [1], IDEAL_P1_ROTATED, keep_if_zero=[0])))
+        out.append((qc, _meta(4, f"bare_{basis}", "bare", basis, 2, ["Z", basis], [1], IDEAL_P1_T, keep_if_zero=[0])))
     return out
 
 
@@ -666,11 +668,20 @@ def test_face_fire_rates_reported_per_block():
     res = by_name(run({"shots": 200, "inject": {"pauli": "X", "qubit": 0}}, 200))
     r = res[(1, "enc_Z")]
     assert len(r["blocks"]) == 1
+    assert r["bases"] == ["Z"]
     faces = r["blocks"][0]
     assert set(faces) == {"x_face", "z_top", "z_bottom", "zzzz_anc"}
     assert faces["z_top"] == 1.0 and faces["zzzz_anc"] == 1.0 and faces["x_face"] == 0.0 and faces["z_bottom"] == 0.0
     r = res[(2, "enc_XX")]
     assert len(r["blocks"]) == 2
+    assert res[(2, "enc_XX")]["bases"] == ["X", "X"]
+
+
+def test_lesson_four_shows_the_t_gate():
+    res = by_name(run({"shots": 4000, "inject": None}, 4000))
+    for name in ("enc_X", "enc_Y", "bare_X", "bare_Y"):
+        assert res[(4, name)]["p1_accepted"] == pytest.approx(0.25, abs=0.03)
+        assert res[(4, name)]["kept_fraction"] == pytest.approx(0.5, abs=0.03)
 
 
 def test_noisy_table_is_informational():
@@ -723,16 +734,16 @@ def block_readout(bits, nblocks, b, basis):
     }
 
 
-def _faces_update(acc, basis, r):
+def _faces_update(acc, basis, r, count):
     if basis == "Z":
-        acc["z_top"] += r["checks"][0]
-        acc["z_bottom"] += r["checks"][1]
-        acc["x_face"] += r["ax"]
+        acc["z_top"] += count * r["checks"][0]
+        acc["z_bottom"] += count * r["checks"][1]
+        acc["x_face"] += count * r["ax"]
     elif basis == "X":
-        acc["x_face"] += 1 if (r["ax"] or r["checks"][0]) else 0
+        acc["x_face"] += count if (r["ax"] or r["checks"][0]) else 0
     else:
-        acc["x_face"] += r["ax"]
-    acc["zzzz_anc"] += r["az"]
+        acc["x_face"] += count * r["ax"]
+    acc["zzzz_anc"] += count * r["az"]
 
 
 def analyze_one(m, counts):
@@ -746,7 +757,7 @@ def analyze_one(m, counts):
             reads = [block_readout(bits, nblocks, b, bases[b]) for b in range(nblocks)]
             flagged = any(r["ax"] or r["az"] or any(r["checks"]) for r in reads)
             for b, r in enumerate(reads):
-                _faces_update(faces[b], bases[b], r)
+                _faces_update(faces[b], bases[b], r, count)
             logical = [r["logical"] for r in reads]
         else:
             flagged = False
@@ -774,6 +785,7 @@ def analyze_one(m, counts):
     ideal = m["ideal_p1"]
     out = {
         "index": m["index"], "lesson": m["lesson"], "name": m["name"], "kind": m["kind"], "label": m["label"],
+        "bases": list(bases),
         "ideal_p1": ideal,
         "n_total": n_total,
         "n_flagged": n_flagged,
@@ -1121,10 +1133,11 @@ bit when the readouts say so. Hardware experiments do exactly this and call it t
     html: `
 <p>Every gate so far was Clifford. The <strong>T gate</strong> is not transversal in this code, or in any code of this kind.
 The way out is to prepare a <em>magic state</em> T|+&gt; in its own patch, then teleport the gate onto the data.</p>
-<p>Patch B holds the magic state, patch A holds |+&gt;. A transversal CNOT from B to A and a Z readout of A leave
-T|+&gt; on B half the time. The other half needs an S correction that requires feed-forward, which IonQ's simulator
+<p>Patch B holds the magic state, patch A holds the same input as lesson 3, <em>ry(pi/4)|0&gt;</em>. A transversal CNOT from B to A and a Z readout of A leave
+T|psi&gt; on B half the time. The other half needs an S correction that requires feed-forward, which IonQ's simulator
 does not offer, so we <strong>keep only the shots where A read 0</strong>. The kept fraction should be about one half.</p>
-<p>Check: reading B in X and in Y should both give 1 about 14.6 percent of the time. Without the T gate, Y would give 50 percent.</p>
+<p>Check: reading B in X and in Y should both give 1 about 25 percent of the time. Without the T gate, X would give 14.6 percent and Y 50 percent.
+We do not use |+&gt; as the input on purpose: T|+&gt; is the magic state itself, so nothing would visibly change.</p>
 <p class="note">Fault-tolerant computers spend most of their effort making clean magic states. This lesson is why.</p>`,
   },
 };
@@ -1337,16 +1350,27 @@ export function renderPatches(root, lesson, rows, settings) {
   const fired = [];
   names.forEach((name, bi) => {
     const f = blocks[bi] || { x_face: 0, z_top: 0, z_bottom: 0, zzzz_anc: 0 };
+    const basis = enc.bases[bi];
+    const zRead = basis === 'Z';   // Z0Z1 and Z2Z3 are only readable from a Z readout
     const g = el('g', { transform: `translate(${bi * W + 25}, 30)` }, svg);
     const P = { q0: [0, 0], q1: [120, 0], q2: [0, 120], q3: [120, 120] };
     // face: XXXX
     const face = el('rect', { x: 0, y: 0, width: 120, height: 120, fill: 'var(--x)', 'fill-opacity': 0.12 + 0.88 * f.x_face, stroke: 'var(--line)', class: 'face' }, g);
-    el('title', {}, face).textContent = `XXXX check, fired in ${pct(f.x_face)} of shots`;
-    // top and bottom semicircles: Z0Z1, Z2Z3
-    const top = el('path', { d: 'M0,0 A60,60 0 0 1 120,0 Z', fill: 'var(--z)', 'fill-opacity': 0.12 + 0.88 * f.z_top, stroke: 'var(--line)', class: 'face' }, g);
-    el('title', {}, top).textContent = `Z0Z1 check, fired in ${pct(f.z_top)} of shots`;
-    const bot = el('path', { d: 'M0,120 A60,60 0 0 0 120,120 Z', fill: 'var(--z)', 'fill-opacity': 0.12 + 0.88 * f.z_bottom, stroke: 'var(--line)', class: 'face' }, g);
-    el('title', {}, bot).textContent = `Z2Z3 check, fired in ${pct(f.z_bottom)} of shots`;
+    el('title', {}, face).textContent = basis === 'Y'
+      ? `XXXX check from the ancilla, fired in ${pct(f.x_face)} of shots`
+      : `XXXX check, fired in ${pct(f.x_face)} of shots`;
+    // top and bottom semicircles: Z0Z1, Z2Z3; dashed outline when this readout cannot measure them
+    const zLook = (rate) => (zRead
+      ? { fill: 'var(--z)', 'fill-opacity': 0.12 + 0.88 * rate }
+      : { fill: 'none', 'stroke-dasharray': '4 3' });
+    const top = el('path', { d: 'M0,0 A60,60 0 0 1 120,0 Z', ...zLook(f.z_top), stroke: 'var(--line)', class: 'face' }, g);
+    el('title', {}, top).textContent = zRead
+      ? `Z0Z1 check, fired in ${pct(f.z_top)} of shots`
+      : 'Z0Z1 check, not measured in this readout';
+    const bot = el('path', { d: 'M0,120 A60,60 0 0 0 120,120 Z', ...zLook(f.z_bottom), stroke: 'var(--line)', class: 'face' }, g);
+    el('title', {}, bot).textContent = zRead
+      ? `Z2Z3 check, fired in ${pct(f.z_bottom)} of shots`
+      : 'Z2Z3 check, not measured in this readout';
     // logical operators as edges with hover titles
     const zl = el('line', { x1: 0, y1: 0, x2: 0, y2: 120, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-dasharray': '6 4', tabindex: 0 }, g);
     el('title', {}, zl).textContent = 'Logical Z = Z0 Z2 (left edge)';
@@ -1363,7 +1387,8 @@ export function renderPatches(root, lesson, rows, settings) {
     el('text', { x: 60, y: 166, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)' }, g).textContent = ROLE[lesson][name];
     const list = [['XXXX', f.x_face], ['Z0Z1', f.z_top], ['Z2Z3', f.z_bottom], ['ZZZZ ancilla', f.zzzz_anc]]
       .filter(([, v]) => v > 0).map(([k, v]) => `${k} ${pct(v)}`);
-    fired.push(`Patch ${name}: ${list.length ? list.join(', ') : 'no check fired'}`);
+    const unread = zRead ? '' : ` (Z edges not measured, basis ${basis})`;
+    fired.push(`Patch ${name}: ${list.length ? list.join(', ') : 'no check fired'}${unread}`);
   });
   // transversal CNOT links between corresponding corners
   (LINKS[lesson] || []).forEach(([a, b]) => {
@@ -1520,7 +1545,7 @@ Three logical qubits, each a 2x2 patch of the [[4,1,2]] rotated surface code, ru
 1. **One patch, one error.** Inject an X, Y or Z on any corner. The checks flag it; the bare qubit next to it has no idea.
 2. **Logical CNOT.** Four physical CNOTs between two patches make a logical Bell pair. No SWAPs on trapped ions.
 3. **Logical teleportation.** A state crosses from patch A to patch C through a Bell measurement. Pauli corrections are applied in software (the Pauli frame), so no feed-forward is needed.
-4. **The teleported T gate.** T is not transversal. We teleport it in with a magic state and keep the shots that need no correction.
+4. **The teleported T gate.** T is not transversal. We teleport it in with a magic state, keep the shots that need no correction, and check that X and Y readouts both give 25 percent, which neither the input nor the magic state alone would.
 
 ## How to run
 
