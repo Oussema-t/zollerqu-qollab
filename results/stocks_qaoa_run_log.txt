@@ -1,0 +1,127 @@
+phase 1: tuning 4 models on 8 workers
+  long_short|balance_on: 6 s
+  buy_or_skip|balance_on: 6 s
+  long_short|balance_off: 15 s
+  buy_or_skip|balance_off: 16 s
+phase 2: extras, XY mixer and transfer check
+  extra cvar_0.1 long_short: completed in 9 s
+  extra cvar_0.25 long_short: completed in 8 s
+  extra multi_angle long_short: completed in 17 s
+  extra dc long_short: completed in 21 s
+  extra varqite long_short: completed in 5 s
+  extra boltzmann_reference long_short: completed in 0 s
+  extra cvar_0.1 buy_or_skip: completed in 15 s
+  extra cvar_0.25 buy_or_skip: completed in 16 s
+  extra multi_angle buy_or_skip: completed in 17 s
+  extra dc buy_or_skip: completed in 21 s
+  extra varqite buy_or_skip: completed in 5 s
+  extra boltzmann_reference buy_or_skip: completed in 0 s
+  varqite long_short ansatz A lr 0.1: ok in 39 s
+  varqite long_short ansatz A lr 0.4: ok in 39 s
+  varqite long_short ansatz A lr 0.8: ok in 35 s
+  varqite long_short ansatz B lr 0.1: ok in 68 s
+  varqite long_short ansatz B lr 0.4: ok in 38 s
+  varqite long_short ansatz B lr 0.8: ok in 20 s
+  varqite buy_or_skip ansatz A lr 0.1: ok in 33 s
+  varqite buy_or_skip ansatz A lr 0.4: ok in 35 s
+  varqite buy_or_skip ansatz A lr 0.8: ok in 35 s
+  varqite buy_or_skip ansatz B lr 0.1: ok in 51 s
+  varqite buy_or_skip ansatz B lr 0.4: ok in 44 s
+  varqite buy_or_skip ansatz B lr 0.8: ok in 37 s
+  xy mixer: completed in 13 s
+  transfer: completed in 52 s
+saved: /root/zollerqu-qollab/results/stocks_qaoa_tuning_n12.json, /root/zollerqu-qollab/results/stocks_qaoa_parameters_n12.json
+[TASK 4] QAOA circuits, offline tuning and benchmarks (classical statevector only, no backend run)
+- Generated 2026-10-10T22:26:52Z in 121.3 s; versions {'python': '3.12.3', 'numpy': '2.5.3', 'scipy': '1.18.1', 'qiskit': '2.5.2'}
+- Training-only objective, n = 12 assets, eta = 1.0; selection rule: lowest expected model energy (the tuning objective); never P(optimum), never test data
+- mixer is rx(+2 beta): lowering the energy needs gamma and beta of opposite sign; the ramp 0.6 / 0.3 as written (same sign) is kept as a measured control
+- long_short|balance_on: scale 0.1931; exact optimum +0.01923 (1 state)
+    p=0 control (uniform): quality 0.639, P(optimum) per shot 0.00024, in 1000 shots 0.217
+    LR p=1: best ramp (0.1, -0.2) [grid edge] quality 0.641, P(opt)/shot 0.0006, in 1000 shots 0.435 | recipe as written (0.6, 0.3): quality 0.647, P(opt)/shot 0.00021
+    LR p=2: best ramp (0.1, -0.2) [grid edge] quality 0.642, P(opt)/shot 0.0006, in 1000 shots 0.451 | recipe as written (0.6, 0.3): quality 0.623, P(opt)/shot 0.00014
+    LR p=3: best ramp (0.1, -0.2) [grid edge] quality 0.643, P(opt)/shot 0.0006, in 1000 shots 0.476 | recipe as written (0.6, 0.3): quality 0.651, P(opt)/shot 0.00008
+    LR p=4: best ramp (0.3, -0.3) quality 0.653, P(opt)/shot 0.0010, in 1000 shots 0.631 | recipe as written (0.6, 0.3): quality 0.667, P(opt)/shot 0.00001
+    LR p=5: best ramp (0.5, -0.2) quality 0.658, P(opt)/shot 0.0013, in 1000 shots 0.717 | recipe as written (0.6, 0.3): quality 0.649, P(opt)/shot 0.00002
+    free angles p=1: best L-BFGS-B from lr_tuned (30 evaluations): quality 0.642, P(opt)/shot 0.0006, in 1000 shots 0.473
+      mean quality over the starts: COBYLA 0.635 (70 ev), Nelder-Mead 0.641 (77 ev), Powell 0.676 (107 ev), L-BFGS-B 0.641 (31 ev), SPSA 0.672 (199 ev)
+    free angles p=2: best Nelder-Mead from lr_tuned (274 evaluations): quality 0.642, P(opt)/shot 0.0011, in 1000 shots 0.661
+      mean quality over the starts: COBYLA 0.642 (212 ev), Nelder-Mead 0.640 (233 ev), Powell 0.625 (291 ev), L-BFGS-B 0.640 (118 ev), SPSA 0.632 (399 ev)
+    classical on the same model: random 0.0007 per try, 0.487 in 1000 tries; greedy 0.5889 per try, 1.000 in 30 tries; annealing 0.5778 per try, 1.000 in 30 tries
+- buy_or_skip|balance_on: scale 0.1483; exact optimum +0.00685 (1 state)
+    p=0 control (uniform): quality 0.587, P(optimum) per shot 0.00024, in 1000 shots 0.217
+    LR p=1: best ramp (0.1, -0.2) [grid edge] quality 0.590, P(opt)/shot 0.0006, in 1000 shots 0.444 | recipe as written (0.6, 0.3): quality 0.595, P(opt)/shot 0.00025
+    LR p=2: best ramp (0.1, -0.2) [grid edge] quality 0.590, P(opt)/shot 0.0006, in 1000 shots 0.460 | recipe as written (0.6, 0.3): quality 0.566, P(opt)/shot 0.00013
+    LR p=3: best ramp (0.1, -0.2) [grid edge] quality 0.591, P(opt)/shot 0.0007, in 1000 shots 0.484 | recipe as written (0.6, 0.3): quality 0.601, P(opt)/shot 0.00008
+    LR p=4: best ramp (0.3, -0.3) quality 0.606, P(opt)/shot 0.0011, in 1000 shots 0.653 | recipe as written (0.6, 0.3): quality 0.641, P(opt)/shot 0.00002
+    LR p=5: best ramp (0.4, -0.2) quality 0.607, P(opt)/shot 0.0012, in 1000 shots 0.700 | recipe as written (0.6, 0.3): quality 0.593, P(opt)/shot 0.00004
+    free angles p=1: best Powell from lr_tuned (79 evaluations): quality 0.590, P(opt)/shot 0.0006, in 1000 shots 0.473
+      mean quality over the starts: COBYLA 0.584 (44 ev), Nelder-Mead 0.589 (73 ev), Powell 0.620 (102 ev), L-BFGS-B 0.592 (50 ev), SPSA 0.589 (199 ev)
+    free angles p=2: best Nelder-Mead from random_seed_4026 (343 evaluations): quality 0.590, P(opt)/shot 0.0011, in 1000 shots 0.660
+      mean quality over the starts: COBYLA 0.599 (232 ev), Nelder-Mead 0.593 (215 ev), Powell 0.583 (291 ev), L-BFGS-B 0.582 (156 ev), SPSA 0.642 (399 ev)
+    classical on the same model: random 0.0020 per try, 0.865 in 1000 tries; greedy 1.0000 per try, 1.000 in 30 tries; annealing 1.0000 per try, 1.000 in 30 tries
+- long_short|balance_off: scale 0.01508; exact optimum +0.01535 (1 state)
+    p=0 control (uniform): quality 0.807, P(optimum) per shot 0.00024, in 1000 shots 0.217
+    LR p=1: best ramp (0.3, -0.3) quality 0.895, P(opt)/shot 0.0011, in 1000 shots 0.663 | recipe as written (0.6, 0.3): quality 0.636, P(opt)/shot 0.00000
+    LR p=2: best ramp (0.5, -0.3) quality 0.916, P(opt)/shot 0.0020, in 1000 shots 0.869 | recipe as written (0.6, 0.3): quality 0.580, P(opt)/shot 0.00000
+    LR p=3: best ramp (0.7, -0.4) quality 0.931, P(opt)/shot 0.0044, in 1000 shots 0.987 | recipe as written (0.6, 0.3): quality 0.527, P(opt)/shot 0.00000
+    LR p=4: best ramp (0.7, -0.4) quality 0.943, P(opt)/shot 0.0058, in 1000 shots 0.997 | recipe as written (0.6, 0.3): quality 0.490, P(opt)/shot 0.00000
+    LR p=5: best ramp (0.7, -0.4) quality 0.950, P(opt)/shot 0.0073, in 1000 shots 0.999 | recipe as written (0.6, 0.3): quality 0.445, P(opt)/shot 0.00000
+    free angles p=1: best L-BFGS-B from lr_tuned (24 evaluations): quality 0.897, P(opt)/shot 0.0010, in 1000 shots 0.650
+      mean quality over the starts: COBYLA 0.897 (41 ev), Nelder-Mead 0.897 (72 ev), Powell 0.844 (81 ev), L-BFGS-B 0.879 (50 ev), SPSA 0.884 (199 ev)
+    free angles p=2: best L-BFGS-B from lr_tuned (65 evaluations): quality 0.919, P(opt)/shot 0.0023, in 1000 shots 0.899
+      mean quality over the starts: COBYLA 0.917 (177 ev), Nelder-Mead 0.911 (242 ev), Powell 0.890 (255 ev), L-BFGS-B 0.894 (85 ev), SPSA 0.909 (399 ev)
+    free angles p=3: best L-BFGS-B from lr_tuned (98 evaluations): quality 0.935, P(opt)/shot 0.0042, in 1000 shots 0.986
+      mean quality over the starts: COBYLA 0.856 (502 ev), Nelder-Mead 0.877 (527 ev), Powell 0.838 (311 ev), L-BFGS-B 0.879 (199 ev), SPSA 0.866 (599 ev)
+    classical on the same model: random 0.0000 per try, 0.000 in 1000 tries; greedy 0.0667 per try, 0.874 in 30 tries; annealing 0.2556 per try, 1.000 in 30 tries
+- buy_or_skip|balance_off: scale 0.0301; exact optimum -0.00433 (1 state)
+    p=0 control (uniform): quality 0.714, P(optimum) per shot 0.00024, in 1000 shots 0.217
+    LR p=1: best ramp (1.0, -0.7) quality 0.955, P(opt)/shot 0.0114, in 1000 shots 1.000 | recipe as written (0.6, 0.3): quality 0.528, P(opt)/shot 0.00009
+    LR p=2: best ramp (1.4, -0.6) quality 0.969, P(opt)/shot 0.0155, in 1000 shots 1.000 | recipe as written (0.6, 0.3): quality 0.492, P(opt)/shot 0.00006
+    LR p=3: best ramp (1.4, -0.6) quality 0.972, P(opt)/shot 0.0181, in 1000 shots 1.000 | recipe as written (0.6, 0.3): quality 0.439, P(opt)/shot 0.00004
+    LR p=4: best ramp (1.4, -0.5) quality 0.973, P(opt)/shot 0.0207, in 1000 shots 1.000 | recipe as written (0.6, 0.3): quality 0.385, P(opt)/shot 0.00002
+    LR p=5: best ramp (1.3, -0.5) quality 0.972, P(opt)/shot 0.0205, in 1000 shots 1.000 | recipe as written (0.6, 0.3): quality 0.332, P(opt)/shot 0.00001
+    free angles p=1: best Powell from lr_tuned (83 evaluations): quality 0.955, P(opt)/shot 0.0114, in 1000 shots 1.000
+      mean quality over the starts: COBYLA 0.955 (36 ev), Nelder-Mead 0.955 (66 ev), Powell 0.910 (63 ev), L-BFGS-B 0.955 (23 ev), SPSA 0.955 (199 ev)
+    free angles p=2: best L-BFGS-B from random_seed_4027 (70 evaluations): quality 0.976, P(opt)/shot 0.0122, in 1000 shots 1.000
+      mean quality over the starts: COBYLA 0.974 (229 ev), Nelder-Mead 0.973 (285 ev), Powell 0.965 (273 ev), L-BFGS-B 0.973 (111 ev), SPSA 0.969 (399 ev)
+    free angles p=3: best L-BFGS-B from random_seed_5027 (385 evaluations): quality 0.985, P(opt)/shot 0.0041, in 1000 shots 0.984
+      mean quality over the starts: COBYLA 0.974 (600 ev), Nelder-Mead 0.975 (559 ev), Powell 0.973 (583 ev), L-BFGS-B 0.979 (304 ev), SPSA 0.972 (599 ev)
+    classical on the same model: random 0.0000 per try, 0.000 in 1000 tries; greedy 1.0000 per try, 1.000 in 30 tries; annealing 1.0000 per try, 1.000 in 30 tries
+- Balance, long_short: penalty coupling is 12x the largest objective term
+    p=1: penalty_lr: balanced share 0.516, P(best balanced)/shot 0.00057; postselect_lr: balanced share 0.309, P(best balanced)/shot 0.00108; penalty_standard: balanced share 0.578, P(best balanced)/shot 0.00064; postselect_standard: balanced share 0.317, P(best balanced)/shot 0.00105
+    p=2: penalty_lr: balanced share 0.540, P(best balanced)/shot 0.00060; postselect_lr: balanced share 0.303, P(best balanced)/shot 0.00176; penalty_standard: balanced share 0.972, P(best balanced)/shot 0.00108; postselect_standard: balanced share 0.305, P(best balanced)/shot 0.00191
+    p=0 control: balanced share 0.226, P(best balanced)/shot 0.00024
+- Balance, buy_or_skip: penalty coupling is 5x the largest objective term
+    p=1: penalty_lr: balanced share 0.531, P(best balanced)/shot 0.00059; postselect_lr: balanced share 0.031, P(best balanced)/shot 0.00073; penalty_standard: balanced share 0.578, P(best balanced)/shot 0.00064; postselect_standard: balanced share 0.033, P(best balanced)/shot 0.00072
+    p=2: penalty_lr: balanced share 0.554, P(best balanced)/shot 0.00062; postselect_lr: balanced share 0.013, P(best balanced)/shot 0.00085; penalty_standard: balanced share 0.968, P(best balanced)/shot 0.00108; postselect_standard: balanced share 0.007, P(best balanced)/shot 0.00022
+    p=0 control: balanced share 0.226, P(best balanced)/shot 0.00024
+- Extra cvar_0.1 (long_short|balance_off): p=1: quality 0.886, P(opt)/shot 0.0013 (standard 0.897, 0.0010); p=2: quality 0.902, P(opt)/shot 0.0034 (standard 0.919, 0.0023); p=3: quality 0.918, P(opt)/shot 0.0066 (standard 0.935, 0.0042)
+- Extra cvar_0.25 (long_short|balance_off): p=1: quality 0.889, P(opt)/shot 0.0013 (standard 0.897, 0.0010); p=2: quality 0.905, P(opt)/shot 0.0033 (standard 0.919, 0.0023); p=3: quality 0.920, P(opt)/shot 0.0065 (standard 0.935, 0.0042)
+- Extra multi_angle (long_short|balance_off): p=1: quality 0.899, P(opt)/shot 0.0013 (standard 0.897, 0.0010); p=2: quality 0.926, P(opt)/shot 0.0033 (standard 0.919, 0.0023); p=3: quality 0.945, P(opt)/shot 0.0054 (standard 0.935, 0.0042)
+- Extra dc (long_short|balance_off): p=1: quality 0.897, P(opt)/shot 0.0011 (standard 0.897, 0.0010); p=2: quality 0.920, P(opt)/shot 0.0026 (standard 0.919, 0.0023); p=3: quality 0.938, P(opt)/shot 0.0067 (standard 0.935, 0.0042)
+- Extra varqite (long_short|balance_off): p=1: quality 0.897, P(opt)/shot 0.0010 (standard 0.897, 0.0010); p=2: quality 0.919, P(opt)/shot 0.0023 (standard 0.919, 0.0023); p=3: quality 0.935, P(opt)/shot 0.0042 (standard 0.935, 0.0042)
+- Extra varqite_pauli (long_short|balance_off): completed
+- Extra boltzmann_reference (long_short|balance_off): completed
+- Extra cvar_0.1 (buy_or_skip|balance_off): p=1: quality 0.954, P(opt)/shot 0.0115 (standard 0.955, 0.0114); p=2: quality 0.953, P(opt)/shot 0.0279 (standard 0.976, 0.0122); p=3: quality 0.948, P(opt)/shot 0.0577 (standard 0.985, 0.0041)
+- Extra cvar_0.25 (buy_or_skip|balance_off): p=1: quality 0.954, P(opt)/shot 0.0112 (standard 0.955, 0.0114); p=2: quality 0.954, P(opt)/shot 0.0283 (standard 0.976, 0.0122); p=3: quality 0.950, P(opt)/shot 0.0530 (standard 0.985, 0.0041)
+- Extra multi_angle (buy_or_skip|balance_off): p=1: quality 0.970, P(opt)/shot 0.0139 (standard 0.955, 0.0114); p=2: quality 0.986, P(opt)/shot 0.0141 (standard 0.976, 0.0122); p=3: quality 0.987, P(opt)/shot 0.0057 (standard 0.985, 0.0041)
+- Extra dc (buy_or_skip|balance_off): p=1: quality 0.985, P(opt)/shot 0.0000 (standard 0.955, 0.0114); p=2: quality 0.985, P(opt)/shot 0.0000 (standard 0.976, 0.0122); p=3: quality 0.985, P(opt)/shot 0.0000 (standard 0.985, 0.0041)
+- Extra varqite (buy_or_skip|balance_off): p=1: quality 0.955, P(opt)/shot 0.0114 (standard 0.955, 0.0114); p=2: quality 0.976, P(opt)/shot 0.0121 (standard 0.976, 0.0122); p=3: quality 0.978, P(opt)/shot 0.0258 (standard 0.985, 0.0041)
+- Extra varqite_pauli (buy_or_skip|balance_off): completed
+- Extra boltzmann_reference (buy_or_skip|balance_off): completed
+- Extra varQITE Pauli-update (long_short|balance_off): best ansatz A lr 0.8, 60 steps, 7980 evaluations: energy +0.08333 -> +0.05760; quality 0.880, P(opt)/shot 0.0000, within 1 % 0.0004; 66 two-qubit gates; all runs: A/0.1: 0.824, A/0.4: 0.861, A/0.8: 0.880, B/0.1: 0.830, B/0.4: 0.829, B/0.8: 0.830
+- Extra varQITE Pauli-update (buy_or_skip|balance_off): best ansatz A lr 0.8, 60 steps, 7980 evaluations: energy +0.07754 -> +0.03267; quality 0.871, P(opt)/shot 0.0000, within 1 % 0.0001; 66 two-qubit gates; all runs: A/0.1: 0.726, A/0.4: 0.815, A/0.8: 0.871, B/0.1: 0.716, B/0.4: 0.721, B/0.8: 0.721
+- Extra XY mixer (long_short): p=1: balanced share 1.000, P(best balanced)/shot 0.0071; p=2: balanced share 1.000, P(best balanced)/shot 0.0192; NumPy vs Qiskit 1.4e-14
+- Extra XY mixer (buy_or_skip): p=1: balanced share 1.000, P(best balanced)/shot 0.0008; p=2: balanced share 1.000, P(best balanced)/shot 0.0068; NumPy vs Qiskit 8.4e-15
+- Deferred: {'warm_start': 'not attempted: multi-angle was the one low-risk option chosen from extra 2', 'variational_real_time_evolution': 'not attempted: highest risk for the time left; future work', 'recursive_qaoa_and_backend_loops': 'excluded: not compatible with one job per run'}
+- Circuit n=12, long_short, per layer: 66 two-qubit gates, two-qubit depth 15, depth 18; routed on heavy-hex (19 qubits): {'min': 276, 'median': 285, 'max': 288} two-qubit gates against 66 all-to-all
+- Circuit n=12, buy_or_skip, per layer: 66 two-qubit gates, two-qubit depth 15, depth 18; routed on heavy-hex (19 qubits): {'min': 276, 'median': 285, 'max': 288} two-qubit gates against 66 all-to-all
+- Circuit n=29, long_short (construction only, never simulated): 244 two-qubit gates per layer, two-qubit depth 29; heavy-hex {'min': 1510, 'median': 1576, 'max': 1597} against 244; angles: linear ramp tuned at n = 12 (same mode), NOT tuned for n = 29
+- Circuit n=29, buy_or_skip (construction only, never simulated): 244 two-qubit gates per layer, two-qubit depth 29; heavy-hex {'min': 1510, 'median': 1576, 'max': 1597} against 244; angles: linear ramp tuned at n = 12 (same mode), NOT tuned for n = 29
+- Transfer to n=16 (tuned_size, keep 1.0), long_short: uniform P(opt)/shot 0.000015; p=1: quality 0.889, P(opt)/shot 0.00006; p=2: quality 0.905, P(opt)/shot 0.00012; p=3: quality 0.922, P(opt)/shot 0.00030
+- Transfer to n=16 (tuned_size, keep 1.0), buy_or_skip: uniform P(opt)/shot 0.000015; p=1: quality 0.949, P(opt)/shot 0.00132; p=2: quality 0.960, P(opt)/shot 0.00192; p=3: quality 0.963, P(opt)/shot 0.00219
+- Transfer to n=20 (larger_size_dense, keep 1.0), long_short: uniform P(opt)/shot 0.000001; p=1: quality 0.906, P(opt)/shot 0.00001; p=2: quality 0.919, P(opt)/shot 0.00001; p=3: quality 0.937, P(opt)/shot 0.00005
+- Transfer to n=20 (larger_size_dense, keep 1.0), buy_or_skip: uniform P(opt)/shot 0.000001; p=1: quality 0.959, P(opt)/shot 0.00064; p=2: quality 0.968, P(opt)/shot 0.00097; p=3: quality 0.969, P(opt)/shot 0.00107
+- Transfer to n=20 (larger_size_thinned, keep 0.6), long_short: uniform P(opt)/shot 0.000001; p=1: quality 0.864, P(opt)/shot 0.00001; p=2: quality 0.882, P(opt)/shot 0.00003; p=3: quality 0.900, P(opt)/shot 0.00015
+- Transfer to n=20 (larger_size_thinned, keep 0.6), buy_or_skip: uniform P(opt)/shot 0.000001; p=1: quality 0.950, P(opt)/shot 0.00073; p=2: quality 0.963, P(opt)/shot 0.00116; p=3: quality 0.966, P(opt)/shot 0.00134
+RESULT: PASS
