@@ -1,5 +1,6 @@
 // Per-lesson scripts for the story page: steps, captions, state expressions, logical symbols, cards.
-// Any field may be a function of ctx (built by story.js): { rows, enc, bare, layout, settings, inj, nq }.
+// Any field may be a function of ctx (built by story.js): { rows, enc, bare, layout, settings, inj, rings, nq }.
+// rings = true when the physical picture draws at least one red ring (a qubit above ringCut in some block).
 // inj = null or { pauli, q (local 0..8), caught: [check indices], cq (local qubit the decoder flips, or null), basis }.
 // SVG strings (wire kets, labels above wires) mark the L subscript as "_L": '|0_L⟩'.
 
@@ -66,7 +67,7 @@ function genericPhase(name, ctx) {
       : `H on all nine qubits of ${P}, so that an ordinary Z measurement reads X.`;
   }
   if (name === 'measure') {
-    return `All ${ctx.nq} qubits are measured. Each check of the readout basis is a parity of measured bits and glows with how often it fired. A red ring marks a qubit the decoder flipped.`;
+    return `All ${ctx.nq} qubits are measured. Each check of the readout basis is a parity of measured bits and glows with how often it fired.${ctx.rings ? ' A red ring marks a qubit the decoder flipped.' : ''}`;
   }
   if (name === 'logical readout') {
     return 'The logical value is a parity too: the left column (q0, q3, q6) when read in Z, the top row (q0, q1, q2) in X, taken after the correction.';
@@ -388,7 +389,7 @@ L1.phaseText = {
     if (!l1Struck(ctx)) return genericPhase('measure', ctx);
     const { inj } = ctx, rates = (ctx.enc.blocks[0] || { checks: [] }).checks;
     const fired = inj.caught.map((k) => `${plaqName('Z', k)} (${pct(rates[k])})`);
-    return `All nine qubits are measured. The checks that see q${inj.q}, ${andList(fired)}, are outlined red. The decoder flips q${inj.cq} back: the red ring.`;
+    return `All nine qubits are measured. The checks that see q${inj.q}, ${andList(fired)}, are outlined red. The decoder flips q${inj.cq} back${ctx.rings ? ': the red ring' : ''}.`;
   },
 };
 L2.phaseText = { 'prepare A': `H on q0 of ${A} gives |+⟩ to encode.` };

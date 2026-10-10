@@ -2,6 +2,7 @@
 // openStory builds the whole page inside root; everything inside is scoped by classes, so two stories never share ids.
 import { SCRIPTS, PLAQUETTES, phaseText, phaseMore } from './storyText.js';
 import { buildPhysical, PHYS_LEGEND } from './storyPhysical.js';
+import { ringCut } from './patches.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const DWELL = 7;             // logical level: seconds per step at 1x
@@ -67,7 +68,8 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   const enc = rows.find((r) => r.kind === 'enc' && (!layout.name || r.name === layout.name)) || rows.find((r) => r.kind === 'enc') || rows[0];
   const bare = rows.find((r) => r.kind === 'bare' && r.label === enc.label) || rows.find((r) => r.kind === 'bare') || null;
   const inj = injection(lesson, layout, settings);
-  const ctx = { rows, enc, bare, layout, settings, inj, nq: 9 * layout.blocks.length };
+  const rings = (enc.blocks || []).some((b) => (b.corrections || []).some((c) => c >= ringCut(b.corrections || [])));
+  const ctx = { rows, enc, bare, layout, settings, inj, rings, nq: 9 * layout.blocks.length };
   const val = (x) => (typeof x === 'function' ? x(ctx) : x);
   const steps = script.steps.map((st) => Object.fromEntries(Object.entries(st).map(([k, v]) => [k, val(v)])));
   const N = steps.length;
