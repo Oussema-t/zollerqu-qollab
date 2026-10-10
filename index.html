@@ -5,24 +5,26 @@
     <p class="banner" id="banner" aria-live="polite"></p>
   </header>
 
-  <section class="setup" id="setup" aria-labelledby="setup-h">
-    <h2 id="setup-h">Set up the run</h2>
-    <div class="row">
-      <label>Shots <input id="shots" type="number" min="100" max="2000" step="100" value="500"></label>
-      <label>Lesson 1 injected error
-        <select id="inject-pauli">
-          <option value="">none</option><option>X</option><option>Y</option><option>Z</option>
-        </select>
-      </label>
-      <label>on data qubit
-        <select id="inject-qubit"><option>0</option><option>1</option><option>2</option><option>3</option></select>
-      </label>
-    </div>
-    <div class="row">
-      <button id="submit" class="primary">Submit one job with all 16 circuits</button>
-      <button id="load-recorded">Load recorded take</button>
-      <button id="export" hidden>Export this run as JSON</button>
-    </div>
+  <section class="setup" aria-labelledby="setup-h">
+    <details id="setup" open>
+      <summary id="setup-h">Set up the run</summary>
+      <div class="row">
+        <label>Shots <input id="shots" type="number" min="100" max="2000" step="100" value="500"></label>
+        <label>Lesson 1 injected error
+          <select id="inject-pauli">
+            <option value="">none</option><option>X</option><option>Y</option><option>Z</option>
+          </select>
+        </label>
+        <label>on data qubit
+          <select id="inject-qubit"><option>0</option><option>1</option><option>2</option><option>3</option></select>
+        </label>
+      </div>
+      <div class="row">
+        <button id="submit" class="primary">Submit one job with all 16 circuits</button>
+        <button id="load-recorded">Load recorded take</button>
+        <button id="export" hidden>Export this run as JSON</button>
+      </div>
+    </details>
     <p class="status" id="status" aria-live="polite"></p>
   </section>
 

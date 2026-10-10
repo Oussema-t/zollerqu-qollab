@@ -49,6 +49,9 @@ function bars(title, items) {
     r.setAttribute('x', pad); r.setAttribute('y', y); r.setAttribute('height', 18);
     r.setAttribute('width', Math.max(1, (W - pad - 50) * v));
     r.setAttribute('fill', it.color || 'var(--z)');
+    const rt = document.createElementNS(NS, 'title');
+    rt.textContent = `${it.label} ${fmt(it.value)}`;
+    r.appendChild(rt);
     svg.appendChild(r);
     const val = document.createElementNS(NS, 'text');
     val.setAttribute('x', pad + (W - pad - 50) * v + 4); val.setAttribute('y', y + 14);

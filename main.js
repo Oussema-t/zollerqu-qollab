@@ -6,9 +6,24 @@ import { renderCards, renderCharts } from './ui/charts.js';
 const $ = (id) => document.getElementById(id);
 const state = { settings: null, metaJson: null, meta: null, countsJson: null, results: null, lesson: 1, backendName: '', isIonq: false, source: '', submitLocked: false };
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));   // works with the injected promise setTimeout and the browser one
 const toPlain = (x) => ((x && typeof x.toJs === 'function') ? Object.fromEntries(x.toJs()) : x);
 const errText = (e) => (e && e.message ? e.message : String(e));
+
+// Works for the browser setTimeout(cb, ms), an injected setTimeout(cb, ms) returning a promise, and setTimeout(ms) returning a promise.
+async function sleep(ms) {
+  const start = Date.now();
+  await new Promise((resolve) => {
+    let r;
+    try { r = setTimeout(resolve, ms); } catch { resolve(); return; }
+    if (r && typeof r.then === 'function') r.then(resolve, resolve);
+  });
+  if (Date.now() - start < ms / 2) {
+    try { const p = setTimeout(ms); if (p && typeof p.then === 'function') await p; } catch { /* ignore */ }
+  }
+  while (Date.now() - start < ms) {
+    await new Promise((r) => requestAnimationFrame(r));
+  }
+}
 
 function setBusy(on) {
   $('submit').disabled = on || state.submitLocked;
@@ -23,6 +38,11 @@ function backendLabel() {
 
 function setBanner(text, cls = '') { const b = $('banner'); b.textContent = text; b.className = 'banner ' + cls; }
 function setStatus(text) { $('status').textContent = text; }
+function showBackendBanner() {
+  setBanner(state.isIonq
+    ? `Backend: ${state.backendName}. IonQ backends accept one job per run, so all 16 circuits go in one submission.`
+    : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`, state.isIonq ? 'warn' : '');
+}
 
 function readSettings() {
   const shots = Math.min(2000, Math.max(100, parseInt($('shots').value, 10) || 500));
@@ -33,35 +53,42 @@ function readSettings() {
 
 async function submit() {
   const settings = readSettings();
-  state.settings = settings;
+  let submitted = false;
   setBusy(true);
   setStatus('Building 16 circuits...');
   try {
-    state.metaJson = await bridge.build.callPromising(JSON.stringify(settings));
-    state.meta = JSON.parse(state.metaJson);
+    // Kept local until the run succeeds, so a failed run leaves the last good results intact.
+    const metaJson = await bridge.build.callPromising(JSON.stringify(settings));
+    const meta = JSON.parse(metaJson);
     const circuits = await bridge.circuits.callPromising();
     setStatus(`Submitting one job with 16 circuits, ${settings.shots} shots each, to ${state.backendName}...`);
+    submitted = true;
     const job = await backend.run(circuits, { shots: settings.shots });
     // Proxies to the same Python enum member are not === in JS, so compare by name.
     const statusName = async () => { const s = await job.status(); try { return String(s.name ?? s); } catch { return String(s); } };
     const terminal = (st) => ['done', 'completed', 'error', 'failed', 'cancel'].some((k) => st.toLowerCase().includes(k));
     let status = await statusName();
     let ticks = 0;
+    const t0 = Date.now();
+    let shownAt = t0;
     while (!terminal(status)) {
       if (ticks >= 3600) throw new Error('Timed out waiting for the job');
       await sleep(1000);
       status = await statusName();
       ticks += 1;
-      setStatus(`Job ${status}... ${ticks}s. Noise-model simulators run one shot at a time, so this scales with shots.`);
+      if (Date.now() - shownAt >= 5000) {   // at most one status update every 5 seconds
+        shownAt = Date.now();
+        setStatus(`Job ${status}... ${Math.round((shownAt - t0) / 1000)}s. Noise-model simulators run one shot at a time, so this scales with shots.`);
+      }
     }
     if (!['done', 'completed'].some((k) => status.toLowerCase().includes(k))) throw new Error('Job ended with status ' + status);
     const result = await job.result();
     const counts = [];
-    for (let i = 0; i < state.meta.length; i++) {
-      counts.push(toPlain(result.get_counts(i)));
+    for (let i = 0; i < meta.length; i++) {
+      counts.push(toPlain(await result.get_counts(i)));
     }
-    state.countsJson = JSON.stringify(counts);
-    state.source = `live run on ${state.backendName}`;
+    Object.assign(state, { settings, metaJson, meta, countsJson: JSON.stringify(counts), source: `live run on ${state.backendName}` });
+    showBackendBanner();
     await explore();
     state.submitLocked = state.isIonq;
     setBusy(false);
@@ -69,10 +96,9 @@ async function submit() {
     if (state.isIonq) setStatus('Done. ' + IONQ_AGAIN);
   } catch (e) {
     setBanner('Run failed: ' + errText(e), 'err');
-    state.submitLocked = state.isIonq;
+    state.submitLocked = state.isIonq && submitted;
     setBusy(false);
-    $('export').disabled = true;   // state now mixes the new build with old counts
-    setStatus(state.isIonq ? IONQ_AGAIN : '');
+    setStatus(state.submitLocked ? IONQ_AGAIN : '');
   }
 }
 
@@ -81,12 +107,14 @@ async function loadRecorded() {
   setStatus('Loading recorded take...');
   try {
     const take = JSON.parse(await bridge.load_recorded.callPromising());
+    $('export').hidden = true;   // export is for live runs, not the recorded take
     state.settings = take.settings;
     state.metaJson = JSON.stringify(take.meta);
     state.meta = take.meta;
     state.countsJson = JSON.stringify(take.counts);
     state.source = `recorded take: ${take.backend}, ${take.date} (${take.source})`;
     await bridge.build.callPromising(JSON.stringify(take.settings));   // so circuit drawings match
+    showBackendBanner();
     await explore();
   } catch (e) {
     setBanner('Recorded take not available: ' + errText(e), 'err');
@@ -103,7 +131,9 @@ async function explore() {
   $('panel').hidden = false;
   showLesson(state.lesson);
   setStatus(`Showing ${state.source}. Shots per circuit: ${state.settings.shots}.`);
-  $('panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('setup').open = false;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('panel').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
 }
 
 function showLesson(n) {
@@ -150,9 +180,7 @@ async function exportRun() {
 function wire() {
   state.backendName = backendLabel();
   state.isIonq = /ionq|aria|forte/i.test(state.backendName);
-  setBanner(state.isIonq
-    ? `Backend: ${state.backendName}. IonQ backends accept one job per run, so all 16 circuits go in one submission.`
-    : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`, state.isIonq ? 'warn' : '');
+  showBackendBanner();
   $('submit').addEventListener('click', submit);
   $('load-recorded').addEventListener('click', loadRecorded);
   $('export').addEventListener('click', exportRun);

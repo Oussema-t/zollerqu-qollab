@@ -3,7 +3,7 @@
   --x: #e0a040; --z: #4f9cff; --good: #39c37a; --bad: #ff5c5c; --focus: #ffd166;
 }
 @media (prefers-color-scheme: light) {
-  :root { --bg: #fafbfd; --fg: #15181f; --muted: #525866; --card: #ffffff; --line: #d9dde6; }
+  :root { --bg: #fafbfd; --fg: #15181f; --muted: #525866; --card: #ffffff; --line: #d9dde6; --focus: #b35c00; --good: #1e7f4a; --x: #a8650a; }
 }
 * { box-sizing: border-box; }
 .app { font: 16px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); padding: 16px; max-width: 1100px; margin: 0 auto; }
@@ -13,12 +13,14 @@ h2 { font-size: 1.1rem; margin: 0 0 8px; }
 .banner { margin: 8px 0 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; }
 .banner.warn { border-color: var(--x); }
 .banner.err { border-color: var(--bad); }
+.setup summary { font-size: 1.1rem; font-weight: 600; cursor: pointer; }
+.setup details[open] > summary { margin-bottom: 8px; }
 .setup, .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 16px; }
 .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 12px; }
 label { display: grid; gap: 4px; font-size: 0.9rem; color: var(--muted); }
 input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
 button { cursor: pointer; }
-button.primary { background: var(--z); color: #fff; border-color: var(--z); }
+button.primary { background: #1f6fe0; color: #fff; border-color: #1f6fe0; }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
@@ -28,12 +30,15 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (min-width: 800px) { .grid { grid-template-columns: 1.2fr 1fr; } }
 .patches { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
 .patches svg { max-width: 100%; height: auto; }
+.patches > p { flex: 1 0 100%; }
+.patches line[tabindex]:is(:hover, :focus) { stroke: var(--focus); stroke-width: 7; }
+.links { font-size: 0.85rem; color: var(--muted); margin: 0; }
 .patch-title { font-size: 0.85rem; color: var(--muted); text-align: center; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
 .card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
 .card .big { font-size: 1.6rem; font-weight: 700; }
 .card .lbl { color: var(--muted); font-size: 0.85rem; }
-.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; margin-top: 16px; }
 .chart h3 { font-size: 0.95rem; margin: 0 0 6px; }
 .chart svg { width: 100%; height: auto; }
 .fired-list { font-size: 0.85rem; color: var(--muted); margin: 6px 0 0; }

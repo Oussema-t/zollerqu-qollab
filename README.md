@@ -12,7 +12,7 @@ Three logical qubits, each a 2x2 patch of the [[4,1,2]] rotated surface code, ru
 Press **Run on Qollab**, pick a backend (built-in simulator for instant results, IonQ Aria 1 noise model for realistic noise), then:
 
 - choose shots (100 to 2000) and, for lesson 1, an injected error,
-- press **Submit one job with all 16 circuits**, or **Load recorded take** to see a saved IonQ run without waiting,
+- press **Submit one job with all 16 circuits**, or **Load recorded take** to see a saved run without waiting (an IonQ Aria 1 noise-model take once recorded; until then a local stand-in),
 - click through the four lesson tabs. Hover any face or edge for its meaning. "Show the physical circuit" draws the real gates.
 
 IonQ backends allow one job per run, so all 16 circuits travel together. On local simulators you can resubmit freely.
