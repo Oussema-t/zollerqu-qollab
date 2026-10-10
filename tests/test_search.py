@@ -126,8 +126,8 @@ def test_find_min_defaults_one_shot_and_80_rounds():
     import inspect
     from qopt.search import dh_done
     sig = inspect.signature(find_min).parameters
-    assert sig["shots"].default == 1 and sig["max_rounds"].default == 80
-    assert inspect.signature(dh_done).parameters["max_rounds"].default == 80
+    assert sig["shots"].default == 1 and sig["max_rounds"].default == 120
+    assert inspect.signature(dh_done).parameters["max_rounds"].default == 120
 
 
 def test_find_min_counts_one_call_per_round():

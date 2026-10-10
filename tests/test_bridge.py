@@ -68,7 +68,7 @@ def test_dh_loop():
         rounds += 1
         assert set(out["round"]) >= {"T", "j", "best_sample_cost", "improved", "oracle_calls_cum"}
         done = out["done"]
-        assert rounds <= 80
+        assert rounds <= 120
     res = out["result"]
     assert res["grover_iterations"] == sum(r["j"] for r in res["rounds"])
     assert res["oracle_calls"] == res["grover_iterations"] + rounds

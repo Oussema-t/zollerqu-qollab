@@ -129,7 +129,7 @@ def dh_feed(cost, state, counts):
     return record
 
 
-def dh_done(state, max_rounds=80, max_oracle_calls=None):
+def dh_done(state, max_rounds=120, max_oracle_calls=None):
     """Stop after 3 consecutive non-improving rounds at mstep = sqrt(N), or on a budget."""
     return (state["stagnant"] >= 3 or len(state["rounds"]) >= max_rounds
             or (max_oracle_calls is not None and state["oracle_calls"] >= max_oracle_calls))
@@ -141,7 +141,7 @@ def dh_result(cost, state):
             "converged": marked_count(cost, state["T"], strict=True) == 0}
 
 
-def find_min(cost, run, rng, shots=1, max_rounds=80, max_oracle_calls=None):
+def find_min(cost, run, rng, shots=1, max_rounds=120, max_oracle_calls=None):
     state = dh_init(cost, rng)
     while not dh_done(state, max_rounds, max_oracle_calls):
         circuit = dh_next(cost, state, rng)

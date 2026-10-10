@@ -1,4 +1,5 @@
 """Record a local Aer take for the page. Run from the repo root: python tools/record_take.py"""
+import itertools
 import json
 import sys
 import time
@@ -29,7 +30,9 @@ def study_entry(data, m, seeds):
     exact = brute_force(cost)[1]
     runs = []
     for seed in seeds:
-        res = find_min(cost, lambda c, sh: aer_run(c, sh, seed=seed), np.random.default_rng(seed), shots=1)
+        rounds = itertools.count()
+        res = find_min(cost, lambda c, sh: aer_run(c, sh, seed=seed * 1000 + next(rounds)),
+                       np.random.default_rng(seed), shots=1)
         runs.append(res)
     calls = [r["oracle_calls"] for r in runs]
     return {"m": m, "N": 2 ** m, "seeds": len(runs), "calls_mean": float(np.mean(calls)),
