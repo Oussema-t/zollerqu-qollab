@@ -16,17 +16,12 @@ sys.path.insert(0, str(ROOT))
 
 import matplotlib
 matplotlib.use("Agg")
-from qiskit import transpile
-from qiskit_aer import AerSimulator
-from qiskit_aer.noise import NoiseModel, depolarizing_error
 
 from qec import bridge
+from qec.aer_compat import simulate, stand_in_noise
 
-# Same stand-in noise as tools/record_take.py so the page looks like a noisy device.
-_noise = NoiseModel()
-_noise.add_all_qubit_quantum_error(depolarizing_error(0.0005, 1), ["h", "x", "y", "z", "t", "sdg", "ry"])
-_noise.add_all_qubit_quantum_error(depolarizing_error(0.006, 2), ["cx"])
-SIM = AerSimulator(noise_model=_noise)
+# Same stand-in noise and simulator choice as tools/record_take.py so the page looks like a noisy device.
+NOISE = stand_in_noise()
 BACKEND_NAME = "local dev harness (Aer, depolarizing stand-in)"
 
 mimetypes.add_type("text/javascript", ".js")
@@ -43,9 +38,7 @@ PAGE = """<!doctype html>
 
 
 def run(shots):
-    circuits = bridge.circuits()
-    result = SIM.run(transpile(circuits, SIM, optimization_level=0), shots=int(shots)).result()
-    return [dict(result.get_counts(i)) for i in range(len(circuits))]
+    return simulate(bridge.circuits(), int(shots), noise_model=NOISE)
 
 
 def api(fn, args):

@@ -1,39 +1,38 @@
-"""Layout of an encoded circuit as a spacetime block for ui/spacetime.js.
+"""Layout of an encoded circuit as a spacetime block for the story view.
 
-Plane coordinates: block b sits at x = b * PITCH; local q0 (0,0), q1 (1,0), q2 (0,1), q3 (1,1);
-the XXXX ancilla at the face centre (0.5, 0.5), the ZZZZ ancilla below the patch (0.5, 1.7).
-Time: integer layers. Gates inside a phase are packed as early as possible; a new phase
-starts above every layer used so far, so phases never overlap.
+Plane coordinates: block b sits at x = b * PITCH; local qubit i at (col, row) = (i % 3, i // 3)
+(row 0 on top). Data qubits only, no helpers. Time: integer layers. Gates inside a phase are
+packed as early as possible; a new phase starts above every layer used so far, so phases never overlap.
 """
-from qec import code412 as c
+from qec import code913 as c
 
-PITCH = 2.2
-LOCAL = {0: (0.0, 0.0), 1: (1.0, 0.0), 2: (0.0, 1.0), 3: (1.0, 1.0)}
-CAUGHT = {  # which checks a single Pauli on local data qubit i flips
-    "X": lambda i: [("z_top" if i in (0, 1) else "z_bottom"), "zzzz_anc"],
-    "Z": lambda i: ["x_face"],
-    "Y": lambda i: ["x_face", ("z_top" if i in (0, 1) else "z_bottom"), "zzzz_anc"],
+PITCH = 4.4
+ROLES = ("transversal", "encode", "inject", "prepare", "readout", "measure")
+CHECKS = {  # readout basis: (Pauli parts it sees, check supports, lookup table)
+    "Z": ("XY", c.Z_STABS, c.Z_TABLE),
+    "X": ("ZY", c.X_STABS, c.X_TABLE),
 }
 
 
 def _role(phase):
-    for key in ("transversal", "syndrome", "encode", "inject", "prepare", "readout", "measure"):
+    for key in ROLES:
         if phase.startswith(key):
             return key
     return "other"
 
 
 def _qubits(n):
-    out = []
-    for b in range(n):
-        for i in range(4):
-            x, y = LOCAL[i]
-            out.append({"id": c.data(b, i), "kind": "data", "block": b, "local": i, "x": b * PITCH + x, "y": y})
-    for b in range(n):
-        out.append({"id": c.anc_x(n, b), "kind": "ax", "block": b, "local": None, "x": b * PITCH + 0.5, "y": 0.5})
-        out.append({"id": c.anc_z(n, b), "kind": "az", "block": b, "local": None, "x": b * PITCH + 0.5, "y": 1.7})
-    out.sort(key=lambda q: q["id"])
-    return out
+    return [{"id": c.data(b, i), "kind": "data", "block": b, "local": i, "x": b * PITCH + i % 3, "y": i // 3}
+            for b in range(n) for i in range(9)]
+
+
+def _caught(pauli, i, basis):
+    """Check indices that fire for a single Pauli on local qubit i, and the qubit the table corrects."""
+    if basis not in CHECKS or pauli not in CHECKS[basis][0]:
+        return [], None
+    _, stabs, table = CHECKS[basis]
+    syndrome = tuple(int(i in s) for s in stabs)
+    return [k for k, s in enumerate(syndrome) if s], table.get(syndrome)
 
 
 def layout(qc, meta):
@@ -69,15 +68,18 @@ def layout(qc, meta):
         phases[-1]["t1"] = max(last.values(), default=0)
     T = phases[-1]["t1"] if phases else 0
 
-    blocks = [{"name": c.BLOCK_NAMES[b], "data": [c.data(b, i) for i in range(4)],
-               "ax": c.anc_x(n, b), "az": c.anc_z(n, b), "x0": b * PITCH, "y0": 0.0} for b in range(n)]
+    blocks = [{"name": c.BLOCK_NAMES[b], "data": [c.data(b, i) for i in range(9)], "x0": b * PITCH, "y0": 0.0}
+              for b in range(n)]
 
     inject = None
     for op in ops:
         if op["role"] == "inject":
             qid = op["q"][0]
-            b, i = divmod(qid, 4)
-            inject = {"q": qid, "t": op["t"], "pauli": op["gate"].upper(), "block": b, "caught": CAUGHT[op["gate"].upper()](i)}
+            b, i = divmod(qid, 9)
+            pauli = op["gate"].upper()
+            caught, fix = _caught(pauli, i, meta["bases"][b])
+            inject = {"q": qid, "t": op["t"], "pauli": pauli, "block": b, "local": i,
+                      "caught": caught, "corrected": fix is not None, "corrected_qubit": fix}
 
     sheets = [{"type": typ, "block": b, "t0": 0, "t1": T, "from": None} for b in range(n) for typ in ("Z", "X")]
     for p in phases:

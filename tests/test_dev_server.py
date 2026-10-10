@@ -46,12 +46,13 @@ def test_build_run_analyze_round_trip(base):
     assert len(meta) == 16
     _, n = post(base, "circuits")
     assert json.loads(n) == 16
-    _, counts = post(base, "run", 100)
+    _, counts = post(base, "run", 4)        # few shots: the 27-qubit lesson 3 circuits run on MPS
     counts = json.loads(counts)
-    assert len(counts) == 16 and all(sum(c.values()) == 100 for c in counts)
+    assert len(counts) == 16 and all(sum(c.values()) == 4 for c in counts)
+    assert [len(next(iter(c))) for c in counts] == [m["nqubits"] for m in meta]
     _, rows = post(base, "analyze", json.dumps(meta), json.dumps(counts))
     rows = json.loads(rows)
-    assert len(rows) == 16 and rows[0]["n_total"] == 100
+    assert len(rows) == 16 and rows[0]["n_total"] == 4
 
 
 def test_draw_returns_svg(base):

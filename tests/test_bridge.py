@@ -9,11 +9,12 @@ def test_build_then_circuits_and_analyze_round_trip():
     meta = json.loads(meta_json)
     circuits = bridge.circuits()
     assert len(meta) == len(circuits) == 16
+    assert [m["nqubits"] for m in meta] == [qc.num_qubits for qc in circuits]
     # fake counts: every shot reads all zeros
     counts = [{"0" * qc.num_clbits: 50} for qc in circuits]
     res = json.loads(bridge.analyze(meta_json, json.dumps(counts)))
     assert len(res) == 16
-    assert res[0]["flagged_fraction"] == 0 and res[0]["p1_accepted"] == 0
+    assert res[0]["discard_fraction"] == 0 and res[0]["p1_corrected"] == 0 and res[0]["n_clean"] == 50
 
 
 def test_recorded_take_is_loadable_and_consistent():
@@ -21,8 +22,10 @@ def test_recorded_take_is_loadable_and_consistent():
     assert set(take) >= {"source", "backend", "date", "settings", "meta", "counts"}
     assert len(take["meta"]) == len(take["counts"]) == 16
     assert build_all(take["settings"])[1] == take["meta"]
+    assert all(sum(c.values()) == take["settings"]["shots"] for c in take["counts"])
     res = json.loads(bridge.analyze(json.dumps(take["meta"]), json.dumps(take["counts"])))
     assert len(res) == 16
+    assert all(r["n_clean"] + r["n_corrected"] + r["n_discarded"] == r["n_total"] for r in res)
 
 
 def test_draw_returns_matplotlib_figure():

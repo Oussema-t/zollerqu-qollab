@@ -24,8 +24,10 @@ def test_qubit_counts():
     circuits, meta = build_all(NO_INJECT)
     enc = {m["lesson"]: qc.num_qubits for qc, m in zip(circuits, meta) if m["kind"] == "enc"}
     bare = {m["lesson"]: qc.num_qubits for qc, m in zip(circuits, meta) if m["kind"] == "bare"}
-    assert enc == {1: 6, 2: 12, 3: 18, 4: 12}
+    assert enc == {1: 9, 2: 18, 3: 27, 4: 18}
     assert bare == {1: 1, 2: 2, 3: 3, 4: 2}
+    for qc, m in zip(circuits, meta):
+        assert m["nqubits"] == qc.num_qubits
 
 
 def test_every_circuit_measures_every_qubit_last():
@@ -41,7 +43,7 @@ def test_metadata_fields_and_recipes():
     _, meta = build_all(NO_INJECT)
     for m in meta:
         assert set(m) >= {"index", "lesson", "name", "kind", "label", "nblocks", "bases",
-                          "value_blocks", "keep_if_zero", "ideal_p1"}
+                          "value_blocks", "keep_if_zero", "ideal_p1", "nqubits"}
         assert len(m["bases"]) == m["nblocks"]
     by = {(m["lesson"], m["name"]): m for m in meta}
     assert by[(1, "enc_Z")]["value_blocks"] == [0] and by[(1, "enc_Z")]["ideal_p1"] == 0
@@ -56,11 +58,11 @@ def test_metadata_fields_and_recipes():
 
 
 def test_injection_only_touches_lesson_one():
-    circuits, meta = build_all({"shots": 100, "inject": {"pauli": "Y", "qubit": 3}})
+    circuits, meta = build_all({"shots": 100, "inject": {"pauli": "Y", "qubit": 8}})
     for qc, m in zip(circuits, meta):
         ys = [qc.find_bit(ins.qubits[0]).index for ins in qc.data if ins.operation.name == "y"]
         if m["lesson"] == 1 and m["kind"] == "enc":
-            assert ys == [3]
+            assert ys == [8]
         elif m["lesson"] == 1:
             assert ys == [0]
         else:
@@ -71,4 +73,6 @@ def test_bad_injection_rejected():
     with pytest.raises(ValueError):
         build_all({"shots": 100, "inject": {"pauli": "H", "qubit": 0}})
     with pytest.raises(ValueError):
-        build_all({"shots": 100, "inject": {"pauli": "X", "qubit": 4}})
+        build_all({"shots": 100, "inject": {"pauli": "X", "qubit": 9}})
+    for q in range(9):
+        build_all({"shots": 100, "inject": {"pauli": "X", "qubit": q}})

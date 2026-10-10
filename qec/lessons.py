@@ -1,7 +1,7 @@
 """Build the 16 circuits of the four lessons plus their metadata."""
 import math
 
-from qec import code412 as c
+from qec import code913 as c
 
 THETA = math.pi / 4
 IDEAL_P1_ROTATED = math.sin(math.pi / 8) ** 2   # 0.146..., same for every rotated readout we use
@@ -21,7 +21,7 @@ def _check_injection(inject):
     if inject is None:
         return None
     pauli, qubit = inject.get("pauli"), inject.get("qubit")
-    if pauli not in ("X", "Y", "Z") or qubit not in (0, 1, 2, 3):
+    if pauli not in ("X", "Y", "Z") or qubit not in range(9):
         raise ValueError(f"bad injection {inject!r}")
     return pauli, int(qubit)
 
@@ -137,6 +137,7 @@ def build_all(settings):
     circuits, meta = [], []
     for index, (qc, m) in enumerate(pairs):
         m["index"] = index
+        m["nqubits"] = qc.num_qubits
         qc.name = f"L{m['lesson']}_{m['name']}"
         circuits.append(qc)
         meta.append(m)
