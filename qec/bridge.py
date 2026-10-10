@@ -4,16 +4,18 @@ from pathlib import Path
 
 from qec.analyze import analyze_all
 from qec.lessons import build_all
+from qec.spacetime import layout
 
 RECORDED = "data/recorded_aria1.json"   # literal path so the Qollab runtime loads the file
 
-_LAST = {"circuits": [], "meta": [], "figures": {}}
+_LAST = {"circuits": [], "meta": [], "figures": {}, "layouts": {}}
 
 
 def build(settings_json):
     circuits, meta = build_all(json.loads(settings_json))
     _LAST["circuits"], _LAST["meta"] = circuits, meta
     _LAST["figures"] = {}
+    _LAST["layouts"] = {}
     return json.dumps(meta)
 
 
@@ -31,6 +33,13 @@ def draw(index):
         qc = _LAST["circuits"][index]
         _LAST["figures"][index] = qc.draw(output="mpl", fold=-1, scale=0.6)
     return _LAST["figures"][index]
+
+
+def spacetime(index):
+    index = int(index)
+    if index not in _LAST["layouts"]:
+        _LAST["layouts"][index] = json.dumps(layout(_LAST["circuits"][index], _LAST["meta"][index]))
+    return _LAST["layouts"][index]
 
 
 def load_recorded():
