@@ -1,10 +1,15 @@
 """JSON-string entry points for the browser page (Pyodide). State lives in _STATE.
 
-params_json: {"m": 10, "k": 3, "c": ..., "staff_cost": ..., "tau": ..., "lam": ..., "wh_weight": ...};
-every key is optional (m defaults to 10, the rest to qopt.cost.DEFAULTS).
+params_json: {"m": 10, "k": 4, "c": ..., "staff_cost": ..., "tau": ..., "lam": ..., "wh_weight": ...};
+every key is optional (m defaults to 10, the rest to qopt.cost.DEFAULTS:
+k=4, c=15000, staff_cost=3.0, tau=10.0, lam=10.0, wh_weight=0.1).
+
+load_recorded() returns the text of data/recorded_local.json; export_take(...) returns (and, inside Qollab,
+downloads) a JSON take {source, backend, date, params, plan, sweep_counts, dh}.
 """
 import json
 import math
+from pathlib import Path
 
 import numpy as np
 
@@ -14,6 +19,7 @@ from qopt.cost import DEFAULTS, cost_table
 
 _STATE = {}
 DEFAULT_M = 10
+RECORDED = "data/recorded_local.json"
 LOCAL_SEARCH_RESTARTS = 20
 
 
@@ -106,3 +112,26 @@ def dh_feed(counts_json):
 
 def placement_sites(index):
     return json.dumps(_sites(int(index)))
+
+
+def load_recorded():
+    path = Path(RECORDED)
+    if not path.exists():
+        path = Path(__file__).resolve().parents[1] / RECORDED
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
+
+def export_take(backend_name, params_json, plan_json, sweep_counts_json, dh_json, date):
+    """Hand a JSON file to the Qollab console so a real run can be saved as data/recorded_<backend>.json."""
+    take = {
+        "source": "qollab-run", "backend": backend_name, "date": date, "params": json.loads(params_json),
+        "plan": json.loads(plan_json), "sweep_counts": json.loads(sweep_counts_json), "dh": json.loads(dh_json),
+    }
+    text = json.dumps(take)
+    try:
+        from js import sendFile  # only exists inside the Qollab runtime
+        sendFile("recorded_take.json", "application/json", text)
+    except ImportError:
+        pass
+    return text

@@ -2,7 +2,7 @@ from math import comb
 
 import numpy as np
 
-from qopt.cost import cost_table, cost_terms, feasible_mask
+from qopt.cost import DEFAULTS, cost_table, cost_terms, feasible_mask
 from tests.conftest import TOY_PARAMS
 
 
@@ -27,9 +27,13 @@ def test_nearest_site_ties_go_to_lowest_index(toy):
 
 def test_defaults_used_when_params_missing(toy):
     t = cost_terms(toy, {}, [0, 1, 2])
-    assert t["crowd"] == 20.0 * 2  # pairs (0,1)=5 and (0,2)=4 are < 6
+    assert t["crowd"] == 10.0 * 3  # pairs (0,1)=5, (0,2)=4 and (1,2)=8 are all < 10
     # b0->0, b1->1, b2->2, b3->0: every site serves some people, all < 15000 -> 1 employee each
-    assert t["staff"] == 1.0 * 3
+    assert t["staff"] == 3.0 * 3
+
+
+def test_defaults_values():
+    assert DEFAULTS == {"k": 4, "c": 15000, "staff_cost": 3.0, "tau": 10.0, "lam": 10.0, "wh_weight": 0.1}
 
 
 def test_feasible_mask():

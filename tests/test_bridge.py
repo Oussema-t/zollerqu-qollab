@@ -78,3 +78,15 @@ def test_dh_loop():
 
 def test_placement_sites():
     assert json.loads(bridge.placement_sites(0b100101)) == [0, 2, 5]
+
+
+def test_export_take_round_trips():
+    plan, counts, dh = [{"M": 1, "T": 2.0, "js": [0]}], [{"00": 5}], {"seed": 7, "rounds": [], "result": {}}
+    text = bridge.export_take("Aer", json.dumps(PARAMS), json.dumps(plan), json.dumps(counts), json.dumps(dh), "2026-10-10")
+    assert json.loads(text) == {"source": "qollab-run", "backend": "Aer", "date": "2026-10-10",
+                                "params": PARAMS, "plan": plan, "sweep_counts": counts, "dh": dh}
+
+
+def test_load_recorded_parses():
+    take = json.loads(bridge.load_recorded())
+    assert take["source"] == "local-aer" and take["params"] == {"m": 10}

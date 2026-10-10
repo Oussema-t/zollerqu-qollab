@@ -3,7 +3,7 @@ from itertools import combinations
 
 import numpy as np
 
-DEFAULTS = {"k": 3, "c": 15000, "staff_cost": 1.0, "tau": 6.0, "lam": 20.0, "wh_weight": 2.0}
+DEFAULTS = {"k": 4, "c": 15000, "staff_cost": 3.0, "tau": 10.0, "lam": 10.0, "wh_weight": 0.1}
 
 
 def _terms(data, params, subsets):
