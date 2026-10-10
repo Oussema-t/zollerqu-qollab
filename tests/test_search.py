@@ -116,3 +116,5 @@ def test_find_min_round_records():
     r = res["rounds"][0]
     assert set(r) >= {"T", "j", "best_sample_cost", "improved", "oracle_calls_cum"}
     assert "converged" in res
+    assert all(isinstance(r["best_index"], int) for r in res["rounds"])
+    assert res["rounds"][-1]["best_index"] == res["best_index"]

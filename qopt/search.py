@@ -120,6 +120,7 @@ def dh_feed(cost, state, counts):
         state["mstep"] = min(LAM * state["mstep"], sqrt(state["N"]))
         if state["mstep"] == sqrt(state["N"]):
             state["stagnant"] += 1
+    record["best_index"] = state["best_index"]
     state["rounds"].append(record)
     return record
 
