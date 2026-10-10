@@ -15,9 +15,10 @@ export function renderCards(root, rows) {
   const encs = rows.filter((r) => r.kind === 'enc');
   const bares = rows.filter((r) => r.kind === 'bare');
   const mean = (xs) => { const v = xs.filter((x) => x !== null && x !== undefined); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
-  root.appendChild(card(fmt(mean(encs.map((r) => r.flagged_fraction))), 'shots flagged by a check and discarded'));
-  root.appendChild(card(fmt(mean(encs.map((r) => r.deviation_accepted))), 'logical error of accepted shots', 'absolute gap between measured and ideal P(1), averaged over the readouts shown'));
-  root.appendChild(card(fmt(mean(bares.map((r) => r.deviation_all))), 'logical error, same experiment on bare physical qubits'));
+  root.appendChild(card(fmt(mean(encs.map((r) => r.discard_fraction))), 'discarded by the checks', 'share of shots whose check pattern the decoder cannot fix'));
+  root.appendChild(card(fmt(mean(encs.map((r) => r.correct_fraction))), 'corrected by the code', 'share of shots where the decoder located and undid a single error'));
+  root.appendChild(card(fmt(mean(encs.map((r) => r.deviation_corrected))), 'logical error after correction', 'absolute gap between measured and ideal P(1) over clean and corrected shots, averaged over the readouts shown'));
+  root.appendChild(card(fmt(mean(bares.map((r) => r.deviation_all))), 'same experiment on bare physical qubits', 'absolute gap between measured and ideal P(1) with no encoding, averaged over the readouts shown'));
   if (rows[0] && rows[0].lesson === 4) {
     root.appendChild(card(fmt(mean(encs.map((r) => r.kept_fraction))), 'kept after post-selecting A = 0 (ideal 50%)'));
   }
@@ -49,6 +50,7 @@ function bars(title, items) {
     r.setAttribute('x', pad); r.setAttribute('y', y); r.setAttribute('height', 18);
     r.setAttribute('width', Math.max(1, (W - pad - 50) * v));
     r.setAttribute('fill', it.color || 'var(--z)');
+    if (it.opacity !== undefined) r.setAttribute('fill-opacity', it.opacity);
     const rt = document.createElementNS(NS, 'title');
     rt.textContent = `${it.label} ${fmt(it.value)}`;
     r.appendChild(rt);
@@ -80,9 +82,10 @@ export function renderCharts(root, rows) {
     const enc = rows.find((r) => r.kind === 'enc' && r.label === label);
     const bare = rows.find((r) => r.kind === 'bare' && r.label === label);
     const items = [
-      { label: 'accepted (encoded)', value: enc.p1_accepted, ideal: enc.ideal_p1, color: 'var(--z)' },
-      { label: 'all shots (encoded)', value: enc.p1_all, ideal: enc.ideal_p1, color: 'var(--muted)' },
-      { label: 'bare physical', value: bare ? bare.p1_all : null, ideal: enc.ideal_p1, color: 'var(--x)' },
+      { label: 'after correction', value: enc.p1_corrected, ideal: enc.ideal_p1, color: 'var(--z)' },
+      { label: 'clean shots only', value: enc.p1_clean, ideal: enc.ideal_p1, color: 'var(--z)', opacity: 0.55 },
+      { label: 'no correction', value: enc.p1_all, ideal: enc.ideal_p1, color: 'var(--muted)' },
+      { label: 'bare qubits', value: bare ? bare.p1_all : null, ideal: enc.ideal_p1, color: 'var(--x)' },
     ];
     root.appendChild(bars(`P(logical = 1), readout ${label}. Green mark = ideal ${fmt(enc.ideal_p1)}`, items));
   });
