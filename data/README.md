@@ -18,8 +18,10 @@ index values for t = 0..T, then each stock's values for t = 0..T.
 - The first index value is 8749.31759356. All prices are positive (stocks 1.79 to 484.59, index 8713.53 to 29550.18).
 
 **What we do not know from the source.** The file has no dates and no stock names. `week` is
-the observation number 0..290, and `s01..s31` follow the file order. That this is the Hang Seng,
-weekly, March 1991 to September 1997 comes from the FRAPO R package documentation (INDTRACK1). We
-have not re-checked it against Beasley, Meade & Chang (2003), the paper the OR-Library page cites.
+the observation number 0..290, and `s01..s31` follow the file order. The FRAPO R package documentation
+(INDTRACK1, read 2026-10-10) describes the data as weekly prices of the Hang Seng index and 31 of its
+constituents, March 1991 to September 1997, and says "The data was downloaded from DATASTREAM and has
+been anonymized". We found no public list of the company names, and we do not guess them. We have not
+re-checked the FRAPO description against Beasley, Meade & Chang (2003), the paper the OR-Library page cites.
 
 Rebuild and validate: `python -m stocks.validate_data` (from the repo root).
