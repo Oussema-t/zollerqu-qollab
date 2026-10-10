@@ -221,3 +221,16 @@ Distance 3, decoding and correction, mid-circuit measurement, reset, feed-forwar
 ## 12. Credits to include on the project page
 
 Small-code error detection on trapped ions (Linke et al. 2017) and the [[4,2,2]] and [[4,1,2]] family (Gottesman 2016), magic-state T gadget (Bravyi and Kitaev 2005), quantum teleportation (Bennett et al. 1993), Qollab runtime docs for the multi-file and recorded-take patterns. AI tools used: Claude Code for planning and implementation, disclosed as the rules require. Required line: "This effort is supported by Qollab & IonQ".
+
+## Addendum, Oct 10 2026: 3D spacetime view
+
+Approved design (Tushar, Oct 10). Each lesson panel gains a three.js scene of the encoded circuit as a spacetime block, after Google Quantum AI, Nature 614, 676 (2023), Fig. 1b and 2a, with time pointing up instead of right.
+
+- Ground plane: the patches as the 2D view draws them (gold data qubits at the corners, XXXX face, two blue Z caps, logical edges); XXXX ancilla at the face centre, ZZZZ ancilla just below the patch. Every qubit is a worldline rising through time.
+- Gate layers: the circuit is cut into phases recorded by the builders (prepare, encode, inject, transversal CNOT, syndrome extraction, readout rotation, measure). Gates inside a phase are packed as early as possible; phases never overlap. Single-qubit gate: labelled box on the worldline. CNOT: bar between worldlines at its step with a dot at the control. Transversal CNOT: four parallel bars patch to patch. Syndrome extraction: the fan of bars from the corners into the ancilla.
+- Top slice from the data: at the final step the tiles are drawn again filled by the measured fire rates and the ZZZZ ancilla rate, so the top of the block is the measured syndrome.
+- Injected error (lesson 1): red marker on the hit worldline at its step; the tiles that catch it are outlined red at the top (spacelike pair).
+- Logical worldsheets: Z_L and X_L edges extruded along time as translucent sheets (blue, gold). At a transversal CNOT the X sheet of the control continues onto the target and the Z sheet of the target onto the control, with a horizontal bridge at that step. Toggle, default on.
+- Animation: time slider and play button; everything above the current time is hidden and a faint "now" plane rises. Orbit and zoom via OrbitControls. No autoplay under reduced motion. Text alternative: the phase list with time spans, clickable.
+- Build: phase names recorded in `qc.metadata["phases"]` (gates unchanged), new `qec/spacetime.py` layout JSON, bridge entry `spacetime(index)`, new `ui/spacetime.js`. three.js is importable by name on Qollab (0.186.1, runtime docs). The Qiskit line drawing stays as a collapsed "Raw Qiskit circuit" and leaves the video.
+- Dev harness (`dev/`) and scripted Playwright demo video are separate tooling, see the plan of Oct 10.
