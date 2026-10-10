@@ -163,9 +163,9 @@ unlocked/
 
 Python to JS boundary. All arguments and return values are JSON strings except circuits and figures, which stay Python proxies.
 
-- `bridge.build(settings_json) -> (circuits, metadata_json)`. `circuits` is a Python list of QuantumCircuit. Metadata is a list, one entry per circuit: lesson id, name, kind (enc or bare), block count, per-block readout basis, logical bit recipe, frame recipe, post-selection recipe, ideal P(1).
+- `bridge.build(settings_json) -> metadata_json; bridge.circuits() returns the cached list`. `circuits` is a Python list of QuantumCircuit. Metadata is a list, one entry per circuit: lesson id, name, kind (enc or bare), block count, per-block readout basis, logical bit recipe, frame recipe, post-selection recipe, ideal P(1).
 - `bridge.analyze(metadata_json, counts_json) -> results_json`. `counts_json` is a list of {bitstring: count} objects in circuit order. Returns per lesson and per circuit the metrics of section 5 plus per-block face fire rates.
-- `bridge.draw(metadata_json, index) -> figure`. Matplotlib figure of one circuit; main.js turns it into an SVG URL via `URL.createObjectURL`.
+- `bridge.draw(index) -> figure`. Matplotlib figure of one circuit; main.js turns it into an SVG URL via `URL.createObjectURL`.
 - `bridge.load_recorded() -> json` reading `data/recorded_aria1.json` through a literal path string, since JavaScript cannot read project files.
 
 `backend.run` is called from main.js only, because a Python-side call fails on IonQ backends with an XHR error. Counts are collected in JS with `result.get_counts(i)` for each circuit index and `.toJs()`, then serialised to JSON.

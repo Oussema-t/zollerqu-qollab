@@ -185,11 +185,12 @@ def test_t_gadget_post_selected_gives_t_state():
 def test_finish_measures_every_qubit_and_rotates_bases():
     qc = c.new_circuit(2)
     c.encode(qc, 0); c.encode(qc, 1)
+    start = len(qc.data)
     c.finish(qc, 2, ["X", "Y"])
     names = [ins.operation.name for ins in qc.data]
     assert names.count("measure") == 12
     # block 0 X readout: four h on data 0..3 after extraction; block 1 Y readout: sdg on 4, h on 4 and 5
-    rotated = [(ins.operation.name, qc.find_bit(ins.qubits[0]).index) for ins in qc.data
+    rotated = [(ins.operation.name, qc.find_bit(ins.qubits[0]).index) for ins in qc.data[start:]
                if ins.operation.name in ("h", "sdg")]
     assert ("sdg", 4) in rotated and ("h", 4) in rotated and ("h", 5) in rotated
     assert all(("h", q) in rotated for q in range(4))
@@ -202,6 +203,31 @@ def test_bare_helpers():
     c.finish_bare(qc, ["Z", "Y"])
     names = [ins.operation.name for ins in qc.data]
     assert names.count("measure") == 2 and "sdg" in names and "h" in names
+
+
+def test_xxxx_ancilla_fault_mid_extraction_is_flagged():
+    # X fault on the XXXX ancilla after its second CX must not leave an undetectable logical error.
+    from qiskit.providers.basic_provider import BasicSimulator
+
+    from qec.analyze import analyze_all
+
+    ext = c.new_circuit(1)
+    c.extract_syndromes(ext, 1, 0)
+    ax = c.anc_x(1, 0)
+    qc = c.new_circuit(1)
+    c.encode(qc, 0)                          # |0_L>
+    n_cx = 0
+    for ins in ext.data:
+        qc.append(ins.operation, [ext.find_bit(q).index for q in ins.qubits])
+        if ins.operation.name == "cx" and ext.find_bit(ins.qubits[0]).index == ax:
+            n_cx += 1
+            if n_cx == 2:
+                qc.x(ax)
+    qc.measure(range(qc.num_qubits), range(qc.num_clbits))   # Z readout
+    counts = BasicSimulator().run(qc, shots=200, seed_simulator=1234).result().get_counts()
+    meta = {"index": 0, "lesson": 1, "name": "hook", "kind": "enc", "label": "Z", "nblocks": 1,
+            "bases": ["Z"], "value_blocks": [0], "keep_if_zero": [], "ideal_p1": 0.0}
+    assert analyze_all([meta], [counts])[0]["flagged_fraction"] == 1.0
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -223,8 +249,6 @@ Layout of one patch (local indices):
     q2 --- q3     bottom edge: Z2Z3 stabilizer, Z_L = Z0Z2 (left edge)
 """
 from qiskit import QuantumCircuit
-
-BASES = ("Z", "X", "Y")
 
 
 def data(b, i):
@@ -269,8 +293,13 @@ def inject(qc, b, pauli, i):
 def extract_syndromes(qc, nblocks, b):
     ax, az = anc_x(nblocks, b), anc_z(nblocks, b)
     q = [data(b, i) for i in range(4)]
+    # XXXX ancilla CX order q0, q2, q1, q3 avoids the hook error: an X fault on ax
+    # after the second CX would leave X2X3 = X_L * XXXX with order q0..q3, a logical
+    # error no check sees. With this order the leftover is X1X2X3 (= X0 * XXXX),
+    # X1X3 or X3, all caught by the Z checks. The ZZZZ ancilla keeps q0..q3: its
+    # mid-sequence leftover Z2Z3 is a stabilizer, while reordering would give Z_L.
     qc.h(ax)
-    for qi in q:
+    for qi in (q[0], q[2], q[1], q[3]):
         qc.cx(ax, qi)
     qc.h(ax)
     for qi in q:
@@ -328,7 +357,7 @@ def finish_bare(qc, bases):
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `python -m pytest tests/test_code412.py -q`
-Expected: all pass (19 tests).
+Expected: all pass (21 tests).
 
 - [ ] **Step 5: Commit**
 
@@ -611,7 +640,7 @@ def run(settings, shots, noise=None):
     circuits, meta = build_all(settings)
     sim = AerSimulator(noise_model=noise) if noise else AerSimulator()
     tcs = transpile(circuits, sim, optimization_level=0)
-    result = sim.run(tcs, shots=shots).result()
+    result = sim.run(tcs, shots=shots, seed_simulator=1234).result()
     counts = [result.get_counts(i) for i in range(len(circuits))]
     return analyze_all(meta, counts)
 
@@ -688,7 +717,7 @@ def test_noisy_table_is_informational():
     noise = NoiseModel()
     noise.add_all_qubit_quantum_error(depolarizing_error(0.002, 1), ["h", "x", "y", "z", "t", "sdg", "ry"])
     noise.add_all_qubit_quantum_error(depolarizing_error(0.01, 2), ["cx"])
-    res = run({"shots": 2000, "inject": None}, 2000, noise)
+    res = run({"shots": 200, "inject": None}, 200, noise)
     print("\nlesson name       flagged  dev_acc  dev_all")
     for r in res:
         if r["kind"] == "enc":
@@ -747,6 +776,11 @@ def _faces_update(acc, basis, r, count):
 
 
 def analyze_one(m, counts):
+    """Metrics for one circuit.
+
+    n_accepted counts unflagged shots. n_kept and the *_accepted metrics also apply
+    keep_if_zero, so they count shots that are unflagged and kept.
+    """
     nblocks, bases = m["nblocks"], m["bases"]
     enc = m["kind"] == "enc"
     n_total = n_flagged = n_kept = n_one = n_kept_all = n_one_all = 0
@@ -790,7 +824,8 @@ def analyze_one(m, counts):
         "n_total": n_total,
         "n_flagged": n_flagged,
         "n_accepted": n_total - n_flagged,
-        "flagged_fraction": frac(n_flagged, n_total) if n_total else 0,
+        "n_kept": n_kept,
+        "flagged_fraction": frac(n_flagged, n_total),
         "kept_fraction": frac(n_kept_all, n_total),
         "p1_accepted": p1_acc,
         "p1_all": p1_all,
@@ -803,7 +838,7 @@ def analyze_one(m, counts):
 
 def analyze_all(meta, counts_list):
     """meta and counts_list are parallel lists, one entry per circuit."""
-    return [analyze_one(m, dict(counts)) for m, counts in zip(meta, counts_list)]
+    return [analyze_one(m, dict(counts)) for m, counts in zip(meta, counts_list, strict=True)]
 ```
 
 - [ ] **Step 4: Run tests to verify they pass**
@@ -833,6 +868,7 @@ git commit -m "Analyse counts into flags, post-selection and face fire rates"
 import json
 
 from qec import bridge
+from qec.lessons import build_all
 
 
 def test_build_then_circuits_and_analyze_round_trip():
@@ -851,6 +887,7 @@ def test_recorded_take_is_loadable_and_consistent():
     take = json.loads(bridge.load_recorded())
     assert set(take) >= {"source", "backend", "date", "settings", "meta", "counts"}
     assert len(take["meta"]) == len(take["counts"]) == 16
+    assert build_all(take["settings"])[1] == take["meta"]
     res = json.loads(bridge.analyze(json.dumps(take["meta"]), json.dumps(take["counts"])))
     assert len(res) == 16
 
@@ -871,18 +908,20 @@ Expected: ImportError.
 ```python
 """Entry points called from main.js. JSON strings in and out; circuits and figures stay proxies."""
 import json
+from pathlib import Path
 
 from qec.analyze import analyze_all
 from qec.lessons import build_all
 
 RECORDED = "data/recorded_aria1.json"   # literal path so the Qollab runtime loads the file
 
-_LAST = {"circuits": [], "meta": []}
+_LAST = {"circuits": [], "meta": [], "figures": {}}
 
 
 def build(settings_json):
     circuits, meta = build_all(json.loads(settings_json))
     _LAST["circuits"], _LAST["meta"] = circuits, meta
+    _LAST["figures"] = {}
     return json.dumps(meta)
 
 
@@ -895,12 +934,18 @@ def analyze(meta_json, counts_json):
 
 
 def draw(index):
-    qc = _LAST["circuits"][int(index)]
-    return qc.draw(output="mpl", fold=-1, scale=0.6)
+    index = int(index)
+    if index not in _LAST["figures"]:
+        qc = _LAST["circuits"][index]
+        _LAST["figures"][index] = qc.draw(output="mpl", fold=-1, scale=0.6)
+    return _LAST["figures"][index]
 
 
 def load_recorded():
-    with open(RECORDED) as f:
+    path = Path(RECORDED)
+    if not path.exists():
+        path = Path(__file__).resolve().parents[1] / RECORDED
+    with open(path, encoding="utf-8") as f:
         return f.read()
 
 
@@ -947,7 +992,7 @@ def main():
     noise.add_all_qubit_quantum_error(depolarizing_error(0.0005, 1), ["h", "x", "y", "z", "t", "sdg", "ry"])
     noise.add_all_qubit_quantum_error(depolarizing_error(0.006, 2), ["cx"])
     sim = AerSimulator(noise_model=noise)
-    result = sim.run(transpile(circuits, sim, optimization_level=0), shots=SETTINGS["shots"]).result()
+    result = sim.run(transpile(circuits, sim, optimization_level=0), shots=SETTINGS["shots"], seed_simulator=1234).result()
     counts = [dict(result.get_counts(i)) for i in range(len(circuits))]
     take = {
         "source": "local-aer-stand-in",
