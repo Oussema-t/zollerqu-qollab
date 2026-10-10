@@ -4,7 +4,17 @@ import { renderPatches } from './ui/patches.js';
 import { renderCards, renderCharts } from './ui/charts.js';
 
 const $ = (id) => document.getElementById(id);
-const state = { settings: null, metaJson: null, meta: null, countsJson: null, results: null, lesson: 1, backendName: '', isIonq: false, source: '' };
+const state = { settings: null, metaJson: null, meta: null, countsJson: null, results: null, lesson: 1, backendName: '', isIonq: false, source: '', submitLocked: false };
+const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));   // works with the injected promise setTimeout and the browser one
+const toPlain = (x) => ((x && typeof x.toJs === 'function') ? Object.fromEntries(x.toJs()) : x);
+const errText = (e) => (e && e.message ? e.message : String(e));
+
+function setBusy(on) {
+  $('submit').disabled = on || state.submitLocked;
+  $('load-recorded').disabled = on;
+  $('export').disabled = on;
+}
 
 function backendLabel() {
   try { return String(backend.name && typeof backend.name === 'function' ? backend.name() : backend.name); }
@@ -24,7 +34,7 @@ function readSettings() {
 async function submit() {
   const settings = readSettings();
   state.settings = settings;
-  $('submit').disabled = true;
+  setBusy(true);
   setStatus('Building 16 circuits...');
   try {
     state.metaJson = await bridge.build.callPromising(JSON.stringify(settings));
@@ -34,43 +44,56 @@ async function submit() {
     const job = await backend.run(circuits, { shots: settings.shots });
     // Proxies to the same Python enum member are not === in JS, so compare by name.
     const statusName = async () => { const s = await job.status(); try { return String(s.name ?? s); } catch { return String(s); } };
+    const terminal = (st) => ['done', 'completed', 'error', 'failed', 'cancel'].some((k) => st.toLowerCase().includes(k));
     let status = await statusName();
     let ticks = 0;
-    while (!['DONE', 'ERROR', 'CANCELLED'].some((k) => status.includes(k))) {
-      await setTimeout(1000);
+    while (!terminal(status)) {
+      if (ticks >= 3600) throw new Error('Timed out waiting for the job');
+      await sleep(1000);
       status = await statusName();
       ticks += 1;
       setStatus(`Job ${status}... ${ticks}s. Noise-model simulators run one shot at a time, so this scales with shots.`);
     }
-    if (!status.includes('DONE')) throw new Error('Job ended with status ' + status);
+    if (!['done', 'completed'].some((k) => status.toLowerCase().includes(k))) throw new Error('Job ended with status ' + status);
     const result = await job.result();
     const counts = [];
     for (let i = 0; i < state.meta.length; i++) {
-      counts.push(Object.fromEntries(result.get_counts(i).toJs()));
+      counts.push(toPlain(result.get_counts(i)));
     }
     state.countsJson = JSON.stringify(counts);
     state.source = `live run on ${state.backendName}`;
     await explore();
+    state.submitLocked = state.isIonq;
+    setBusy(false);
     $('export').hidden = false;
-    if (!state.isIonq) $('submit').disabled = false;
-    else setStatus('Done. IonQ backends allow one job per run: press Stop, then Run, to submit again.');
+    if (state.isIonq) setStatus('Done. ' + IONQ_AGAIN);
   } catch (e) {
-    setBanner('Run failed: ' + (e && e.message ? e.message : String(e)), 'err');
-    setStatus('');
-    $('submit').disabled = false;
+    setBanner('Run failed: ' + errText(e), 'err');
+    state.submitLocked = state.isIonq;
+    setBusy(false);
+    $('export').disabled = true;   // state now mixes the new build with old counts
+    setStatus(state.isIonq ? IONQ_AGAIN : '');
   }
 }
 
 async function loadRecorded() {
+  setBusy(true);
   setStatus('Loading recorded take...');
-  const take = JSON.parse(await bridge.load_recorded.callPromising());
-  state.settings = take.settings;
-  state.metaJson = JSON.stringify(take.meta);
-  state.meta = take.meta;
-  state.countsJson = JSON.stringify(take.counts);
-  state.source = `recorded take: ${take.backend}, ${take.date} (${take.source})`;
-  await bridge.build.callPromising(JSON.stringify(take.settings));   // so circuit drawings match
-  await explore();
+  try {
+    const take = JSON.parse(await bridge.load_recorded.callPromising());
+    state.settings = take.settings;
+    state.metaJson = JSON.stringify(take.meta);
+    state.meta = take.meta;
+    state.countsJson = JSON.stringify(take.counts);
+    state.source = `recorded take: ${take.backend}, ${take.date} (${take.source})`;
+    await bridge.build.callPromising(JSON.stringify(take.settings));   // so circuit drawings match
+    await explore();
+  } catch (e) {
+    setBanner('Recorded take not available: ' + errText(e), 'err');
+    setStatus('');
+  } finally {
+    setBusy(false);
+  }
 }
 
 async function explore() {
@@ -111,7 +134,10 @@ async function drawCircuit() {
     img.src = URL.createObjectURL(fig);
     $('circuit-img').replaceChildren(img);
   } catch (e) {
-    $('circuit-img').textContent = 'Drawing needs the Qiskit Visualizations library enabled in the Libraries list. ' + e;
+    const msg = 'Could not draw the circuit on this backend: ' + e;
+    $('circuit-img').textContent = /visualization|matplotlib/i.test(String(e))
+      ? msg + ' Enable Qiskit Visualizations in the Libraries list.'
+      : msg;
   }
 }
 
