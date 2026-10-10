@@ -5,19 +5,23 @@ from qopt.cost import DEFAULTS, cost_terms
 
 
 def brute_force(cost):
+    """Exhaustive scan of the feasible placements; evaluations = how many there are."""
     idx = int(np.argmin(cost))
-    return idx, float(cost[idx]), len(cost)
+    return idx, float(cost[idx]), int(np.isfinite(cost).sum())
 
 
 def greedy(data, params, m):
+    """Add the site that lowers the cost most, k times. Evaluations = cost_terms calls (partial placements)."""
     k = {**DEFAULTS, **params}["k"]
-    sites = []
+    sites, evaluations = [], 0
     for _ in range(k):
-        best = min((i for i in range(m) if i not in sites),
-                   key=lambda i: cost_terms(data, params, sites + [i])["total"])
+        scores = {i: cost_terms(data, params, sites + [i])["total"] for i in range(m) if i not in sites}
+        evaluations += len(scores)
+        best = min(scores, key=scores.get)
         sites.append(best)
+        total = scores[best]
     sites.sort()
-    return sites, cost_terms(data, params, sites)["total"]
+    return sites, total, evaluations
 
 
 def local_search(cost, m, k, restarts, rng):
@@ -42,37 +46,3 @@ def local_search(cost, m, k, restarts, rng):
     return {"best_index": best_index, "best_cost": float(cost[best_index]),
             "local_minima": len(minima), "evaluations": evaluations}
 
-
-def milp(data, params, m):
-    """p-median MIP on the travel term only (scipy HiGHS). None if milp is unavailable or fails."""
-    try:
-        from scipy.optimize import Bounds, LinearConstraint, milp as scipy_milp
-    except ImportError:
-        return None
-    try:
-        k = {**DEFAULTS, **params}["k"]
-        pop = np.array([b["pop"] for b in data["blocks"]], dtype=float)
-        tb = np.asarray(data["t_block_site"], dtype=float)[:, :m]
-        nb = len(pop)
-        # variables: y_0..y_{m-1}, then x_{b,i} row-major
-        c = np.concatenate([np.zeros(m), (pop[:, None] * tb).ravel() / pop.sum()])
-        n = m + nb * m
-        assign = np.zeros((nb, n))
-        link = np.zeros((nb * m, n))
-        for b in range(nb):
-            assign[b, m + b * m: m + (b + 1) * m] = 1
-            for i in range(m):
-                link[b * m + i, m + b * m + i] = 1
-                link[b * m + i, i] = -1
-        count = np.concatenate([np.ones(m), np.zeros(nb * m)])[None, :]
-        constraints = [LinearConstraint(assign, 1, 1), LinearConstraint(link, -np.inf, 0),
-                       LinearConstraint(count, k, k)]
-        integrality = np.concatenate([np.ones(m), np.zeros(nb * m)])
-        res = scipy_milp(c, constraints=constraints, integrality=integrality, bounds=Bounds(0, 1))
-        if not res.success:
-            return None
-        sites = [i for i in range(m) if res.x[i] > 0.5]
-        return {"sites": sites, "index": sum(1 << i for i in sites), "travel": float(res.fun),
-                "scope": "travel part only"}
-    except Exception:
-        return None

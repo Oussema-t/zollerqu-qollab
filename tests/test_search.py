@@ -1,12 +1,15 @@
+from math import comb
+
 import numpy as np
+import pytest
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector
 
 from qopt.aer_run import aer_run
 from qopt.classical import brute_force
 from qopt.cost import feasible_mask
-from qopt.search import (find_min, grover_circuit, index_from_key, marked_count, oracle,
-                         success_theory, sweep_analyze, sweep_circuits, sweep_plan)
+from qopt.search import (dh_init, dicke_circuit, feasible_count, find_min, grover_circuit, index_from_key,
+                         marked_count, oracle, success_theory, sweep_analyze, sweep_circuits, sweep_plan)
 
 
 def random_table(m, k, seed):
@@ -40,6 +43,28 @@ def test_strict_oracle_excludes_threshold():
     assert np.allclose(amps, np.where(table < T, -1, 1))
 
 
+def test_oracle_never_marks_infeasible_entries():
+    m = 6
+    table = random_table(m, 3, seed=4)
+    qc = QuantumCircuit(m)
+    qc.h(range(m))
+    qc.append(oracle(table, np.inf), range(m))
+    amps = Statevector(qc).data * np.sqrt(2 ** m)
+    assert np.allclose(amps, np.where(np.isfinite(table), -1, 1))
+    assert marked_count(table, np.inf) == comb(6, 3)
+
+
+@pytest.mark.parametrize("m,k", [(4, 2), (6, 3), (8, 4), (10, 4)])
+def test_dicke_circuit_is_uniform_over_weight_k(m, k):
+    amps = Statevector(dicke_circuit(m, k)).data
+    expected = np.where(feasible_mask(m, k), 1 / np.sqrt(comb(m, k)), 0)
+    assert np.allclose(amps, expected, atol=1e-9)
+
+
+def test_feasible_count():
+    assert feasible_count(random_table(8, 4, seed=0)) == 70
+
+
 def test_index_from_key_little_endian():
     # site 0 = qubit 0 = last character
     assert index_from_key("0001") == 1
@@ -47,10 +72,27 @@ def test_index_from_key_little_endian():
     assert index_from_key("10 01") == 9
 
 
+def test_uniform_start_samples_only_feasible():
+    m, k = 8, 4
+    table = random_table(m, k, seed=6)
+    counts = aer_run([grover_circuit(table, np.sort(table)[0], 0)], 4000, seed=2)[0]
+    assert all(bin(index_from_key(key)).count("1") == k for key in counts)
+    assert len(counts) > 60  # spread over the 70 feasible placements
+
+
+def test_grover_circuit_k_inferred_equals_explicit():
+    table = random_table(6, 3, seed=8)
+    T = np.sort(table)[2]
+    a = Statevector(grover_circuit(table, T, 2).remove_final_measurements(inplace=False))
+    b = Statevector(grover_circuit(table, T, 2, k=3).remove_final_measurements(inplace=False))
+    assert a.equiv(b)
+
+
 def test_success_probability_matches_theory():
     m = 8
-    table = random_table(m, 3, seed=2)
-    N = 2 ** m
+    table = random_table(m, 4, seed=2)
+    N = comb(8, 4)
+    assert feasible_count(table) == N == 70
     finite = np.sort(table[np.isfinite(table)])
     circuits, expected = [], []
     for M in (1, 4, 16):
@@ -69,15 +111,18 @@ def test_sweep_plan_and_analyze_round_trip():
     table = random_table(m, 3, seed=3)
     plan = sweep_plan(table, M_targets=(1, 4), max_circuits=5)
     assert [s["M"] for s in plan] == [1, 4]
-    assert plan[0]["js"] == [0, 1, 2, 3, 4]  # ceil(1.2*pi/4*16)=16, capped at max_circuits-1
-    assert plan[1]["js"] == [0, 1, 2, 3, 4]
+    assert all(s["N"] == comb(8, 3) for s in plan)  # feasible count, not 2^m
+    assert plan[0]["js"] == [0, 1, 2, 3, 4]  # ceil(1.2*pi/4*sqrt(56))=8, capped at max_circuits-1
+    assert plan[1]["js"] == [0, 1, 2, 3, 4]  # ceil(1.2*pi/4*sqrt(14))=4
     assert plan[0]["T"] == np.sort(table)[0]
     circuits = sweep_circuits(table, plan)
     assert len(circuits) == 10 and all(c.num_clbits == m for c in circuits)
     analysis = sweep_analyze(table, plan, aer_run(circuits, 4000, seed=1))
     assert [s["M"] for s in analysis] == [1, 4]
     for s in analysis:
+        assert s["N"] == comb(8, 3)
         assert [p["j"] for p in s["points"]] == [0, 1, 2, 3, 4]
+        assert all(p["theory"] == success_theory(s["M"], comb(8, 3), p["j"]) for p in s["points"])
         assert s["max_dev"] == max(abs(p["measured"] - p["theory"]) for p in s["points"])
         assert s["max_dev"] < 0.03
 
@@ -86,8 +131,8 @@ def test_sweep_plan_iteration_count():
     m = 8
     table = random_table(m, 3, seed=3)
     plan = sweep_plan(table, M_targets=(16,), max_circuits=12)
-    # ceil(1.2 * pi/4 * sqrt(256/16)) = ceil(3.77) = 4
-    assert plan[0]["js"] == [0, 1, 2, 3, 4] and plan[0]["M"] == 16
+    # N = C(8,3) = 56: ceil(1.2 * pi/4 * sqrt(56/16)) = ceil(1.76) = 2
+    assert plan[0]["js"] == [0, 1, 2] and plan[0]["M"] == 16
 
 
 def test_find_min_reaches_brute_force_optimum():
@@ -102,9 +147,9 @@ def test_find_min_reaches_brute_force_optimum():
             return aer_run(circuits, shots, seed=next(aer_seeds))
 
         res = find_min(table, run, np.random.default_rng(seed))  # default: one shot per round
-        assert res["N"] == 2 ** m and res["rounds"] and res["oracle_calls"] > 0
+        assert res["N"] == comb(8, 3) and res["rounds"] and res["oracle_calls"] > 0
         assert res["grover_iterations"] == sum(r["j"] for r in res["rounds"])
-        assert res["oracle_calls"] == res["grover_iterations"] + len(res["rounds"])
+        assert res["oracle_calls"] == 1 + res["grover_iterations"] + len(res["rounds"])
         assert res["rounds"][-1]["oracle_calls_cum"] == res["oracle_calls"]
         assert res["best_cost"] == table[res["best_index"]]
         hits += res["best_index"] == brute_force(table)[0]
@@ -140,9 +185,16 @@ def test_find_min_counts_one_call_per_round():
 
     res = find_min(table, run, np.random.default_rng(1))
     assert set(shots_seen) == {1}
-    cum = 0
+    cum = 1  # the random start is one lookup
     for r in res["rounds"]:
         cum += r["j"] + 1
         assert r["oracle_calls_cum"] == cum
     assert res["oracle_calls"] == cum
-    assert res["grover_iterations"] == cum - len(res["rounds"])
+    assert res["grover_iterations"] == cum - len(res["rounds"]) - 1
+
+
+def test_dh_init_counts_the_random_start():
+    table = random_table(6, 3, seed=9)
+    state = dh_init(table, np.random.default_rng(3))
+    assert state["oracle_calls"] == 1 and state["N"] == comb(6, 3)
+    assert np.isfinite(table[state["best_index"]]) and state["T"] == table[state["best_index"]]

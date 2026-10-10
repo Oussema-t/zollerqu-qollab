@@ -23,8 +23,8 @@ def test_load_data_returns_json():
 
 def test_cost_table_json():
     out = json.loads(bridge.cost_table_json(json.dumps(PARAMS)))
-    assert set(out) == {"m", "k", "n_feasible", "best_index", "best_cost", "best_sites"}
-    assert out["m"] == 6 and out["k"] == 3 and out["n_feasible"] == 20
+    assert set(out) == {"m", "k", "N", "n_feasible", "best_index", "best_cost", "best_sites"}
+    assert out["m"] == 6 and out["k"] == 3 and out["n_feasible"] == out["N"] == 20
     table = cost_table(random_data(30, 12, seed=11), PARAMS, 6)
     assert out["best_index"] == brute_force(table)[0]
     assert out["best_sites"] == [i for i in range(6) if out["best_index"] >> i & 1]
@@ -32,33 +32,38 @@ def test_cost_table_json():
 
 def test_cost_table_json_default_m_is_10():
     out = json.loads(bridge.cost_table_json(json.dumps({"k": 2})))
-    assert out["m"] == 10 and out["n_feasible"] == 45
+    assert out["m"] == 10 and out["n_feasible"] == out["N"] == 45
 
 
 def test_classical():
     out = json.loads(bridge.classical(json.dumps(PARAMS)))
-    assert set(out) >= {"brute_force", "greedy", "local_search", "milp"}
-    assert set(out["brute_force"]) >= {"index", "cost", "sites", "evaluations"}
+    assert set(out) == {"brute_force", "greedy", "local_search"}
+    assert set(out["brute_force"]) >= {"index", "cost", "sites", "evaluations", "unit"}
+    assert out["brute_force"]["evaluations"] == 20 and out["brute_force"]["unit"] == "placements scored"
     assert len(out["greedy"]["sites"]) == 3
+    assert out["greedy"]["evaluations"] == 6 + 5 + 4 and out["greedy"]["unit"] == "partial placements scored"
     assert out["local_search"]["best_cost"] >= out["brute_force"]["cost"]
-    assert out["milp"] is None or out["milp"]["scope"] == "travel part only"
+    assert out["local_search"]["unit"] == "placements scored" and out["local_search"]["evaluations"] > 0
 
 
 def test_sweep_round_trip():
     plan = json.loads(bridge.sweep(json.dumps(PARAMS)))
     assert [s["M"] for s in plan] == [1, 4, 16]
+    assert all(s["N"] == 20 for s in plan)
     circuits = bridge.sweep_circuits_py(json.dumps(PARAMS))
     assert all(isinstance(c, QuantumCircuit) for c in circuits)
     assert len(circuits) == sum(len(s["js"]) for s in plan)
     counts = aer_run(circuits, 2000, seed=3)
     out = json.loads(bridge.sweep_analyze_json(json.dumps(PARAMS), json.dumps(plan), json.dumps(counts)))
     assert [s["M"] for s in out] == [1, 4, 16]
+    assert all(s["N"] == 20 for s in out)
     assert all(s["max_dev"] < 0.05 for s in out)
 
 
 def test_dh_loop():
     start = json.loads(bridge.dh_start(json.dumps(PARAMS), 5))
     assert set(start) >= {"N", "T", "best_index"}
+    assert start["N"] == 20
     done, rounds, seed = False, 0, 0
     while not done:
         circuit = bridge.dh_next_circuit()
@@ -71,7 +76,8 @@ def test_dh_loop():
         assert rounds <= 120
     res = out["result"]
     assert res["grover_iterations"] == sum(r["j"] for r in res["rounds"])
-    assert res["oracle_calls"] == res["grover_iterations"] + rounds
+    assert res["oracle_calls"] == 1 + res["grover_iterations"] + rounds
+    assert res["N"] == 20
     table = cost_table(random_data(30, 12, seed=11), PARAMS, 6)
     assert res["best_index"] == brute_force(table)[0]
     assert res["converged"] is True and len(res["rounds"]) == rounds

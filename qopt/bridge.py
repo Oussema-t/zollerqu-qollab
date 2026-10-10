@@ -48,7 +48,8 @@ def load_data(json_text):
 def cost_table_json(params_json):
     m, params, cost = _setup(params_json)
     idx, best, _ = cl.brute_force(cost)
-    return json.dumps({"m": m, "k": {**DEFAULTS, **params}["k"], "n_feasible": int(np.isfinite(cost).sum()),
+    n = search.feasible_count(cost)
+    return json.dumps({"m": m, "k": {**DEFAULTS, **params}["k"], "N": n, "n_feasible": n,
                        "best_index": idx, "best_cost": best, "best_sites": _sites(idx)})
 
 
@@ -56,14 +57,16 @@ def classical(params_json):
     m, params, cost = _setup(params_json)
     k = {**DEFAULTS, **params}["k"]
     idx, best, evals = cl.brute_force(cost)
-    g_sites, g_cost = cl.greedy(_STATE["data"], params, m)
+    g_sites, g_cost, g_evals = cl.greedy(_STATE["data"], params, m)
     ls = cl.local_search(cost, m, k, LOCAL_SEARCH_RESTARTS, np.random.default_rng(0))
     ls["sites"] = _sites(ls["best_index"])
+    ls["unit"] = "placements scored"
     return json.dumps({
-        "brute_force": {"index": idx, "cost": best, "sites": _sites(idx), "evaluations": evals},
-        "greedy": {"sites": g_sites, "cost": g_cost, "index": sum(1 << i for i in g_sites)},
+        "brute_force": {"index": idx, "cost": best, "sites": _sites(idx), "evaluations": evals,
+                        "unit": "placements scored"},
+        "greedy": {"sites": g_sites, "cost": g_cost, "index": sum(1 << i for i in g_sites),
+                   "evaluations": g_evals, "unit": "partial placements scored"},
         "local_search": ls,
-        "milp": cl.milp(_STATE["data"], params, m),
     })
 
 

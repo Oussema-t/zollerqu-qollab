@@ -1,4 +1,5 @@
 import json
+from math import comb
 from pathlib import Path
 
 import numpy as np
@@ -35,7 +36,8 @@ def test_dh_result_is_feasible_and_not_below_brute_force():
 def test_dh_one_shot_per_round():
     assert TAKE["dh"]["dh_shots"] == 1
     res = TAKE["dh"]["result"]
-    assert res["oracle_calls"] == res["grover_iterations"] + len(TAKE["dh"]["rounds"])
+    assert res["oracle_calls"] == 1 + res["grover_iterations"] + len(TAKE["dh"]["rounds"])
+    assert res["N"] == 210
 
 
 def test_scaling_study():
@@ -45,8 +47,8 @@ def test_scaling_study():
     for e in study:
         assert set(e) == {"m", "N", "seeds", "calls_mean", "calls_min", "calls_max", "grover_mean",
                           "rounds_mean", "exact_fraction"}
-        assert e["N"] == 2 ** e["m"]
+        assert e["N"] == comb(e["m"], 4)  # 15, 70, 210, 495
         assert e["calls_min"] <= e["calls_mean"] <= e["calls_max"]
         assert e["exact_fraction"] >= 0.5
-        if e["m"] >= 8:
+        if e["m"] >= 10:
             assert e["calls_mean"] < e["N"]

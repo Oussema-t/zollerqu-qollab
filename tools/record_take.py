@@ -14,7 +14,7 @@ from qopt import bridge
 from qopt.aer_run import aer_run
 from qopt.classical import brute_force
 from qopt.cost import cost_table
-from qopt.search import find_min
+from qopt.search import feasible_count, find_min
 
 OUT = Path("data/recorded_local.json")
 PARAMS = {"m": 10}
@@ -22,7 +22,12 @@ DH_SEED = 7
 DH_SHOTS = 1
 STUDY_SEEDS = 20
 STUDY_M12_SEEDS = 5
-STUDY_M12_LIMIT_S = 60
+STUDY_M12_LIMIT_S = 120
+
+
+def aer_seed(seed, round_index):
+    """The one simulator seeding rule: loop seed s, round r -> Aer seed s * 1000 + r."""
+    return seed * 1000 + round_index
 
 
 def study_entry(data, m, seeds):
@@ -31,11 +36,11 @@ def study_entry(data, m, seeds):
     runs = []
     for seed in seeds:
         rounds = itertools.count()
-        res = find_min(cost, lambda c, sh: aer_run(c, sh, seed=seed * 1000 + next(rounds)),
+        res = find_min(cost, lambda c, sh: aer_run(c, sh, seed=aer_seed(seed, next(rounds))),
                        np.random.default_rng(seed), shots=1)
         runs.append(res)
     calls = [r["oracle_calls"] for r in runs]
-    return {"m": m, "N": 2 ** m, "seeds": len(runs), "calls_mean": float(np.mean(calls)),
+    return {"m": m, "N": feasible_count(cost), "seeds": len(runs), "calls_mean": float(np.mean(calls)),
             "calls_min": int(min(calls)), "calls_max": int(max(calls)),
             "grover_mean": float(np.mean([r["grover_iterations"] for r in runs])),
             "rounds_mean": float(np.mean([len(r["rounds"]) for r in runs])),
@@ -77,7 +82,8 @@ def main():
     bridge.dh_start(params, DH_SEED)
     t0, done, n = time.time(), False, 0
     while not done:
-        out = json.loads(bridge.dh_feed(json.dumps(aer_run([bridge.dh_next_circuit()], DH_SHOTS, seed=n)[0])))
+        dh_counts = aer_run([bridge.dh_next_circuit()], DH_SHOTS, seed=aer_seed(DH_SEED, n))[0]
+        out = json.loads(bridge.dh_feed(json.dumps(dh_counts)))
         n += 1
         done = out["done"]
     res = out["result"]

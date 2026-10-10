@@ -1,13 +1,17 @@
-"""Grover threshold search and Durr-Hoyer minimum finding over a cost table.
+"""Grover threshold search and Durr-Hoyer minimum finding over the feasible placements.
+
+The search space is the C(m,k) placements with exactly k open sites: the register starts in the
+Dicke state |D^m_k> (uniform over them) and the diffusion reflects about that state, so
+N = C(m,k) = number of finite entries of the cost table.
 
 Bitstring convention: site i = qubit i = bit i of the index. In a Qiskit counts key
 (little-endian) site i is the character at position m-1-i, so int(key, 2) is the index.
 """
-from math import asin, ceil, pi, sin, sqrt
+from math import acos, asin, ceil, pi, sin, sqrt
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import DiagonalGate
+from qiskit.circuit.library import DiagonalGate, RYGate
 
 
 def index_from_key(key):
@@ -15,7 +19,11 @@ def index_from_key(key):
 
 
 def _marked(cost, T, strict):
-    return cost < T if strict else cost <= T
+    return np.isfinite(cost) & (cost < T if strict else cost <= T)
+
+
+def feasible_count(cost):
+    return int(np.isfinite(cost).sum())
 
 
 def marked_count(cost, T, strict=False):
@@ -26,24 +34,62 @@ def oracle(cost, T, strict=False):
     return DiagonalGate(np.where(_marked(cost, T, strict), -1.0, 1.0).tolist())
 
 
-def _diffusion(m):
+def _scs(qc, n, k):
+    """Split-and-cyclic-shift block SCS_{n,k} of Bartschi and Eidenbenz (arXiv:1904.07358).
+
+    Paper qubits 1..n are circuit qubits 0..n-1; the block acts on paper qubits n-k..n.
+    """
+    q = lambda p: p - 1  # noqa: E731
+    qc.cx(q(n - 1), q(n))
+    qc.cry(2 * acos(sqrt(1 / n)), q(n), q(n - 1))
+    qc.cx(q(n - 1), q(n))
+    for l in range(2, k + 1):
+        qc.cx(q(n - l), q(n))
+        qc.append(RYGate(2 * acos(sqrt(l / n))).control(2, annotated=False), [q(n), q(n - l + 1), q(n - l)])
+        qc.cx(q(n - l), q(n))
+
+
+def dicke_circuit(m, k):
+    """Deterministic |D^m_k> preparation, no ancilla, O(km) gates (Bartschi and Eidenbenz, Lemma 2).
+
+    Start from |0..0 1..1> with ones on the k top-index qubits, then apply
+    SCS_{l,k} for l = m..k+1 followed by SCS_{l,l-1} for l = k..2.
+    """
+    qc = QuantumCircuit(m, name="Dicke")
+    qc.x(range(m - k, m))
+    for n in range(m, k, -1):
+        _scs(qc, n, k)
+    for n in range(k, 1, -1):
+        _scs(qc, n, n - 1)
+    return qc
+
+
+def _diffusion(prep):
+    """D = A (2|0><0| - I) A^dagger, up to a global phase, with A the feasible-uniform preparation."""
+    m = prep.num_qubits
     qc = QuantumCircuit(m, name="D")
-    qc.h(range(m))
+    qc.compose(prep.inverse(), inplace=True)
     qc.x(range(m))
     qc.h(m - 1)
     qc.mcx(list(range(m - 1)), m - 1)
     qc.h(m - 1)
     qc.x(range(m))
-    qc.h(range(m))
+    qc.compose(prep, inplace=True)
     return qc.to_gate()
 
 
-def grover_circuit(cost, T, j, strict=False):
+def _weight(cost):
+    return bin(int(np.flatnonzero(np.isfinite(cost))[0])).count("1")
+
+
+def grover_circuit(cost, T, j, strict=False, k=None):
     m = int(np.log2(len(cost)))
+    k = _weight(cost) if k is None else k
+    prep = dicke_circuit(m, k)
     qc = QuantumCircuit(m, m)
-    qc.h(range(m))
+    qc.compose(prep, inplace=True)
     if j:
-        o, d = oracle(cost, T, strict), _diffusion(m)
+        o, d = oracle(cost, T, strict), _diffusion(prep)
         for _ in range(j):
             qc.append(o, range(m))
             qc.append(d, range(m))
@@ -56,14 +102,14 @@ def success_theory(M, N, j):
 
 
 def sweep_plan(cost, M_targets=(1, 4, 16), max_circuits=12):
-    N = len(cost)
+    N = feasible_count(cost)
     finite = np.sort(cost[np.isfinite(cost)])
     plan = []
     for target in M_targets:
         T = float(finite[target - 1])
         M = marked_count(cost, T)
         J = min(max_circuits - 1, ceil(1.2 * pi / 4 * sqrt(N / M)))
-        plan.append({"M": M, "T": T, "js": list(range(J + 1))})
+        plan.append({"M": M, "N": N, "T": T, "js": list(range(J + 1))})
     return plan
 
 
@@ -72,7 +118,7 @@ def sweep_circuits(cost, plan):
 
 
 def sweep_analyze(cost, plan, counts_list):
-    N = len(cost)
+    N = feasible_count(cost)
     counts_iter = iter(counts_list)
     out = []
     for s in plan:
@@ -82,7 +128,7 @@ def sweep_analyze(cost, plan, counts_list):
             shots = sum(counts.values())
             hits = sum(c for key, c in counts.items() if cost[index_from_key(key)] <= s["T"])
             points.append({"j": j, "measured": hits / shots, "theory": success_theory(s["M"], N, j)})
-        out.append({"M": s["M"], "T": s["T"], "points": points,
+        out.append({"M": s["M"], "N": N, "T": s["T"], "points": points,
                     "max_dev": max(abs(p["measured"] - p["theory"]) for p in points)})
     return out
 
@@ -93,9 +139,10 @@ LAM = 6 / 5
 
 
 def dh_init(cost, rng):
+    """Random feasible start; scoring it is one lookup, so oracle_calls starts at 1."""
     x = int(rng.choice(np.flatnonzero(np.isfinite(cost))))
-    return {"N": len(cost), "T": float(cost[x]), "best_index": x, "mstep": 1.0,
-            "stagnant": 0, "j": None, "grover_iterations": 0, "oracle_calls": 0, "rounds": []}
+    return {"N": feasible_count(cost), "T": float(cost[x]), "best_index": x, "mstep": 1.0,
+            "stagnant": 0, "j": None, "grover_iterations": 0, "oracle_calls": 1, "rounds": []}
 
 
 def dh_next(cost, state, rng):
@@ -107,7 +154,8 @@ def dh_next(cost, state, rng):
 def dh_feed(cost, state, counts):
     """Take the best sample of the last circuit's counts; returns the round record.
 
-    Oracle calls per round = j Grover iterations + 1 classical query scoring the measured sample.
+    Oracle calls per round = j Grover iterations + 1 classical query scoring the measured sample
+    (plus the 1 for the random start counted in dh_init).
     """
     j = state["j"]
     state["grover_iterations"] += j
