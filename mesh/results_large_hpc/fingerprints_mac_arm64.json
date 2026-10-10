@@ -1,0 +1,33 @@
+{
+ "meshes": {
+  "1 control": "113f8857911b",
+  "2 main": "b8ea37b094b1",
+  "3 hard": "ad4c94b1df84",
+  "4 structural": "593b05f3bf00",
+  "5 L uniform": "faaf311515a4",
+  "6 three sources": "baaad310e757",
+  "7 materials": "baaad310e757",
+  "8 coupling": "baaad310e757",
+  "9 priority": "baaad310e757"
+ },
+ "instances": {
+  "1 control|12|7|2 equal devices": "e8e486f9b07f5cf3",
+  "1 control|12|7|CPU + GPU (GPU 4x)": "590400a024c5f3ac",
+  "2 main|12|7|2 equal devices": "2120785b2f7510fe",
+  "2 main|12|7|CPU + GPU (GPU 4x)": "fb537c3aec9f8c87",
+  "3 hard|12|7|2 equal devices": "40368b1a366167de",
+  "3 hard|12|7|CPU + GPU (GPU 4x)": "1bc0838f10509f76",
+  "4 structural|12|7|2 equal devices": "4661bd0cb32457a6",
+  "4 structural|12|7|CPU + GPU (GPU 4x)": "df4918478904bc59",
+  "5 L uniform|12|7|2 equal devices": "f78160667de35bfe",
+  "5 L uniform|12|7|CPU + GPU (GPU 4x)": "cb6511f81ad8b6ef",
+  "6 three sources|12|7|2 equal devices": "03b116175f3dc3b8",
+  "6 three sources|12|7|CPU + GPU (GPU 4x)": "632ec4d30a7e4620",
+  "7 materials|12|7|2 equal devices": "22d4dc85280a8952",
+  "7 materials|12|7|CPU + GPU (GPU 4x)": "85a023b67d9ace3c",
+  "8 coupling|12|7|2 equal devices": "5e4ae6c11ad497ac",
+  "8 coupling|12|7|CPU + GPU (GPU 4x)": "11c0eae79292180c",
+  "9 priority|12|7|2 equal devices": "5e4ae6c11ad497ac",
+  "9 priority|12|7|CPU + GPU (GPU 4x)": "11c0eae79292180c"
+ }
+}
