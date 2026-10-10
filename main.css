@@ -65,9 +65,9 @@ table.classical td:nth-child(3) { font-variant-numeric: tabular-nums; white-spac
 .card.good .big, b.good { color: var(--good); }
 .card.amber { border-color: var(--x); }
 .card.amber .big, b.amber { color: var(--x); }
-.counters dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; }
+.counters dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
 .counters dt { color: var(--muted); font-size: 0.85rem; align-self: center; }
-.counters dd { margin: 0; font-variant-numeric: tabular-nums; }
+.counters dd { margin: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .counters b { font-size: 1.2rem; }
 .note { border-left: 3px solid var(--x); padding-left: 10px; color: var(--muted); font-size: 0.85rem; margin: 8px 0 0; }
 /* plots */
@@ -93,3 +93,4 @@ table.classical td:nth-child(3) { font-variant-numeric: tabular-nums; white-spac
 .chart .range { stroke: var(--fg); stroke-width: 1.5; }
 .chart .mean { fill: var(--z); stroke: var(--bg); stroke-width: 1; }
 .chart svg text.frac { fill: var(--fg); font-size: 10px; }
+table.classical td.muted { color: var(--muted); }

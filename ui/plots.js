@@ -20,7 +20,7 @@ function frame(svgEl, W, H, label) {
   svgEl.setAttribute('aria-label', label);
 }
 
-// series: [{M, T, points: [{j, measured, theory}], max_dev}] from sweep_analyze_json; N = 2^m.
+// series: [{M, T, points: [{j, measured, theory}], max_dev}] from sweep_analyze_json; N = C(m,k) feasible placements.
 export function renderSweep(svgEl, series, N) {
   const W = 560, H = 320, L = 48, R = 16, T = 40, B = 44;
   frame(svgEl, W, H, 'Measured Grover success probability against the theory curve for ' +
@@ -105,12 +105,12 @@ export function fitSqrtN(study) {
   return sxy / sxx;
 }
 
-// study: [{m, N, seeds, calls_mean, calls_min, calls_max, exact_fraction}] from the recorded take; returns the fitted c.
+// study: [{m, N, seeds, calls_mean, calls_min, calls_max, exact_fraction}] from the recorded take, N = C(m,4); returns the fitted c.
 export function renderScaling(svgEl, study) {
   const W = 560, H = 340, L = 52, R = 16, T = 40, B = 52;
   const c = fitSqrtN(study);
-  frame(svgEl, W, H, `Mean oracle calls of the one-measurement loop against sqrt N for ${study.map((r) => `m = ${r.m}`).join(', ')}; `
-    + `fitted c = ${c.toFixed(1)}; brute force needs N evaluations.`);
+  frame(svgEl, W, H, `Mean placements scored by the one-measurement loop against sqrt N, N = C(m,4) feasible placements, for ${study.map((r) => `m = ${r.m}`).join(', ')}; `
+    + `fitted c = ${c.toFixed(1)}; brute force scores N.`);
   const sMax = 1.08 * Math.sqrt(Math.max(...study.map((r) => r.N)));
   const top = 1.15 * Math.max(...study.map((r) => r.calls_max));
   const step = [1, 2, 5].flatMap((u) => [1, 10, 100, 1000, 10000].map((p) => u * p)).sort((a, b) => a - b)
@@ -130,7 +130,7 @@ export function renderScaling(svgEl, study) {
     el('tspan', { x: x(Math.sqrt(r.N)), dy: 13 }, t).textContent = `(N = ${r.N})`;
   }
   text(axes, (L + W - R) / 2, H - 6, 'sqrt N', { 'text-anchor': 'middle' });
-  text(axes, 12, (T + H - B) / 2, 'oracle calls', { 'text-anchor': 'middle', transform: `rotate(-90 12 ${(T + H - B) / 2})` });
+  text(axes, 12, (T + H - B) / 2, 'placements scored', { 'text-anchor': 'middle', transform: `rotate(-90 12 ${(T + H - B) / 2})` });
 
   // y = N is a parabola in sqrt N; it leaves the frame at sqrt N = sqrt(yMax).
   const sTop = Math.min(sMax, Math.sqrt(yMax));
@@ -149,7 +149,7 @@ export function renderScaling(svgEl, study) {
     el('line', { x1: sx, x2: sx, y1: y(r.calls_min), y2: y(r.calls_max), class: 'range' }, g);
     for (const v of [r.calls_min, r.calls_max]) el('line', { x1: sx - 4, x2: sx + 4, y1: y(v), y2: y(v), class: 'range' }, g);
     const dot = el('circle', { cx: sx, cy: y(r.calls_mean), r: 4.5, class: 'mean' }, g);
-    el('title', {}, dot).textContent = `m = ${r.m}, N = ${r.N}: mean ${r.calls_mean} oracle calls (min ${r.calls_min}, `
+    el('title', {}, dot).textContent = `m = ${r.m}, N = ${r.N}: mean ${r.calls_mean} placements scored (min ${r.calls_min}, `
       + `max ${r.calls_max}) over ${r.seeds} seeds; exact minimum in ${exact} of ${r.seeds}`;
     text(g, sx, y(r.calls_max) - 8, `exact ${exact}/${r.seeds}`, { 'text-anchor': 'middle', class: 'frac' });
   }

@@ -1,7 +1,7 @@
 <div class="app" id="app">
   <header class="hdr">
     <h1>Store placement by quantum minimum finding</h1>
-    <p class="sub">Pick k of the candidate sites in Champaign County, Illinois, and let Grover search with a tightening threshold (Durr-Hoyer) find the cheapest placement among all 2<sup>m</sup> bitstrings.</p>
+    <p class="sub">Pick k of the candidate sites in Champaign County, Illinois, and let Grover search with a tightening threshold (Durr-Hoyer) find the cheapest of the N = C(m,k) feasible placements.</p>
     <p class="banner" id="banner" aria-live="polite"></p>
     <p class="credit">Population: US Census Bureau TIGERweb, 2020 block groups. Travel times: OSRM demo server, map data (c) OpenStreetMap contributors.</p>
   </header>
@@ -18,7 +18,7 @@
         <label>Warehouse weight <span><input id="wh_weight" type="range" min="0" max="1" step="0.05" value="0.1"> <output for="wh_weight" id="wh_weight-out">0.1</output></span></label>
         <label>Staff cost per team <span><input id="staff_cost" type="range" min="1" max="5" step="0.5" value="3"> <output for="staff_cost" id="staff_cost-out">3</output></span></label>
         <label>Candidate sites, m
-          <select id="m"><option value="10" selected>10 (N = 1024)</option><option value="12">12 (N = 4096, slow)</option></select>
+          <select id="m"><option value="10" selected>10 sites (N = C(10,4) = 210)</option><option value="12">12 sites (N = C(12,4), slow)</option></select>
         </label>
       </div>
     </fieldset>
@@ -49,7 +49,7 @@
     <div class="cards" id="cards"></div>
     <div class="charts">
       <figure class="chart">
-        <figcaption>Theory match: Grover success probability against sin<sup>2</sup>((2j+1)&theta;), sin &theta; = &radic;(M/N). Lines: theory; dots: measured, 1000 shots each.</figcaption>
+        <figcaption>Theory match: Grover success probability against sin<sup>2</sup>((2j+1)&theta;), sin &theta; = &radic;(M/N), N = C(m,k) feasible placements. Lines: theory; dots: measured, 1000 shots each.</figcaption>
         <svg id="sweep" role="img" aria-label="No sweep yet"></svg>
       </figure>
       <div class="dh">
@@ -67,7 +67,7 @@
   </section>
 
   <footer class="foot">
-    <p>The oracle here is a lookup table compiled from the classical cost table (a reversible arithmetic circuit does not fit 29 qubits); the theory and the counters count oracle calls, which is what the quadratic speedup is about. The loop takes one measurement per round; every measured sample is scored once and counted.</p>
+    <p>The oracle is a lookup table compiled from the classical cost table (a reversible arithmetic circuit does not fit 29 qubits), so this demo cannot be a speedup and does not claim one. Both sides count the same thing: placements scored. The loop takes one measurement per round.</p>
     <p>This effort is supported by Qollab &amp; IonQ.</p>
   </footer>
 </div>

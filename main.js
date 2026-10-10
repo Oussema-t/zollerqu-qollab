@@ -81,22 +81,33 @@ function showPlacement(sites, what) {
 
 function drawTable() {
   const v = state.view;
-  renderClassical($('classical'), v.classical, { k: v.k, m: v.m, quantum: v.quantum },
+  renderClassical($('classical'), v.classical, { N: v.N, quantum: v.quantum },
     (sites) => showPlacement(sites, `Showing sites ${sites.join(', ')}.`));
 }
 
 function drawCards() {
   const v = state.view;
   renderCards($('cards'), { exact: v.exact, qBest: v.quantum ? v.quantum.cost : null, oracleCalls: v.quantum ? v.quantum.oracle_calls : null,
-    N: 2 ** v.m, maxDev: v.maxDev, localMinima: v.classical.local_search.local_minima, study: state.study });
+    N: v.N, maxDev: v.maxDev, localMinima: v.classical.local_search.local_minima, study: state.study });
 }
 
-// e.g. "294 oracle calls (214 Grover iterations over 80 rounds), best cost 62.73 (exact 62.73)"
-function dhSummary(dh) {
-  const r = dh.result;
-  return `${r.oracle_calls} oracle calls (${r.grover_iterations} Grover iterations over ${dh.rounds.length} rounds), `
-    + `best cost ${r.best_cost.toFixed(2)} (exact ${state.view.exact.toFixed(2)})`;
+// e.g. "96 placements scored (1 start + 71 Grover iterations + 24 rounds), best cost 62.73 (exact 62.73)".
+// The start term is what the bridge's total leaves after Grover iterations and rounds (1 by the counting rule).
+function dhSummary(dh, exact) {
+  const r = dh.result, n = dh.rounds.length;
+  return `${r.oracle_calls} placements scored (${r.oracle_calls - r.grover_iterations - n} start + ${r.grover_iterations} Grover iterations + ${n} rounds), `
+    + `best cost ${r.best_cost.toFixed(2)} (exact ${exact.toFixed(2)})`;
 }
+
+// The m select names N = C(m,k); the selected option carries the bridge's feasible count.
+function labelM(k, nFeasible) {
+  for (const o of $('m').options) {
+    const slow = o.value === '12' ? ', slow' : '';
+    o.textContent = `${o.value} sites (N = C(${o.value},${k})${o.selected ? ` = ${nFeasible}` : ''}${slow})`;
+  }
+}
+
+const sameParams = (a, b) => PARAMS.every((key) => Number(a[key]) === Number(b[key]));
 
 // The recorded take: fetched like champaign.json, validated by the bridge. Shows its scaling study when it has one.
 async function loadTake() {
@@ -106,8 +117,8 @@ async function loadTake() {
   if (take.study && take.study.length) {
     state.study = take.study;
     const c = renderScaling($('scaling'), take.study);
-    $('scaling-cap').textContent = 'Mean oracle calls of the one-measurement loop over the study seeds against sqrt N; '
-      + `dashed: N evaluations of brute force; fitted c = ${c.toFixed(1)}.`;
+    $('scaling-cap').textContent = 'Mean placements scored by the loop over the study seeds against sqrt N, N = C(m,4) feasible placements; '
+      + `dashed: N, the brute-force count; fitted c = ${c.toFixed(1)}.`;
     $('scaling-fig').hidden = false;
   }
   return take;
@@ -120,7 +131,7 @@ function clearQuantum() {
   $('traj').setAttribute('aria-label', 'No minimum-finding run yet');
   const c = $('dh-counters');
   c.dataset.done = 'false';
-  c.innerHTML = '<h3>Minimum finding</h3><p class="lbl">Oracle calls and best cost appear here during a run.</p>';
+  c.innerHTML = '<h3>Minimum finding</h3><p class="lbl">Placements scored and best cost appear here during a run.</p>';
 }
 
 // Recompute the cost table and the classical answers for p; the quantum panel is cleared because it no longer matches.
@@ -132,13 +143,14 @@ async function refreshClassical(p) {
     const table = JSON.parse(await bridge.cost_table_json.callPromising(pj));
     const classical = JSON.parse(await bridge.classical.callPromising(pj));
     if (seq !== state.seq) return false;   // a newer control change superseded this one
-    state.view = { pj, m: p.m, k: table.k, exact: table.best_cost, bestSites: table.best_sites,
+    state.view = { pj, p, m: p.m, k: table.k, N: table.n_feasible, exact: table.best_cost, bestSites: table.best_sites,
       classical, quantum: null, maxDev: null };
+    labelM(table.k, table.n_feasible);
     showPlacement(table.best_sites, `Showing the exact optimum, sites ${table.best_sites.join(', ')}.`);
     drawTable();
     drawCards();
     clearQuantum();
-    setStatus(`${table.n_feasible} feasible placements of ${2 ** p.m} bitstrings; exact minimum ${table.best_cost.toFixed(2)}.`);
+    setStatus(`N = ${table.n_feasible} feasible placements (C(${table.m},${table.k})); exact minimum ${table.best_cost.toFixed(2)}.`);
     return true;
   } catch (e) {
     if (seq === state.seq) { setBanner('Classical step failed: ' + errText(e), 'err'); setStatus(''); }
@@ -182,21 +194,24 @@ async function runJob(circuits, shots, n, label) {
   return counts;
 }
 
-async function showSweep(pj, planJson, countsJson, m) {
+async function showSweep(pj, planJson, countsJson) {
   const series = JSON.parse(await bridge.sweep_analyze_json.callPromising(pj, planJson, countsJson));
-  renderSweep($('sweep'), series, 2 ** m);
+  renderSweep($('sweep'), series, state.view.N);
   state.view.maxDev = Math.max(...series.map((s) => s.max_dev));
   drawCards();
 }
 
 // Draw one state of the Durr-Hoyer loop: trajectory, counters, and (when known) the current best placement.
-function showDh(start, rounds, { result = null, sites = null, note = '' } = {}) {
+// own: {N, exact} of a recorded take at other parameters; it then goes to the counters panel only, not the map, table or cards.
+function showDh(start, rounds, { result = null, sites = null, note = '', startCalls = 0, own = null } = {}) {
   const v = state.view;
+  const ref = own || v;
   const last = rounds[rounds.length - 1];
   const best = result ? result.best_cost : last ? (last.improved ? last.best_sample_cost : last.T) : start;
-  renderTrajectory($('traj'), start, rounds, v.exact);
-  renderCounters($('dh-counters'), { round: rounds.length, calls: last ? last.oracle_calls_cum : 0, N: 2 ** v.m,
-    best, exact: v.exact, done: !!result, note });
+  renderTrajectory($('traj'), start, rounds, ref.exact);
+  renderCounters($('dh-counters'), { round: rounds.length, calls: result ? result.oracle_calls : last ? last.oracle_calls_cum : startCalls,
+    N: ref.N, best, exact: ref.exact, done: !!result, note });
+  if (own) return;
   if (sites) showPlacement(sites, `Showing the minimum-finding best placement, sites ${sites.join(', ')}.`);
   if (result) {
     v.quantum = { sites: sites || [], cost: result.best_cost, oracle_calls: result.oracle_calls };
@@ -205,15 +220,26 @@ function showDh(start, rounds, { result = null, sites = null, note = '' } = {}) 
   }
 }
 
-async function showDhFromTake(dh, note) {
+// The take's loop enters the table and cards only when its params (after defaults) equal the current ones;
+// otherwise only the counters panel shows it, against its own N and exact minimum. Returns that exact minimum.
+async function showDhFromTake(take, note) {
+  const dh = take.dh;
+  const tp = { ...DEFAULTS, ...take.params };
+  let own = null;
+  if (!sameParams(tp, state.view.p)) {
+    const t = JSON.parse(await bridge.cost_table_json.callPromising(JSON.stringify(tp)));
+    own = { N: t.n_feasible, exact: t.best_cost };
+    note = `${note} This is the recorded take at its own parameters (m = ${tp.m}, k = ${tp.k}).`;
+  }
   const sites = JSON.parse(await bridge.placement_sites.callPromising(dh.result.best_index));
-  showDh(dh.rounds.length ? dh.rounds[0].T : dh.result.best_cost, dh.rounds, { result: dh.result, sites, note });
+  showDh(dh.rounds.length ? dh.rounds[0].T : dh.result.best_cost, dh.rounds, { result: dh.result, sites, note, own });
+  return own ? own.exact : state.view.exact;
 }
 
 async function liveDh(pj, seed) {
   const start = JSON.parse(await bridge.dh_start.callPromising(pj, seed));
   const rounds = [];
-  showDh(start.T, rounds, { sites: start.best_sites });
+  showDh(start.T, rounds, { sites: start.best_sites, startCalls: 'oracle_calls' in start ? start.oracle_calls : 1 });
   setStatus(`Minimum finding: random start, threshold ${start.T.toFixed(2)}.`);
   for (let i = 0; i < 200; i++) {
     const circ = await bridge.dh_next_circuit.callPromising();
@@ -231,7 +257,7 @@ async function liveDh(pj, seed) {
     const sites = 'best_index' in r ? JSON.parse(await bridge.placement_sites.callPromising(r.best_index)) : null;
     showDh(start.T, rounds, { sites });
     setStatus(`Round ${rounds.length}: j = ${r.j}, best sample ${r.best_sample_cost == null ? '-' : r.best_sample_cost.toFixed(2)}`
-      + `${r.improved ? ' (new threshold)' : ''}, ${r.oracle_calls_cum} oracle calls so far.`);
+      + `${r.improved ? ' (new threshold)' : ''}, ${r.oracle_calls_cum} placements scored so far.`);
   }
   throw new Error('Minimum finding did not stop within 200 rounds');
 }
@@ -262,18 +288,17 @@ async function runQuantum() {
     const countsJson = JSON.stringify(counts);
     state.last = { backend: state.backendName, pj, planJson, countsJson, dh: null };
     $('export').hidden = false;   // exportable even if a later step fails
-    await showSweep(pj, planJson, countsJson, p.m);
+    await showSweep(pj, planJson, countsJson);
     if (state.isLocal) {
       const seed = Math.max(0, parseInt($('seed').value, 10) || 0);
       state.last.dh = await liveDh(pj, seed);
-      setStatus(`Done: ${dhSummary(state.last.dh)}.`);
+      setStatus(`Done: ${dhSummary(state.last.dh, state.view.exact)}.`);
     } else {
       state.locked = true;
       const take = await loadTake();
       drawCards();
-      const tp = JSON.stringify({ ...DEFAULTS, ...take.params });
-      const note = IONQ_DH + (tp === pj ? '.' : ` (take parameters: ${tp}).`);
-      await showDhFromTake(take.dh, note);
+      const note = IONQ_DH + '.';
+      await showDhFromTake(take, note);
       setStatus(`Sweep done on ${state.backendName}. ${note} ${IONQ_AGAIN}`);
     }
   } catch (e) {
@@ -297,10 +322,10 @@ async function loadRecorded() {
     if (!(await refreshClassical(p))) return;
     $('export').hidden = true;   // export is for live runs, not the recorded take
     showBackendBanner();
-    await showSweep(JSON.stringify(take.params), JSON.stringify(take.plan), JSON.stringify(take.sweep_counts), p.m);
-    if (take.dh) await showDhFromTake(take.dh, `Recorded take, seed ${take.dh.seed}, one measurement per round.`);
+    await showSweep(JSON.stringify(take.params), JSON.stringify(take.plan), JSON.stringify(take.sweep_counts));
+    const exact = take.dh ? await showDhFromTake(take, `Recorded take, seed ${take.dh.seed}, one measurement per round.`) : null;
     setStatus(`Showing the recorded take: ${take.backend}, ${take.date} (${take.source})`
-      + (take.dh ? `. ${dhSummary(take.dh)}.` : '.'));
+      + (take.dh ? `. ${dhSummary(take.dh, exact)}.` : '.'));
   } catch (e) {
     setBanner('Recorded take not available: ' + errText(e), 'err');
     setStatus('');

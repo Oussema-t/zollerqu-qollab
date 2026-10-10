@@ -2,6 +2,7 @@
 
 Run from the project root: python dev/smoke.py [url]. Screenshots go to dev/out/.
 """
+import re
 import sys
 from pathlib import Path
 
@@ -14,6 +15,22 @@ OUT = Path(__file__).resolve().parent / "out"
 def cards(page):
     return page.locator("#cards .card").evaluate_all(
         "els => els.map(e => e.querySelector('.big').textContent + ' | ' + e.querySelector('.lbl').textContent)")
+
+
+WORK = re.compile(r"^\d+ (partial )?placements scored\b")
+
+
+def check_table(page, n_rows):
+    """No MILP row; N in the caption; every Work cell opens with its count and one of the two units."""
+    text = page.locator("#classical").inner_text()
+    assert "MILP" not in text, "MILP row still on the page"
+    assert "N = 210" in page.locator("#classical caption").inner_text(), "table caption does not say N = 210"
+    work = page.locator("#classical td.work").all_inner_texts()
+    assert len(work) == n_rows, f"expected {n_rows} rows, got {work}"
+    bad = [w for w in work if not WORK.match(w)]
+    assert not bad, f"Work cells without the placements-scored unit: {bad}"
+    assert work[0] == "210 placements scored", f"brute force Work cell: {work[0]}"
+    return work
 
 
 def main():
@@ -30,6 +47,10 @@ def main():
         page.wait_for_selector("#classical tbody tr", timeout=120_000)
         page.wait_for_function("!document.getElementById('run').disabled", timeout=60_000)
         print("classical:", page.locator("#classical tbody").inner_text().replace("\n", " / "))
+        check_table(page, 3)
+        m_label = page.locator("#m option:checked").inner_text()
+        assert m_label == "10 sites (N = C(10,4) = 210)", f"m select label: {m_label}"
+        print("m select:", m_label)
         page.screenshot(path=str(OUT / "01-classical.png"), full_page=True)
 
         page.click("#load-recorded")
@@ -44,6 +65,7 @@ def main():
         print("scaling fractions:", page.locator("#scaling text.frac").evaluate_all("els => els.map(e => e.textContent)"))
         print("take status:", page.locator("#status").inner_text())
         print("take cards:", cards(page))
+        print("take table:", check_table(page, 4))
         page.screenshot(path=str(OUT / "02-take.png"), full_page=True)
 
         page.click("#run")
@@ -52,6 +74,7 @@ def main():
         page.wait_for_selector("#dh-counters[data-done='true']", timeout=480_000)
         assert page.locator("#scaling-fig").is_visible(), "scaling plot gone after the live run"
         print("live cards:", cards(page))
+        print("live table:", check_table(page, 4))
         print("counters:", page.locator("#dh-counters").inner_text().replace("\n", " / "))
         print("status:", page.locator("#status").inner_text())
         print("banner:", page.locator("#banner").inner_text())
