@@ -161,3 +161,7 @@ Tushar's rule: when a quantity is compared, everything on both sides is the same
 7. **tools/time_grover.py** times the shipped instance (data/champaign.json, defaults, m = 10 and 12), not a random table; README quotes those numbers.
 8. README: round cap 120; search space and N restated; the oracle note says the full table of C(m,k) costs is computed classically to compile the oracle, so the demo cannot be a speedup and does not claim one.
 9. Study and take re-recorded; README and page numbers replaced from the new take. Expected (not yet measured): calls ~ c sqrt N with N = C(m,k); at m = 6 (N = 15) the constant dominates and calls exceed N; the table says so.
+
+## Amendment 4 (Oct 11 early)
+
+Tushar: ship the recorded take at m = 12 (N = 495). Recorded: sweep max deviation 2.8 pp; seed-7 loop 170 placements scored (1 + 128 + 41), exact minimum. Live default on the page stays m = 10. Branch `placement` in Oussama's repo is the publication target; no separate repo.
