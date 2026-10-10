@@ -1,0 +1,25 @@
+Kaggle licence note for data/kaggle_weekly_29.csv and data/kaggle_asset_metadata.csv
+====================================================================================
+
+Dataset:  "Huge Stock Market Dataset" - Historical daily prices and volumes of all U.S. stocks and ETFs
+Owner:    Boris Marjanovic (Kaggle user borismarjanovic)
+URL:      https://www.kaggle.com/datasets/borismarjanovic/price-volume-data-for-all-us-stocks-etfs
+Licence:  CC0: Public Domain, as reported by Kaggle's dataset metadata (licenseName field of
+          https://www.kaggle.com/api/v1/datasets/view/borismarjanovic/price-volume-data-for-all-us-stocks-etfs),
+          checked 2026-10-10. Dataset last updated on Kaggle 2017-11-16.
+
+Author's statement, quoted from the dataset description:
+  "Note that prices have been adjusted for dividends and splits."
+  "This dataset belongs to me. I’m sharing it here for free. You may do with it as you wish."
+
+Caveats (not resolved by us):
+- The description does not name an upstream data source for the prices. We have not verified who
+  originally produced them, and we rely on Kaggle's CC0 label and the author's statement above.
+- No further legal review was done.
+
+What we ship (team ZollerQu):
+- kaggle_weekly_29.csv: weekly (Friday) closing prices of 29 assets + SPY, 2006-05-26 to 2017-11-10,
+  derived from the "Close" column of the files ETFs/<ticker>.us.txt and Stocks/<ticker>.us.txt by
+  stocks/kaggle_data.py (last close of each week). No values were invented or altered.
+- kaggle_asset_metadata.csv: company/fund names and groups, added by us from the ticker symbols
+  (the dataset itself has tickers only).

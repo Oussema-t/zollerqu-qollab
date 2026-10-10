@@ -25,3 +25,22 @@ been anonymized". We found no public list of the company names, and we do not gu
 re-checked the FRAPO description against Beasley, Meade & Chang (2003), the paper the OR-Library page cites.
 
 Rebuild and validate: `python -m stocks.validate_data` (from the repo root).
+
+## Kaggle named assets (main demonstration)
+
+| File | What it is |
+|---|---|
+| `kaggle_weekly_29.csv` | Weekly (Friday) closes, 2006-05-26 to 2017-11-10: `date`, 29 assets, `SPY` (599 rows) |
+| `kaggle_asset_metadata.csv` | ticker, name, group, role (asset / benchmark), is_qubit |
+| `LICENSE_KAGGLE.txt` | CC0 as reported by Kaggle, attribution and caveats |
+| `raw/kaggle/archive.zip` | Local only, gitignored (515 MB), never shipped |
+
+**Source.** "Huge Stock Market Dataset" by Boris Marjanovic on Kaggle (CC0 per Kaggle's metadata; the author
+names no upstream source). The archive holds every file twice; only `ETFs/` and `Stocks/` are read.
+
+**Treatment.** We use the `Close` column, which the dataset description says is adjusted for dividends and
+splits. The common window runs from the latest first day to the earliest last day across the 30 series. Each
+week's price is the last close of the week, with weeks ending on Friday. This is the same as pandas
+`resample("W-FRI").last()`, and the two give identical output.
+
+Rebuild from a local archive (no network): `python -m stocks.kaggle_data`. Report: `python -m stocks.task2_report`.

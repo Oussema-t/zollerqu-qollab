@@ -1,0 +1,31 @@
+ticker,name,group,role,is_qubit
+AAPL,Apple,Tech,asset,true
+MSFT,Microsoft,Tech,asset,true
+INTC,Intel,Tech,asset,true
+CSCO,Cisco Systems,Tech,asset,true
+XLK,Technology Select Sector SPDR fund,Tech,asset,true
+GLD,SPDR Gold Shares (gold),Gold & silver,asset,true
+SLV,iShares Silver Trust (silver),Gold & silver,asset,true
+GDX,VanEck Gold Miners fund,Gold & silver,asset,true
+NEM,Newmont (gold miner),Gold & silver,asset,true
+XOM,Exxon Mobil,Energy (oil),asset,true
+CVX,Chevron,Energy (oil),asset,true
+SLB,Schlumberger (oilfield services),Energy (oil),asset,true
+USO,United States Oil Fund (oil futures),Energy (oil),asset,true
+JPM,JPMorgan Chase,Finance (banks),asset,true
+BAC,Bank of America,Finance (banks),asset,true
+GS,Goldman Sachs,Finance (banks),asset,true
+XLF,Financial Select Sector SPDR fund,Finance (banks),asset,true
+TLT,iShares 20+ Year Treasury Bond fund,Bonds (safe haven),asset,true
+IEF,iShares 7-10 Year Treasury Bond fund,Bonds (safe haven),asset,true
+SHY,iShares 1-3 Year Treasury Bond fund,Bonds (safe haven),asset,true
+JNJ,Johnson & Johnson,Healthcare,asset,true
+PFE,Pfizer,Healthcare,asset,true
+XLV,Health Care Select Sector SPDR fund,Healthcare,asset,true
+PG,Procter & Gamble,Consumer staples,asset,true
+KO,Coca-Cola,Consumer staples,asset,true
+WMT,Walmart,Consumer staples,asset,true
+XLU,Utilities Select Sector SPDR fund,Utilities,asset,true
+VNQ,Vanguard Real Estate fund,Real estate,asset,true
+FCX,Freeport-McMoRan (copper miner),Materials (copper),asset,true
+SPY,SPDR S&P 500 fund (whole market),Market reference (not a qubit),benchmark,false
