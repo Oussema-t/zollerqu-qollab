@@ -17,8 +17,8 @@ export function renderCards(root, rows) {
   const mean = (xs) => { const v = xs.filter((x) => x !== null && x !== undefined); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
   root.appendChild(card(fmt(mean(encs.map((r) => r.flagged_fraction))), 'shots flagged by a check and discarded'));
   root.appendChild(card(fmt(mean(encs.map((r) => r.deviation_accepted))), 'logical error of accepted shots', 'absolute gap between measured and ideal P(1), averaged over the readouts shown'));
-  root.appendChild(card(fmt(mean(bares.map((r) => r.deviation_all))), 'same experiment on bare physical qubits'));
-  if (encs[0] && encs[0].kept_fraction !== null && encs[0].name.startsWith('enc') && rows[0].lesson === 4) {
+  root.appendChild(card(fmt(mean(bares.map((r) => r.deviation_all))), 'logical error, same experiment on bare physical qubits'));
+  if (rows[0] && rows[0].lesson === 4) {
     root.appendChild(card(fmt(mean(encs.map((r) => r.kept_fraction))), 'kept after post-selecting A = 0 (ideal 50%)'));
   }
 }

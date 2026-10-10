@@ -3,9 +3,10 @@
   --x: #e0a040; --z: #4f9cff; --good: #39c37a; --bad: #ff5c5c; --focus: #ffd166;
 }
 @media (prefers-color-scheme: light) {
-  :root { --bg: #fafbfd; --fg: #15181f; --muted: #525866; --card: #ffffff; --line: #d9dde6; --focus: #b35c00; --good: #1e7f4a; --x: #a8650a; }
+  :root { --bg: #fafbfd; --fg: #15181f; --muted: #525866; --card: #ffffff; --line: #d9dde6; --focus: #b35c00; --good: #1e7f4a; --x: #a8650a; --z: #1f6fe0; --bad: #c62828; }
 }
 * { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); }
 .app { font: 16px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); padding: 16px; max-width: 1100px; margin: 0 auto; }
 h1 { font-size: 1.5rem; margin: 0 0 4px; }
 h2 { font-size: 1.1rem; margin: 0 0 8px; }
@@ -33,7 +34,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .patches > p { flex: 1 0 100%; }
 .patches line[tabindex]:is(:hover, :focus) { stroke: var(--focus); stroke-width: 7; }
 .links { font-size: 0.85rem; color: var(--muted); margin: 0; }
-.patch-title { font-size: 0.85rem; color: var(--muted); text-align: center; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
 .card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
 .card .big { font-size: 1.6rem; font-weight: 700; }

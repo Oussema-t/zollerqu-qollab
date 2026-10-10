@@ -4,9 +4,14 @@ import { renderPatches } from './ui/patches.js';
 import { renderCards, renderCharts } from './ui/charts.js';
 
 const $ = (id) => document.getElementById(id);
-const state = { settings: null, metaJson: null, meta: null, countsJson: null, results: null, lesson: 1, backendName: '', isIonq: false, source: '', submitLocked: false };
+// settings and results always change together (in explore); lastRun is the latest live job, kept for export.
+const state = { settings: null, results: null, source: '', lesson: 1, backendName: '', isIonq: false, submitLocked: false, lastRun: null };
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
-const toPlain = (x) => ((x && typeof x.toJs === 'function') ? Object.fromEntries(x.toJs()) : x);
+const toPlain = (x) => {
+  if (!(x && typeof x.toJs === 'function')) return x;
+  const v = x.toJs();
+  return v instanceof Map ? Object.fromEntries(v) : v;
+};
 const errText = (e) => (e && e.message ? e.message : String(e));
 
 // Works for the browser setTimeout(cb, ms), an injected setTimeout(cb, ms) returning a promise, and setTimeout(ms) returning a promise.
@@ -20,7 +25,7 @@ async function sleep(ms) {
   if (Date.now() - start < ms / 2) {
     try { const p = setTimeout(ms); if (p && typeof p.then === 'function') await p; } catch { /* ignore */ }
   }
-  while (Date.now() - start < ms) {
+  while (Date.now() - start < ms - 50) {
     await new Promise((r) => requestAnimationFrame(r));
   }
 }
@@ -54,6 +59,7 @@ function readSettings() {
 async function submit() {
   const settings = readSettings();
   let submitted = false;
+  let run = null;   // this submission's settings, metadata and counts once collected
   setBusy(true);
   setStatus('Building 16 circuits...');
   try {
@@ -65,7 +71,18 @@ async function submit() {
     submitted = true;
     const job = await backend.run(circuits, { shots: settings.shots });
     // Proxies to the same Python enum member are not === in JS, so compare by name.
-    const statusName = async () => { const s = await job.status(); try { return String(s.name ?? s); } catch { return String(s); } };
+    // Up to 5 failed status calls in a row are tolerated so a network blip cannot lose the one IonQ job.
+    let statusFailures = 0;
+    const statusName = async () => {
+      let s;
+      try { s = await job.status(); } catch (e) {
+        statusFailures += 1;
+        if (statusFailures > 5) throw e;
+        return 'retrying';
+      }
+      statusFailures = 0;
+      try { return String(s.name ?? s); } catch { return String(s); }
+    };
     const terminal = (st) => ['done', 'completed', 'error', 'failed', 'cancel'].some((k) => st.toLowerCase().includes(k));
     let status = await statusName();
     let ticks = 0;
@@ -87,15 +104,17 @@ async function submit() {
     for (let i = 0; i < meta.length; i++) {
       counts.push(toPlain(await result.get_counts(i)));
     }
-    Object.assign(state, { settings, metaJson, meta, countsJson: JSON.stringify(counts), source: `live run on ${state.backendName}` });
+    run = { settings, metaJson, countsJson: JSON.stringify(counts) };
+    state.lastRun = run;
+    $('export').hidden = false;   // exportable even if the analysis below fails
     showBackendBanner();
-    await explore();
+    await explore(settings, metaJson, run.countsJson, `live run on ${state.backendName}`);
     state.submitLocked = state.isIonq;
     setBusy(false);
-    $('export').hidden = false;
     if (state.isIonq) setStatus('Done. ' + IONQ_AGAIN);
   } catch (e) {
     setBanner('Run failed: ' + errText(e), 'err');
+    if (run) console.log('Counts of the failed run, so the job is not lost:', run.countsJson);
     state.submitLocked = state.isIonq && submitted;
     setBusy(false);
     setStatus(state.submitLocked ? IONQ_AGAIN : '');
@@ -108,14 +127,10 @@ async function loadRecorded() {
   try {
     const take = JSON.parse(await bridge.load_recorded.callPromising());
     $('export').hidden = true;   // export is for live runs, not the recorded take
-    state.settings = take.settings;
-    state.metaJson = JSON.stringify(take.meta);
-    state.meta = take.meta;
-    state.countsJson = JSON.stringify(take.counts);
-    state.source = `recorded take: ${take.backend}, ${take.date} (${take.source})`;
     await bridge.build.callPromising(JSON.stringify(take.settings));   // so circuit drawings match
     showBackendBanner();
-    await explore();
+    await explore(take.settings, JSON.stringify(take.meta), JSON.stringify(take.counts),
+      `recorded take: ${take.backend}, ${take.date} (${take.source})`);
   } catch (e) {
     setBanner('Recorded take not available: ' + errText(e), 'err');
     setStatus('');
@@ -124,9 +139,10 @@ async function loadRecorded() {
   }
 }
 
-async function explore() {
+async function explore(settings, metaJson, countsJson, source) {
   setStatus('Analysing...');
-  state.results = JSON.parse(await bridge.analyze.callPromising(state.metaJson, state.countsJson));
+  const results = JSON.parse(await bridge.analyze.callPromising(metaJson, countsJson));
+  Object.assign(state, { settings, results, source });   // together, so a tab click never mixes old results with new settings
   $('tabs').hidden = false;
   $('panel').hidden = false;
   showLesson(state.lesson);
@@ -155,26 +171,35 @@ function showLesson(n) {
 
 async function drawCircuit() {
   if (!$('circuit-details').open || $('circuit-img').childElementCount) return;
-  const row = state.results.find((r) => r.lesson === state.lesson && r.kind === 'enc');
+  const lesson = state.lesson;
+  const row = state.results.find((r) => r.lesson === lesson && r.kind === 'enc');
   $('circuit-img').textContent = 'Drawing...';
   try {
     const fig = await bridge.draw.callPromising(row.index);
+    if (state.lesson !== lesson) return;   // the tab changed while drawing
     const img = document.createElement('img');
-    img.alt = `Physical circuit for lesson ${state.lesson}, ${row.name}`;
+    img.alt = `Physical circuit for lesson ${lesson}, ${row.name}`;
     img.src = URL.createObjectURL(fig);
     $('circuit-img').replaceChildren(img);
   } catch (e) {
-    const msg = 'Could not draw the circuit on this backend: ' + e;
-    $('circuit-img').textContent = /visualization|matplotlib/i.test(String(e))
+    if (state.lesson !== lesson) return;
+    const msg = 'Could not draw the circuit on this backend: ' + errText(e);
+    $('circuit-img').textContent = /visualization|matplotlib/i.test(msg)
       ? msg + ' Enable Qiskit Visualizations in the Libraries list.'
       : msg;
   }
 }
 
 async function exportRun() {
-  const text = await bridge.export_take.callPromising(state.backendName, JSON.stringify(state.settings), state.metaJson, state.countsJson, new Date().toISOString().slice(0, 10));
-  console.log('Exported run JSON (also offered as a file in the console):');
-  console.log(text.slice(0, 200) + '...');
+  const run = state.lastRun;
+  try {
+    const text = await bridge.export_take.callPromising(state.backendName, JSON.stringify(run.settings), run.metaJson, run.countsJson, new Date().toISOString().slice(0, 10));
+    console.log('Exported run JSON (also offered as a file in the console):');
+    console.log(text.slice(0, 200) + '...');
+    setStatus('Exported: the JSON file is in the Qollab console (recorded_take.json).');
+  } catch (e) {
+    setBanner('Export failed: ' + errText(e), 'err');
+  }
 }
 
 function wire() {

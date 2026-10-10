@@ -68,9 +68,9 @@ export function renderPatches(root, lesson, rows, settings) {
       label(g, 60, 154, 'not measured', 10);
     }
     // logical operators as edges with hover titles
-    const zl = el('line', { x1: 0, y1: 0, x2: 0, y2: 120, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-dasharray': '6 4', tabindex: 0 }, g);
+    const zl = el('line', { x1: 0, y1: 0, x2: 0, y2: 120, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-dasharray': '6 4', tabindex: 0, role: 'img', 'aria-label': 'Logical Z = Z0 Z2 (left edge)' }, g);
     el('title', {}, zl).textContent = 'Logical Z = Z0 Z2 (left edge)';
-    const xl = el('line', { x1: 0, y1: 0, x2: 120, y2: 0, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-dasharray': '2 4', tabindex: 0 }, g);
+    const xl = el('line', { x1: 0, y1: 0, x2: 120, y2: 0, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-dasharray': '2 4', tabindex: 0, role: 'img', 'aria-label': 'Logical X = X0 X1 (top edge)' }, g);
     el('title', {}, xl).textContent = 'Logical X = X0 X1 (top edge)';
     // data qubits
     Object.entries(P).forEach(([q, [x, y]], i) => {
