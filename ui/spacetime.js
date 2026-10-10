@@ -2,7 +2,7 @@
 // The encoded circuit as a spacetime block: patches in the plane, time up, gates as bars,
 // the measured syndrome on the top slice, logical operators as worldsheets. three.js is
 // resolved by name on Qollab and by the dev harness import map.
-const DT = 0.22;                 // world units per time layer
+const DT = 0.16;                 // world units per time layer
 const C = {
   data: 0xe0a040, anc: 0x4f9cff, x: 0xe0a040, z: 0x4f9cff, bad: 0xff5c5c, focus: 0xffd166,
   encode: 0x9aa0ad, transversal: 0xf4f4f8, syndrome: 0x4f9cff, h: 0xdfe3ea, t: 0xb07cff, sdg: 0xb07cff, ry: 0x39c37a, measure: 0x6b7280,
@@ -63,17 +63,37 @@ export async function renderSpacetime(root, L, row, opts = {}) {
   const H = L.T * DT;
   const xs = L.qubits.map((q) => q.x), ys = L.qubits.map((q) => q.y);
   const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cz = (Math.min(...ys) + Math.max(...ys)) / 2;
-  const span = Math.max(Math.max(...xs) - Math.min(...xs) + 1.5, H, 3);
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  // Look along the planned diagonal, from far enough that the whole block (top slice included) fits the view.
-  const radius = 0.5 * Math.hypot(Math.max(...xs) - Math.min(...xs) + 1.5, H + 0.6, Math.max(...ys) - Math.min(...ys) + 1.5);
-  const home = new THREE.Vector3(span * 0.9, H * 0.25 + span * 0.5, span * 1.1).normalize()
-    .multiplyScalar(0.8 * radius / Math.sin(THREE.MathUtils.degToRad(38 / 2))).add(new THREE.Vector3(cx, H / 2, cz));
-  camera.position.copy(home);
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.target.set(cx, H / 2, cz);
   controls.enableDamping = true;
-  controls.update();
+  // Fit the camera to the scene box (now plane and top-slice labels included) along the planned diagonal,
+  // elevation reduced so the view direction rises 0.45 of its horizontal length.
+  const box = new THREE.Box3(
+    new THREE.Vector3(Math.min(...xs) - 0.9, 0, Math.min(...ys) - 0.9),
+    new THREE.Vector3(Math.max(...xs) + 0.9, H + 0.5, Math.max(...ys) + 0.9));
+  const centre = box.getCenter(new THREE.Vector3());
+  const corners = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) corners.push(new THREE.Vector3(x, y, z));
+  const dir = new THREE.Vector3(0.9, 0.45 * Math.hypot(0.9, 1.1), 1.1).normalize();
+  const home = new THREE.Vector3();
+  let userMoved = false;
+  controls.addEventListener('start', () => { userMoved = true; });
+  function fit() {
+    let d = 4 * box.getSize(new THREE.Vector3()).length();
+    const p = new THREE.Vector3();
+    for (let i = 0; i < 4; i++) {
+      camera.position.copy(dir).multiplyScalar(d).add(centre);
+      camera.lookAt(centre);
+      camera.updateMatrixWorld(); camera.updateProjectionMatrix();
+      let m = 0;
+      for (const c of corners) { p.copy(c).project(camera); m = Math.max(m, Math.abs(p.x), Math.abs(p.y)); }
+      d *= m / 0.92;
+    }
+    home.copy(dir).multiplyScalar(d).add(centre);
+    camera.position.copy(home);
+    controls.target.copy(centre);
+    controls.update();
+  }
   scene.add(new THREE.HemisphereLight(0xffffff, 0x334455, 1.1));
   const sun = new THREE.DirectionalLight(0xffffff, 1.2);
   sun.position.set(cx + 4, H + 6, cz + 5);
@@ -262,7 +282,7 @@ export async function renderSpacetime(root, L, row, opts = {}) {
   });
   slider.addEventListener('input', () => { playing = false; play.textContent = 'Play'; setT(parseFloat(slider.value)); });
   sheetsBox.addEventListener('change', () => setT(tNow));
-  reset.addEventListener('click', () => { camera.position.copy(home); controls.target.set(cx, H / 2, cz); controls.update(); });
+  reset.addEventListener('click', () => { userMoved = false; fit(); });
 
   function resize() {
     const w = Math.max(280, canvasBox.clientWidth);
@@ -270,6 +290,7 @@ export async function renderSpacetime(root, L, row, opts = {}) {
     renderer.setSize(w, h, false);
     renderer.domElement.style.width = '100%'; renderer.domElement.style.height = h + 'px';
     camera.aspect = w / h; camera.updateProjectionMatrix();
+    if (!userMoved) fit();
   }
   const ro = new ResizeObserver(resize);
   ro.observe(canvasBox);
