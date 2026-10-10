@@ -1,6 +1,7 @@
 import json
 
 from qec import bridge
+from qec.lessons import build_all
 
 
 def test_build_then_circuits_and_analyze_round_trip():
@@ -19,6 +20,7 @@ def test_recorded_take_is_loadable_and_consistent():
     take = json.loads(bridge.load_recorded())
     assert set(take) >= {"source", "backend", "date", "settings", "meta", "counts"}
     assert len(take["meta"]) == len(take["counts"]) == 16
+    assert build_all(take["settings"])[1] == take["meta"]
     res = json.loads(bridge.analyze(json.dumps(take["meta"]), json.dumps(take["counts"])))
     assert len(res) == 16
 

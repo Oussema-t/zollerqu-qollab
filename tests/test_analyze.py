@@ -13,7 +13,7 @@ def run(settings, shots, noise=None):
     circuits, meta = build_all(settings)
     sim = AerSimulator(noise_model=noise) if noise else AerSimulator()
     tcs = transpile(circuits, sim, optimization_level=0)
-    result = sim.run(tcs, shots=shots).result()
+    result = sim.run(tcs, shots=shots, seed_simulator=1234).result()
     counts = [result.get_counts(i) for i in range(len(circuits))]
     return analyze_all(meta, counts)
 
@@ -90,7 +90,7 @@ def test_noisy_table_is_informational():
     noise = NoiseModel()
     noise.add_all_qubit_quantum_error(depolarizing_error(0.002, 1), ["h", "x", "y", "z", "t", "sdg", "ry"])
     noise.add_all_qubit_quantum_error(depolarizing_error(0.01, 2), ["cx"])
-    res = run({"shots": 2000, "inject": None}, 2000, noise)
+    res = run({"shots": 200, "inject": None}, 200, noise)
     print("\nlesson name       flagged  dev_acc  dev_all")
     for r in res:
         if r["kind"] == "enc":

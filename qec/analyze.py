@@ -38,6 +38,11 @@ def _faces_update(acc, basis, r, count):
 
 
 def analyze_one(m, counts):
+    """Metrics for one circuit.
+
+    n_accepted counts unflagged shots. n_kept and the *_accepted metrics also apply
+    keep_if_zero, so they count shots that are unflagged and kept.
+    """
     nblocks, bases = m["nblocks"], m["bases"]
     enc = m["kind"] == "enc"
     n_total = n_flagged = n_kept = n_one = n_kept_all = n_one_all = 0
@@ -81,7 +86,8 @@ def analyze_one(m, counts):
         "n_total": n_total,
         "n_flagged": n_flagged,
         "n_accepted": n_total - n_flagged,
-        "flagged_fraction": frac(n_flagged, n_total) if n_total else 0,
+        "n_kept": n_kept,
+        "flagged_fraction": frac(n_flagged, n_total),
         "kept_fraction": frac(n_kept_all, n_total),
         "p1_accepted": p1_acc,
         "p1_all": p1_all,
@@ -94,4 +100,4 @@ def analyze_one(m, counts):
 
 def analyze_all(meta, counts_list):
     """meta and counts_list are parallel lists, one entry per circuit."""
-    return [analyze_one(m, dict(counts)) for m, counts in zip(meta, counts_list)]
+    return [analyze_one(m, dict(counts)) for m, counts in zip(meta, counts_list, strict=True)]

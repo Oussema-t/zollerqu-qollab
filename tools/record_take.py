@@ -23,7 +23,7 @@ def main():
     noise.add_all_qubit_quantum_error(depolarizing_error(0.0005, 1), ["h", "x", "y", "z", "t", "sdg", "ry"])
     noise.add_all_qubit_quantum_error(depolarizing_error(0.006, 2), ["cx"])
     sim = AerSimulator(noise_model=noise)
-    result = sim.run(transpile(circuits, sim, optimization_level=0), shots=SETTINGS["shots"]).result()
+    result = sim.run(transpile(circuits, sim, optimization_level=0), shots=SETTINGS["shots"], seed_simulator=1234).result()
     counts = [dict(result.get_counts(i)) for i in range(len(circuits))]
     take = {
         "source": "local-aer-stand-in",

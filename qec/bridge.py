@@ -1,17 +1,19 @@
 """Entry points called from main.js. JSON strings in and out; circuits and figures stay proxies."""
 import json
+from pathlib import Path
 
 from qec.analyze import analyze_all
 from qec.lessons import build_all
 
 RECORDED = "data/recorded_aria1.json"   # literal path so the Qollab runtime loads the file
 
-_LAST = {"circuits": [], "meta": []}
+_LAST = {"circuits": [], "meta": [], "figures": {}}
 
 
 def build(settings_json):
     circuits, meta = build_all(json.loads(settings_json))
     _LAST["circuits"], _LAST["meta"] = circuits, meta
+    _LAST["figures"] = {}
     return json.dumps(meta)
 
 
@@ -24,12 +26,18 @@ def analyze(meta_json, counts_json):
 
 
 def draw(index):
-    qc = _LAST["circuits"][int(index)]
-    return qc.draw(output="mpl", fold=-1, scale=0.6)
+    index = int(index)
+    if index not in _LAST["figures"]:
+        qc = _LAST["circuits"][index]
+        _LAST["figures"][index] = qc.draw(output="mpl", fold=-1, scale=0.6)
+    return _LAST["figures"][index]
 
 
 def load_recorded():
-    with open(RECORDED) as f:
+    path = Path(RECORDED)
+    if not path.exists():
+        path = Path(__file__).resolve().parents[1] / RECORDED
+    with open(path, encoding="utf-8") as f:
         return f.read()
 
 

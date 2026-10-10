@@ -10,8 +10,6 @@ Layout of one patch (local indices):
 """
 from qiskit import QuantumCircuit
 
-BASES = ("Z", "X", "Y")
-
 
 def data(b, i):
     return 4 * b + i
@@ -55,8 +53,13 @@ def inject(qc, b, pauli, i):
 def extract_syndromes(qc, nblocks, b):
     ax, az = anc_x(nblocks, b), anc_z(nblocks, b)
     q = [data(b, i) for i in range(4)]
+    # XXXX ancilla CX order q0, q2, q1, q3 avoids the hook error: an X fault on ax
+    # after the second CX would leave X2X3 = X_L * XXXX with order q0..q3, a logical
+    # error no check sees. With this order the leftover is X1X2X3 (= X0 * XXXX),
+    # X1X3 or X3, all caught by the Z checks. The ZZZZ ancilla keeps q0..q3: its
+    # mid-sequence leftover Z2Z3 is a stabilizer, while reordering would give Z_L.
     qc.h(ax)
-    for qi in q:
+    for qi in (q[0], q[2], q[1], q[3]):
         qc.cx(ax, qi)
     qc.h(ax)
     for qi in q:

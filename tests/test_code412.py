@@ -107,3 +107,28 @@ def test_bare_helpers():
     c.finish_bare(qc, ["Z", "Y"])
     names = [ins.operation.name for ins in qc.data]
     assert names.count("measure") == 2 and "sdg" in names and "h" in names
+
+
+def test_xxxx_ancilla_fault_mid_extraction_is_flagged():
+    # X fault on the XXXX ancilla after its second CX must not leave an undetectable logical error.
+    from qiskit.providers.basic_provider import BasicSimulator
+
+    from qec.analyze import analyze_all
+
+    ext = c.new_circuit(1)
+    c.extract_syndromes(ext, 1, 0)
+    ax = c.anc_x(1, 0)
+    qc = c.new_circuit(1)
+    c.encode(qc, 0)                          # |0_L>
+    n_cx = 0
+    for ins in ext.data:
+        qc.append(ins.operation, [ext.find_bit(q).index for q in ins.qubits])
+        if ins.operation.name == "cx" and ext.find_bit(ins.qubits[0]).index == ax:
+            n_cx += 1
+            if n_cx == 2:
+                qc.x(ax)
+    qc.measure(range(qc.num_qubits), range(qc.num_clbits))   # Z readout
+    counts = BasicSimulator().run(qc, shots=200, seed_simulator=1234).result().get_counts()
+    meta = {"index": 0, "lesson": 1, "name": "hook", "kind": "enc", "label": "Z", "nblocks": 1,
+            "bases": ["Z"], "value_blocks": [0], "keep_if_zero": [], "ideal_p1": 0.0}
+    assert analyze_all([meta], [counts])[0]["flagged_fraction"] == 1.0
