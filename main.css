@@ -47,12 +47,126 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .note { border-left: 3px solid var(--x); padding-left: 10px; color: var(--muted); }
 @media (prefers-reduced-motion: no-preference) { .face { transition: fill-opacity 200ms; } }
 .spacetime { margin-top: 16px; }
-.st-canvas { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: radial-gradient(ellipse at 50% 20%, rgba(79,156,255,0.08), transparent 70%); touch-action: none; }
-.st-canvas canvas { display: block; }
-.st-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 8px; }
-.st-bar input[type=range] { flex: 1 1 200px; accent-color: #1f6fe0; }
-.st-t { font-size: 0.9rem; color: var(--muted); min-width: 14ch; }
-.st-check { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 0.9rem; }
-.st-phases { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 8px 0 0; font-size: 0.85rem; }
-.st-phases li button { padding: 4px 8px; font-size: 0.85rem; color: var(--muted); }
-.st-phases li.on button { color: var(--fg); border-color: var(--fg); }
+/* story */
+.story { position: fixed; inset: 0; overflow: auto; z-index: 50; padding: 16px 16px 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif;
+  --qa: #ffb454; --qb: #4fd1c5; --qc: #c084fc; }
+@media (prefers-color-scheme: light) { .story { --qa: #b86a00; --qb: #0f8a80; --qc: #8a3fd1; } }
+.story[hidden] { display: none; }
+.story .qa { color: var(--qa); } .story .qb { color: var(--qb); } .story .qc { color: var(--qc); }
+.story .story-in { min-height: 100%; display: flex; flex-direction: column; gap: 8px; max-width: 1232px; margin: 0 auto; }
+.story .story-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+.story h1 { font-size: 1.15rem; font-weight: 600; margin: 0; }
+.story .stage { display: block; width: 100%; max-width: 1200px; height: auto; max-height: calc(100vh - 300px); margin: 0 auto;
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+/* Caption is the primary text: step line (small, muted) then the caption itself. */
+.story .narr { max-width: 1200px; }
+.story .stepline { margin: 2px 0 0; color: var(--muted); font-size: 0.85rem; }
+.story .stepline b { color: var(--fg); font-weight: 600; }
+.story .caption { font-size: 1.25rem; line-height: 1.4; margin: 2px 0 0; color: var(--fg); }
+/* Room for two caption lines (plus the disclosure line when there is one), so the text below does not jump. */
+.story .capbox { min-height: calc(2 * 1.75rem + 2px); }
+.story .capbox.phys { min-height: calc(2 * 1.75rem + 2px + 0.9rem * 1.5 + 2px); }
+/* Constant legend items (logical level): one quiet line between the picture and the step line. */
+.story .qlegend { margin: 0; color: var(--muted); font-size: 0.8rem; }
+/* Optional detail under a caption, closed by default (summary is keyboard-operable). */
+.story .why { margin: 2px 0 0; color: var(--muted); font-size: 0.9rem; }
+.story .why summary { width: fit-content; cursor: pointer; border-radius: 4px; }
+.story .why p { margin: 2px 0 0; }
+/* State panel: second in the hierarchy, a full-width card. */
+.story .state-panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; max-width: 1200px; font-size: 1rem; }
+.story .state-panel h2 { font-size: 0.95rem; font-weight: 600; margin: 0 0 4px; }
+.story .state-panel .hdr { color: var(--muted); font-size: 0.85rem; margin: 0 0 8px; }
+.story .state-panel .expr { font-size: 1rem; line-height: 1.7; margin: 0 0 6px; }
+.story .state-panel .pre { color: var(--muted); font-size: 0.9rem; margin: 0 0 2px; }
+.story .state-panel .line, .story .state-panel .where { margin: 6px 0 0; font-size: 1rem; }
+.story .state-panel .where { color: var(--muted); }
+.story mark { color: inherit; background: color-mix(in srgb, var(--focus) 25%, transparent); border-radius: 4px; padding: 0 2px; }
+.story .state-panel table { border-collapse: collapse; font-size: 1rem; margin: 4px 0 0; }
+.story .state-panel td, .story .state-panel th { padding: 1px 14px 1px 0; text-align: left; }
+.story .state-panel th { color: var(--muted); font-weight: 400; }
+/* Overlays inside the picture (foreignObject, so they scale with it). Sizes are in picture units:
+   11.75 units renders as 0.8rem when the picture is 1200 px wide. */
+.story .stage .ov { box-sizing: border-box; width: fit-content; max-width: 100%; background: color-mix(in srgb, var(--bg) 75%, transparent);
+  color: var(--muted); font: 11.75px/1.3 system-ui, sans-serif; padding: 6px 9px; border-radius: 8px; border: 1px solid var(--line); }
+.story .stage .ov-tr { margin-left: auto; }
+.story .stage .ov ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.story .stage .ov li { display: flex; gap: 7px; align-items: flex-start; }
+.story .stage .ov li svg { flex: 0 0 24px; margin-top: 1px; overflow: visible; }
+.story .stage .ov p { margin: 0; white-space: nowrap; }
+/* Narrow dynamic legend (physical level): swatch above its label. */
+.story .stage .ov.stack li { flex-direction: column; gap: 1px; }
+.story .stage .ov.stack li svg { flex: none; margin: 0; }
+/* Constant legend items (physical level): a quiet strip above the header row, no box. */
+.story .stage .ov.ov-strip { width: 100%; background: none; border: 0; border-radius: 0; padding: 2px 0; }
+/* Title and closing cards inside the picture. */
+.story .stage .ovcard { box-sizing: border-box; background: color-mix(in srgb, var(--bg) 92%, transparent); color: var(--fg); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px 20px; font: 14px/1.45 system-ui, sans-serif; }
+.story .stage .ovcard h2 { margin: 0 0 6px; font-size: 22px; font-weight: 650; }
+.story .stage .ovcard h3 { margin: 0 0 6px; font-size: 16px; font-weight: 650; color: var(--focus); }
+.story .stage .ovcard p { margin: 4px 0 0; white-space: normal; }
+.story .stage .ovcard .sub { color: var(--muted); font-size: 15px; margin: 0; }
+.story .stage .ovcard .go { color: var(--focus); font-weight: 600; margin-top: 12px; }
+.story .stage .ovcard ul { margin: 0; padding-left: 18px; }
+.story .stage .ovcard li { margin: 3px 0 0; }
+.story .stage .intro .ovcard { text-align: center; }
+/* Title card: the level fades to a ghost, except the logical wire heads, which stay legible.
+   The result cards keep their own opacity (0 until the result step); tokens fade through their wrappers. */
+.story .stage .lvl.faint > :not(.head):not(.res) { opacity: 0.08; }
+.story .stage .lvl-logical.closing > :not(.tok-wrap):not(.res) { opacity: 0.3; }
+.story .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  position: sticky; bottom: 0; z-index: 2; background: var(--bg); padding: 8px 0 16px; border-top: 1px solid var(--line); }
+/* Step strip: one dot per step on a line with a progress fill; the native range stays for keyboard and screen readers. */
+.story .strip { flex: 1 1 360px; min-width: 0; position: relative; padding: 0 56px; }
+.story .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.story .track { position: relative; height: 44px; cursor: pointer; touch-action: none; border-radius: 6px; }
+.story .scrub:focus-visible + .track { outline: 3px solid var(--focus); outline-offset: 4px; }
+.story .rail, .story .track .fill { position: absolute; left: 0; top: 9px; height: 2px; }
+.story .rail { right: 0; background: var(--line); }
+.story .track .fill { width: 0; background: var(--focus); }
+.story .sdot { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: 0; padding: 0; border-radius: 6px; color: var(--muted); }
+.story .pip { box-sizing: border-box; width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; border: 2px solid var(--muted); background: var(--bg); }
+.story .sdot.past .pip { background: var(--fg); border-color: var(--fg); }
+.story .sdot[aria-current=step] .pip { width: 16px; height: 16px; margin-top: 2px; background: var(--focus); border-color: var(--focus); }
+.story .sd-lbl { font-size: 0.75rem; line-height: 1.2; white-space: nowrap; }
+.story .sdot.past .sd-lbl { color: var(--fg); }
+.story .sdot[aria-current=step] .sd-lbl { color: var(--fg); font-weight: 600; }
+/* Narrow screens: only the current label shows; the others appear on hover or focus (and in the title tooltip). */
+@media (max-width: 900px) {
+  .story .strip { padding: 0 40px; }
+  .story .sdot .sd-lbl { visibility: hidden; }
+  .story .sdot[aria-current=step] .sd-lbl, .story .sdot:hover .sd-lbl, .story .sdot:focus-visible .sd-lbl { visibility: visible; }
+  .story .sdot:hover, .story .sdot:focus-visible { z-index: 1; }
+  .story .sdot:hover .sd-lbl, .story .sdot:focus-visible .sd-lbl { background: var(--bg); }
+}
+.story .controls .seg { display: inline-flex; }
+.story .controls .seg button:first-child { border-radius: 8px 0 0 8px; }
+.story .controls .seg button:last-child { border-radius: 0 8px 8px 0; border-left: 0; }
+.story .controls button[aria-pressed=true] { background: var(--card); border-color: var(--fg); font-weight: 600; }
+.story .controls label { display: inline-flex; align-items: center; gap: 6px; }
+.story .controls .play { min-width: 5.5em; }
+/* Logical symbols: future ones barely visible and slightly small; revealed when the playhead reaches them. */
+.story .stage .sym .inst { transform-box: fill-box; transform-origin: center; transform: scale(0.85); }
+.story .stage .sym.on .inst { transform: none; }
+.story .stage .sym .inst > * { opacity: 0.08; }
+.story .stage .sym.on .inst > * { opacity: 1; }
+.story .stage .tok-in { transform-box: fill-box; transform-origin: center; }
+.story .stage .tok-in.small { transform: scale(0.75); }
+.story .stage .flash { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .story .stage .fade { transition: opacity 300ms; }
+  .story .stage .lvl, .story .stage .lvl-logical > :not(.rib):not(.fade) { transition: opacity 300ms; }
+  .story .track .fill { transition: width 120ms linear; }
+  .story .stage .sym .inst { transition: transform 300ms ease-out; }
+  .story .stage .sym .inst > * { transition: opacity 300ms; }
+  .story .stage .tok { transition: transform 400ms ease, opacity 400ms ease; }
+  .story .stage .tok-in { transition: transform 400ms ease; }
+  .story .stage .tok-in.pop { animation: story-pop 400ms ease-out; }
+  .story .stage .tok-lbl, .story .stage .rib { transition: opacity 400ms; }
+  .story .stage .draw { stroke-dasharray: 1 1; animation: story-draw 400ms ease-out both; }
+  .story .stage .flash { animation: story-ring-in 200ms ease-out, story-flash 600ms ease-out; }
+  @keyframes story-flash { from { stroke-opacity: 0.2; stroke-width: 6; } to { stroke-opacity: 1; stroke-width: 2.5; } }
+  @keyframes story-ring-in { from { transform: scale(0.3); } to { transform: scale(1); } }
+  @keyframes story-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes story-pop { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+}
