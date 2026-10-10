@@ -9,9 +9,9 @@ RECIPES = {
 }
 
 
-def bits_of(key):
-    """Qiskit keys are little-endian; return bits indexed by qubit number."""
-    return [int(ch) for ch in reversed(key.replace(" ", ""))]
+def bits_of(key, width=0):
+    """Qiskit keys are little-endian; return bits indexed by qubit number, padding dropped leading zeros to width."""
+    return [int(ch) for ch in reversed(key.replace(" ", "").zfill(width))]
 
 
 def _parity(v, support):
@@ -36,10 +36,10 @@ def analyze_one(m, counts):
     """Metrics for one circuit.
 
     Per shot, a value block is clean (checks quiet), corrected (syndrome in the lookup table) or
-    discarded (any other syndrome). The shot is discarded if any value block is, corrected if any
-    value block was corrected, clean otherwise. Frames (extra value blocks) and keep_if_zero use
-    corrected logical bits for p1_corrected and p1_clean and raw bits for p1_all. n_kept counts
-    clean and corrected shots that also pass keep_if_zero.
+    discarded (any other syndrome). The shot is discarded if any block with checks is (Y blocks have
+    none and count as clean), corrected if any value block was corrected, clean otherwise. Frames
+    (extra value blocks) and keep_if_zero use corrected logical bits for p1_corrected and p1_clean
+    and raw bits for p1_all. n_kept counts clean and corrected shots that also pass keep_if_zero.
     """
     nblocks, bases = m["nblocks"], m["bases"]
     enc = m["kind"] == "enc"
@@ -55,7 +55,7 @@ def analyze_one(m, counts):
             kept[which][1] += count * (sum(logical[b] for b in vb) % 2)
 
     for key, count in counts.items():
-        bits = bits_of(key)
+        bits = bits_of(key, m["nqubits"])
         n["total"] += count
         if not enc:
             logical = bits[:nblocks]
@@ -70,7 +70,8 @@ def analyze_one(m, counts):
             if r["corrected_qubit"] is not None:
                 corrections[b][r["corrected_qubit"]] += count
         status = {reads[b]["status"] for b in vb}
-        cls = "discarded" if "discarded" in status else "corrected" if "corrected" in status else "clean"
+        cls = ("discarded" if any(r["status"] == "discarded" for r in reads)
+               else "corrected" if "corrected" in status else "clean")
         n[cls] += count
         tally("all", [r["raw_logical"] for r in reads], count)
         logical = [r["logical"] for r in reads]

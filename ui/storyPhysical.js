@@ -3,6 +3,8 @@
 import { PLAQUETTES } from './storyText.js';
 
 const SP = 44;                                  // dot spacing inside a patch
+// Fewer patches draw larger: one patch (with its caps) fills about 70% of the height above the legend strip.
+const SP_OF = { 1: 60, 2: 52 };
 const CXS = { 1: [470], 2: [300, 640], 3: [190, 515, 840] };
 const CY = 124;                                 // centre row of every patch
 export const PHYS = { nameY: CY + 122 };
@@ -81,6 +83,7 @@ export function buildPhysical(o) {
   const { parent, layout, row, steps, lesson, inj, el, text, setParts, HALO, hues, ids } = o;
   const nb = layout.blocks.length;
   const CX = CXS[nb] || CXS[3];
+  const sp = SP_OF[nb] || SP;
   const bases = layout.bases || row.bases;
   const { segs, seq, stepLayers } = buildSequence(layout, steps);
   const RESULT = seq.length;
@@ -95,7 +98,7 @@ export function buildPhysical(o) {
   const patches = [];
   layout.blocks.forEach((b, bi) => {
     const cx = CX[bi];
-    const P = (i) => [cx + ((i % 3) - 1) * SP, CY + (Math.floor(i / 3) - 1) * SP];
+    const P = (i) => [cx + ((i % 3) - 1) * sp, CY + (Math.floor(i / 3) - 1) * sp];
     const pg = el('g', {}, g);
     const blk = (row.blocks && row.blocks[bi]) || { checks: [], corrections: [] };
     const basis = bases[bi];
@@ -107,10 +110,10 @@ export function buildPhysical(o) {
         let e, lx, ly, anchor = 'middle', closed = null, arc = null;
         if (shape === 'sq') {
           const [x0, y0] = P(qs[0]);
-          e = el('rect', { x: x0, y: y0, width: SP, height: SP, fill: col, 'fill-opacity': 0.12, stroke: 'var(--line)' }, pg);
-          lx = x0 + SP / 2; ly = y0 + SP / 2 + 4;
+          e = el('rect', { x: x0, y: y0, width: sp, height: sp, fill: col, 'fill-opacity': 0.12, stroke: 'var(--line)' }, pg);
+          lx = x0 + sp / 2; ly = y0 + sp / 2 + 4;
         } else {
-          const [xa, ya] = P(qs[0]), [xb, yb] = P(qs[1]), r = SP / 2;
+          const [xa, ya] = P(qs[0]), [xb, yb] = P(qs[1]), r = sp / 2;
           const sweep = shape === 'top' || shape === 'right' ? 1 : 0;
           arc = `M${xa},${ya} A${r},${r} 0 0 ${sweep} ${xb},${yb}`;
           closed = `${arc} Z`;
@@ -142,9 +145,9 @@ export function buildPhysical(o) {
       const [x, y] = P(i);
       QPOS[qid] = [x, y, 9];
       const c = (blk.corrections || [])[i] || 0;
-      if (c > 0) {
+      if (c >= 0.01) {
         const s = Math.sqrt(Math.min(1, c));
-        const ring = el('circle', { cx: x, cy: y, r: 12 + 9 * s, fill: 'none', stroke: 'var(--bad)', 'stroke-width': 2, 'stroke-opacity': 0.35 + 0.65 * s }, rings);
+        const ring = el('circle', { cx: x, cy: y, r: 12 + 9 * s, fill: 'none', stroke: 'var(--bad)', 'stroke-width': 2, 'stroke-opacity': Math.min(1, 0.25 + 0.75 * c / 0.25) }, rings);
         el('title', {}, ring).textContent = `q${i} corrected by the decoder in ${(100 * c).toFixed(1)}% of shots`;
       }
       qDot[qid] = el('circle', { cx: x, cy: y, r: 9, fill: 'var(--card)', stroke: 'var(--fg)', 'stroke-width': 2 }, pg);
@@ -159,8 +162,8 @@ export function buildPhysical(o) {
     if (inj && bi === inj.block && inj.cq !== null && inj.caught.length) {
       tag = el('g', { display: 'none', 'pointer-events': 'none' }, pg);
       // The leader leaves the qubit down and to the right, through the gap between rows, to a tag right of the patch.
-      const [qx, qy] = P(inj.cq), tx = cx + SP + 64, ty = qy + SP / 2 + 4;
-      el('path', { d: `M${qx + 9},${qy + 9} L${qx + SP / 2},${qy + SP / 2} H${tx - 6}`, fill: 'none', stroke: 'var(--bad)', 'stroke-width': 1.2, 'stroke-dasharray': '3 3' }, tag);
+      const [qx, qy] = P(inj.cq), tx = cx + sp + 64, ty = qy + sp / 2 + 4;
+      el('path', { d: `M${qx + 9},${qy + 9} L${qx + sp / 2},${qy + sp / 2} H${tx - 6}`, fill: 'none', stroke: 'var(--bad)', 'stroke-width': 1.2, 'stroke-dasharray': '3 3' }, tag);
       text(tag, tx, ty + 4, `corrected ↺ q${inj.cq}`, { 'text-anchor': 'start', 'font-size': 12, 'font-weight': 700, fill: 'var(--bad)', ...HALO });
     }
     patches.push({ plaqs, rings, zl, xl, basis, tag });
@@ -184,8 +187,12 @@ export function buildPhysical(o) {
     const hg = el('g', {}, g);
     el('title', {}, hg).textContent = `Step ${k + 1}: ${st.title}`;
     const r = el('rect', { x: x + 1, y: HDR.y, width: w - 2, height: HDR.h, rx: 4, fill: 'var(--bg)', stroke: 'var(--line)' }, hg);
-    const fits = st.title.length * 5.6 + 6 <= w - 2;
-    const t = text(hg, x + w / 2, HDR.y + HDR.h / 2 + 3.5, fits ? st.title : String(k + 1), { 'font-size': 10, fill: 'var(--muted)' });
+    // Full title when it fits, else the step's short label, cut with an ellipsis when even that is too wide.
+    const room = (str) => str.length * 5.6 + 6 <= w - 2;
+    const fits = room(st.title);
+    let lbl = fits ? st.title : st.short || st.title;
+    if (!room(lbl)) lbl = `${lbl.slice(0, Math.max(1, Math.floor((w - 8) / 5.6) - 1))}…`;
+    const t = text(hg, x + w / 2, HDR.y + HDR.h / 2 + 3.5, lbl, { 'font-size': 10, fill: 'var(--muted)' });
     return { r, t, fits, cx: x + w / 2, title: st.title };
   });
   const barSegs = segs.map((s) => {
@@ -301,12 +308,12 @@ export function buildPhysical(o) {
     const marks = layerMarks(d);
     const kinds = new Set(marks.filter((m) => m.type === 'cx').map((m) => arrowKind(m.op.role)));
     add(kinds.has('gold'), 'gold', 'gold arrow: CNOT inside a patch, control to target');
-    add(kinds.has('white'), 'white', 'white arrow: CNOT between patches (transversal)');
+    add(kinds.has('white'), 'white', 'arc: one CNOT of the transversal gate');
     add(marks.some((m) => m.type === 'gate'), 'ring', 'yellow ring: single-qubit gate (letter says which)');
     add(marks.some((m) => m.type === 'inject'), 'burst', 'red burst: injected error');
     add(lit(d), 'dataM', 'grey: measured');
     add(lit(d), 'dashed', 'dashed: not readable in this basis');
-    add(lit(d) && (row.blocks || []).some((b) => (b.corrections || []).some((c) => c > 0)), 'fix', 'red ring: corrected by the decoder');
+    add(lit(d) && (row.blocks || []).some((b) => (b.corrections || []).some((c) => c >= 0.01)), 'fix', 'red ring: corrected by the decoder');
     add(dRead >= 0 && d >= dRead, 'logic', 'gold line: read as the logical value');
     return items;
   }

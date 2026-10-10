@@ -28,8 +28,7 @@ def test_root_wraps_index_with_import_map(base):
     html = urllib.request.urlopen(base + "/").read().decode()
     assert html.startswith("<!doctype html>")
     assert '"qec.bridge": "/dev/bridge_shim.js"' in html
-    assert '"three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js"' in html
-    assert '"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"' in html
+    assert '"three' not in html
     assert '<div class="app" id="app">' in html
     assert '<script type="module" src="/main.js">' in html
     assert 'href="/main.css"' in html

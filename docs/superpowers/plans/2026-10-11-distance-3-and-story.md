@@ -103,3 +103,4 @@ Upload, run on the built-in simulator (lessons 1, 2, 4 live; lesson 3 from the t
 5. **Story steps without helpers:** at the physical level the Checks step covers the readout rotation and measurement layers (plaquettes light, correction rings appear); Readout is a one-layer step that highlights the logical operator. Lesson 1 without injection shows a one-layer "No error injected" step.
 6. **Task 3 interface:** the bridge entry is `circuits_subset(indices_json)`; the harness `run` still executes all built circuits (harness capacity is 29).
 7. **Task 6 split:** README, spec addendum and this amendment are written by the planner; `dev/record_demo.py` is retargeted after the harness smoke test, since the video is last.
+8. **Keep rule:** a shot is kept only if every block with checks is clean or corrected; lesson 4's post-selection block A discards the shot too when its syndrome is outside the table.

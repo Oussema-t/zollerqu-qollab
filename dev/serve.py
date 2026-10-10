@@ -30,7 +30,7 @@ PAGE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Logical teleportation on a tiny surface code (dev harness)</title>
 <link rel="stylesheet" href="/main.css">
-<script type="importmap">{"imports": {"qec.bridge": "/dev/bridge_shim.js", "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="importmap">{"imports": {"qec.bridge": "/dev/bridge_shim.js"}}</script>
 </head><body>
 %s
 <script type="module" src="/main.js"></script>

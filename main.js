@@ -6,8 +6,9 @@ import { openStory } from './ui/story.js';
 
 const $ = (id) => document.getElementById(id);
 // settings, meta, results and sources always change together (in explore); lastRun is the latest live job, kept for export.
-// sources: lesson -> 'live' | 'recorded' (a lesson too big for this backend is filled from the recorded take).
-const state = { settings: null, meta: null, results: null, source: '', sources: {}, lesson: 1, backendName: '', maxQubits: 24, isIonq: false, submitLocked: false, busy: false, lastRun: null, story: null };
+// sources: lesson -> 'live' | 'recorded' | 'missing' (a lesson too big for this backend is filled from the recorded take,
+// or left empty when the take is not available); takeSettings: the settings of that take.
+const state = { settings: null, meta: null, results: null, source: '', sources: {}, takeSettings: null, lesson: 1, backendName: '', maxQubits: 24, isIonq: false, submitLocked: false, busy: false, lastRun: null, story: null };
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
 const toPlain = (x) => {
   if (!(x && typeof x.toJs === 'function')) return x;
@@ -53,7 +54,7 @@ function setBanner(text, cls = '') { const b = $('banner'); b.textContent = text
 function setStatus(text) { $('status').textContent = text; }
 function showBackendBanner() {
   setBanner((state.isIonq
-    ? `Backend: ${state.backendName}. IonQ backends accept one job per run, so all 16 circuits go in one submission.`
+    ? `Backend: ${state.backendName}. IonQ backends accept one job per run, so all circuits go in one submission.`
     : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`)
     + (state.maxQubits < 27 ? ' Lesson 3 needs 27 qubits, so on this backend it is shown from the recorded take; pick a Forte simulator to run it live.' : ''),
   state.isIonq ? 'warn' : '');
@@ -62,9 +63,15 @@ function showBackendBanner() {
 // Status line for the lesson on screen: what is shown, and why a lesson comes from the recorded take.
 function lessonStatus() {
   let s = `Showing ${state.source}. Shots per circuit: ${state.settings.shots}.`;
-  if (state.sources[state.lesson] === 'recorded') {
+  const src = state.sources[state.lesson];
+  if (src === 'recorded' || src === 'missing') {
     const need = Math.max(...state.meta.filter((m) => m.lesson === state.lesson).map((m) => m.nqubits));
-    s += ` Lesson ${state.lesson} needs ${need} qubits; this backend offers ${state.maxQubits}. Showing the recorded take for this lesson.`;
+    s += ` Lesson ${state.lesson} needs ${need} qubits; this backend offers ${state.maxQubits}`;
+    if (src === 'missing') s += ', and the recorded take could not be loaded.';
+    else {
+      const t = state.takeSettings, inj = t.inject;
+      s += `. Showing the recorded take for this lesson (${t.shots} shots, ${inj ? `${inj.pauli} injected on q${inj.qubit}` : 'no injection'}).`;
+    }
   }
   if (state.submitLocked) s += ' ' + IONQ_AGAIN;
   return s;
@@ -88,9 +95,11 @@ async function submit() {
     // Kept local until the run succeeds, so a failed run leaves the last good results intact.
     const metaJson = await bridge.build.callPromising(JSON.stringify(settings));
     const meta = JSON.parse(metaJson);
-    // Circuits wider than the backend stay out of the job; their counts come from the recorded take.
+    // A lesson with any circuit wider than the backend stays out of the job whole, so its cards never mix
+    // live and recorded rows; its counts come from the recorded take.
+    const tooBig = new Set(meta.filter((m) => m.nqubits > state.maxQubits).map((m) => m.lesson));
     const included = [], excluded = [];
-    meta.forEach((m, i) => (m.nqubits <= state.maxQubits ? included : excluded).push(i));
+    meta.forEach((m, i) => (tooBig.has(m.lesson) ? excluded : included).push(i));
     let take = null;
     if (excluded.length) {
       try { take = JSON.parse(await bridge.load_recorded.callPromising()); } catch (e) { console.log('Recorded take not available:', errText(e)); }
@@ -136,18 +145,21 @@ async function submit() {
       counts[included[k]] = toPlain(await result.get_counts(k));   // k indexes the circuits passed to run
     }
     const sources = {};
-    meta.forEach((m) => { if (m.kind === 'enc') sources[m.lesson] = 'live'; });
-    for (const i of excluded) {
-      const t = take && take.meta && take.meta[i];
-      if (t && t.name === meta[i].name && t.lesson === meta[i].lesson) counts[i] = take.counts[i];
-      else console.log(`No recorded counts for circuit ${i} (lesson ${meta[i].lesson}, ${meta[i].name}); left empty.`);
-      if (meta[i].kind === 'enc') sources[meta[i].lesson] = 'recorded';
+    meta.forEach((m) => { sources[m.lesson] = 'live'; });
+    // A too-big lesson is filled from the take only when every one of its circuits has a matching entry; else all stay empty.
+    const matches = (i) => { const t = take && take.meta && take.meta[i]; return !!t && t.name === meta[i].name && t.lesson === meta[i].lesson; };
+    for (const lesson of tooBig) {
+      const mine = excluded.filter((i) => meta[i].lesson === lesson);
+      const ok = mine.every(matches);
+      if (ok) for (const i of mine) counts[i] = take.counts[i];
+      else console.log(`No recorded counts for every circuit of lesson ${lesson}; its circuits are left empty.`);
+      sources[lesson] = ok ? 'recorded' : 'missing';
     }
     run = { settings, metaJson, countsJson: JSON.stringify(counts) };
     state.lastRun = run;
     $('export').hidden = false;   // exportable even if the analysis below fails
     showBackendBanner();
-    await explore(settings, metaJson, run.countsJson, `live run on ${state.backendName}`, sources);
+    await explore(settings, metaJson, run.countsJson, `live run on ${state.backendName}`, sources, take && take.settings);
     state.submitLocked = state.isIonq;
     setBusy(false);
     if (state.isIonq) setStatus('Done. ' + lessonStatus());
@@ -179,11 +191,11 @@ async function loadRecorded() {
   }
 }
 
-async function explore(settings, metaJson, countsJson, source, sources = {}) {
+async function explore(settings, metaJson, countsJson, source, sources = {}, takeSettings = null) {
   setStatus('Analysing...');
   const results = JSON.parse(await bridge.analyze.callPromising(metaJson, countsJson));
   const meta = JSON.parse(metaJson);
-  Object.assign(state, { settings, meta, results, source, sources });   // together, so a tab click never mixes old results with new settings
+  Object.assign(state, { settings, meta, results, source, sources, takeSettings });   // together, so a tab click never mixes old results with new settings
   $('tabs').hidden = false;
   $('panel').hidden = false;
   showLesson(state.lesson);

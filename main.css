@@ -31,7 +31,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (min-width: 800px) { .grid { grid-template-columns: 1.2fr 1fr; } }
 .patches { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
 .patches svg { max-width: 100%; height: auto; }
-.patches > p { flex: 1 0 100%; }
+.patches > p, .patches > details { flex: 1 0 100%; }
 .patches line[tabindex]:is(:hover, :focus) { stroke: var(--focus); stroke-width: 7; }
 .links { font-size: 0.85rem; color: var(--muted); margin: 0; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
@@ -42,6 +42,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .chart h3 { font-size: 0.95rem; margin: 0 0 6px; }
 .chart svg { width: 100%; height: auto; }
 .fired-list { font-size: 0.85rem; color: var(--muted); margin: 6px 0 0; }
+.rates summary { cursor: pointer; font-size: 0.85rem; color: var(--muted); }
 .circuit { margin-top: 16px; }
 .circuit img { max-width: 100%; background: #fff; border-radius: 8px; }
 .note { border-left: 3px solid var(--x); padding-left: 10px; color: var(--muted); }

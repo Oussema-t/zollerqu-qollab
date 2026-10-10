@@ -110,10 +110,10 @@ export function renderPatches(root, lesson, rows, settings) {
     for (let i = 0; i < 9; i++) {
       const [x, y] = pos(i);
       const c = corr[i] || 0;
-      if (c > 0) {
+      if (c >= 0.01) {
         const ring = el('circle', {
           cx: x, cy: y, r: 14, fill: 'none', stroke: 'var(--bad)', 'stroke-width': 3,
-          'stroke-opacity': 0.25 + 0.75 * Math.min(1, c * 4),
+          'stroke-opacity': Math.min(1, 0.25 + 0.75 * c / 0.25),
         }, g);
         el('title', {}, ring).textContent = `decoder corrected this qubit in ${pct(c)} of shots`;
       }
@@ -143,8 +143,12 @@ export function renderPatches(root, lesson, rows, settings) {
     l.title = 'Each logical CNOT is nine physical CNOTs, one between each pair of matching data qubits';
     root.appendChild(l);
   }
+  const rates = document.createElement('details');
+  rates.className = 'rates';
+  rates.appendChild(document.createElement('summary')).textContent = 'Check and correction rates';
   const p = document.createElement('p');
   p.className = 'fired-list';
   p.textContent = `Rates from ${enc.name}. Checks fired (share of all shots). ` + fired.join(' | ');
-  root.appendChild(p);
+  rates.appendChild(p);
+  root.appendChild(rates);
 }

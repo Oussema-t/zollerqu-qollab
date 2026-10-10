@@ -115,6 +115,22 @@ def test_keep_if_zero_uses_corrected_bits():
     assert r["p1_all"] == pytest.approx(1 / 4)                   # raw A reads 0 on the first string
 
 
+def test_key_without_leading_zeros_is_padded_to_circuit_width():
+    key = key_of(block_bits([4])).lstrip("0")                   # "10000": q5..q8 dropped by the backend
+    r = analyze_one(meta1("Z"), {key: 3})
+    assert r["n_corrected"] == 3 and r["blocks"][0]["corrections"][4] == pytest.approx(1.0)
+
+
+def test_keep_if_zero_block_with_uncorrectable_syndrome_discards_the_shot():
+    m = {"index": 0, "lesson": 4, "name": "enc_X", "kind": "enc", "label": "X", "nblocks": 2, "bases": ["Z", "X"],
+         "value_blocks": [1], "keep_if_zero": [0], "ideal_p1": 0.25, "nqubits": 18}
+    a_bad = block_bits([0, 8], nblocks=2)                       # A: Z syndrome 0011, not in the table
+    clean = block_bits([], nblocks=2)
+    r = analyze_one(m, {key_of(a_bad): 2, key_of(clean): 2})
+    assert (r["n_discarded"], r["n_clean"], r["n_kept"]) == (2, 2, 2)
+    assert r["discard_fraction"] == pytest.approx(0.5) and r["kept_fraction"] == pytest.approx(0.5)
+
+
 def test_bare_row_shape():
     m = {"index": 2, "lesson": 1, "name": "bare_Z", "kind": "bare", "label": "Z", "nblocks": 1, "bases": ["Z"],
          "value_blocks": [0], "keep_if_zero": [], "ideal_p1": 0.0, "nqubits": 1}
