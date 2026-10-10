@@ -117,3 +117,23 @@ README: problem, data and credits (Census Bureau TIGERweb, OSRM and OpenStreetMa
 - OSRM demo server rate limits; fallback to haversine is in the tool.
 - Pyodide milp unknown; brute force is the exact baseline anyway.
 - Time: two entries, one person on Qollab tomorrow. The Unlocked upload comes first; this entry's Qollab step is last.
+
+---
+
+## Amendment 1 (Oct 10 night, after Tasks 1 and 2)
+
+**Measured.** Tasks 1 and 2 committed (a01408d, 689afd1), 33 tests pass. Transpiled Grover circuit, basis rz/sx/x/cx, j = 10: m = 10 gives 13,540 CX (1,354 per iteration), Aer 2.0 s; m = 12 gives 46,580 CX, Aer 9.7 s. m = 10 stays the default; m = 12 is offered in the control but the page warns it is slow.
+
+**Default parameters changed** (plan said k=3, c=15000, staff_cost=1.0, tau=6, lam=20, wh_weight=2.0). With those the warehouse term is 85 of a 115 total, greedy finds the optimum and local search sees one minimum, so the classical baseline is trivially sufficient. Parameter scan on the real data (tools not kept; scan in session): the new defaults **k=4, c=15000, staff_cost=3.0, tau=10, lam=10, wh_weight=0.1** give exact 62.7 (travel 10.8, staff 45.0, crowd 0, warehouse 6.9), greedy misses by 1.8, local search from 30 restarts reaches 5 distinct local minima, identical at m = 10 and 12. `DEFAULTS` in `qopt/cost.py:6` and the docstring in `qopt/bridge.py:3` change accordingly (Task 3). Control ranges on the page: k 2..5, lam 0..40, tau 4..14 min, staff capacity 5,000..30,000, warehouse weight 0..1, m 10 or 12.
+
+**Accepted deviations.** Task 1: Durr-Hoyer split into dh_init/dh_next/dh_feed/dh_done/dh_result shared by `find_min` and the bridge; `aer_run` caches simulator and pass manager; bridge local search fixed at 20 restarts, seed 0. Task 2: block-to-own-site and warehouse-to-site times floored at 0.5 min (12 entries affected); site gap check uses both OSRM directions.
+
+**Bridge contract for the page** (module `qopt.bridge`, every call `bridge.<fn>.callPromising(...)`, params `p` is a JSON string with optional keys m, k, c, staff_cost, tau, lam, wh_weight): `load_data(text)`, `cost_table_json(p)` -> {m,k,n_feasible,best_index,best_cost,best_sites}, `classical(p)`, `sweep(p)` -> plan JSON, `sweep_circuits_py(p)` -> Python list of circuits (pass straight to `backend.run`), `sweep_analyze_json(p, plan_json, counts_json)`, `dh_start(p, seed)`, `dh_next_circuit()` -> one circuit (wrap in a list for `backend.run`), `dh_feed(counts_json)` -> {round, done, result}, `placement_sites(index)`. Bitstring: index = int(counts key, 2); site i = bit i. Infinite cost is null in JSON. Task 3 adds `load_recorded()` (reads `data/recorded_local.json` like Unlocked's) and `export_take(backend_name, params_json, plan_json, sweep_counts_json, dh_json, date)`.
+
+**Recorded take format** (`data/recorded_local.json`): {source, backend, date, params, plan, sweep_counts: [counts dict per circuit in plan order], dh: {seed, rounds, result}}. The page renders a take through the same `sweep_analyze_json` path as a live run.
+
+**Dev harness protocol** (`dev/serve.py`, `dev/bridge_shim.js`, copied from Unlocked and retargeted): the import map maps `qopt.bridge` to the shim; POST /api/<fn> calls the bridge; `sweep_circuits_py` and `dh_next_circuit` store their circuits server-side as the current circuit list and return its length; `backend.run` executes the current list on Aer through `qopt.aer_run.aer_run`; `data/champaign.json` is loaded at server start through `load_data`. On Qollab the page fetches `data/champaign.json` itself and calls `load_data` with the text.
+
+**Task 3 (Sonnet)** now covers: defaults change plus test update if any test pins them, `load_recorded`/`export_take`, harness, shim, `tools/record_take.py` (sweep with 1000 shots and one DH loop with seed 7, 100 shots per round, m = 10, default params), `data/recorded_local.json`, `tests/test_take.py` (take file parses, sweep max deviation under 0.05 per series, dh result best_cost equals brute force).
+
+**Task 4 (Opus)** builds the page against this contract; smoke test with Playwright against `python dev/serve.py 8766` once Task 3 has landed (check `git log`), screenshots to `dev/out/`.
