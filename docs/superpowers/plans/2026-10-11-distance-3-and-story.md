@@ -93,3 +93,13 @@ Upload, run on the built-in simulator (lessons 1, 2, 4 live; lesson 3 from the t
 - Time: Tasks 1 to 4 are a full rewrite of the Python core and the patch drawing; Task 5 is the largest UI piece. Parallelise: Task 1+2 (one agent), Task 4 (one agent, interface = analysis row fields above), Task 5 physical renderer (one agent, interface = layout JSON and row fields above). Task 3 after 2.
 - Forte simulator speed and reliability at 27 qubits is unknown until Tushar runs it.
 - The Y readout sign is fixed by test, not derived here.
+
+## Amendments after implementation (Oct 11)
+
+1. **Aer extended_stabilizer dropped.** Measured during Task 2: with the Clifford+T rewrite, noiseless lesson 3 returned 28 of 100 shots outside the code space and ideal P(1) = 0.46 instead of 0.146; the per-shot noisy path returned 40 of 40 shots outside the code space. The Metropolis sampler cannot move between codewords by single-bit flips. Replacement: `qec/aer_compat.py` picks an exact method per circuit (stabilizer for Clifford-only, statevector up to 20 qubits, matrix_product_state above) and holds the stand-in noise model; used by `tools/record_take.py`, `dev/serve.py` and the tests only. Cost: about 0.9 s per noisy shot for the two 27-qubit circuits, so a harness run at 100 shots takes about 3 minutes. The take's backend text is "Aer depolarizing stand-in (Forte run pending)". No `clifford_t` helper exists.
+2. **Y readout sign:** no flip needed (|+i_L> reads 0 with probability 1; lesson 4 enc_Y ideal 0.235 at 1000 shots).
+3. **`meta.nqubits`** is the circuit's real qubit count (9n encoded, n bare), so the capacity filter never drops a bare circuit.
+4. **Lesson 4 keep rule:** block A is not a value block; its corrected bit drives keep_if_zero, and a discarded A still counts toward keep with its raw bit. All three P(1) values apply keep_if_zero.
+5. **Story steps without helpers:** at the physical level the Checks step covers the readout rotation and measurement layers (plaquettes light, correction rings appear); Readout is a one-layer step that highlights the logical operator. Lesson 1 without injection shows a one-layer "No error injected" step.
+6. **Task 3 interface:** the bridge entry is `circuits_subset(indices_json)`; the harness `run` still executes all built circuits (harness capacity is 29).
+7. **Task 6 split:** README, spec addendum and this amendment are written by the planner; `dev/record_demo.py` is retargeted after the harness smoke test, since the video is last.

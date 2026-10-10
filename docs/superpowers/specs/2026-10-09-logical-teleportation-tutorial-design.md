@@ -222,7 +222,7 @@ Distance 3, decoding and correction, mid-circuit measurement, reset, feed-forwar
 
 Small-code error detection on trapped ions (Linke et al. 2017) and the [[4,2,2]] and [[4,1,2]] family (Gottesman 2016), magic-state T gadget (Bravyi and Kitaev 2005), quantum teleportation (Bennett et al. 1993), Qollab runtime docs for the multi-file and recorded-take patterns. AI tools used: Claude Code for planning and implementation, disclosed as the rules require. Required line: "This effort is supported by Qollab & IonQ".
 
-## Addendum, Oct 10 2026: 3D spacetime view
+## Addendum, Oct 10 2026: 3D spacetime view (superseded Oct 11 by the story page addendum below; the three.js view was removed)
 
 Approved design (Tushar, Oct 10). Each lesson panel gains a three.js scene of the encoded circuit as a spacetime block, after Google Quantum AI, Nature 614, 676 (2023), Fig. 1b and 2a, with time pointing up instead of right.
 
@@ -234,3 +234,17 @@ Approved design (Tushar, Oct 10). Each lesson panel gains a three.js scene of th
 - Animation: time slider and play button; everything above the current time is hidden and a faint "now" plane rises. Orbit and zoom via OrbitControls. No autoplay under reduced motion. Text alternative: the phase list with time spans, clickable.
 - Build: phase names recorded in `qc.metadata["phases"]` (gates unchanged), new `qec/spacetime.py` layout JSON, bridge entry `spacetime(index)`, new `ui/spacetime.js`. three.js is importable by name on Qollab (0.186.1, runtime docs). The Qiskit line drawing stays as a collapsed "Raw Qiskit circuit" and leaves the video.
 - Dev harness (`dev/`) and scripted Playwright demo video are separate tooling, see the plan of Oct 10.
+
+## Addendum, Oct 11 2026: distance 3 and the story page
+
+**Code.** The [[4,1,2]] patches are replaced by the rotated [[9,1,3]] surface code: nine data qubits per patch, row-major q0..q8 in a 3x3 grid, no helper qubits. X stabilizers (0,1,3,4), (4,5,7,8), (2,5), (3,6); Z stabilizers (1,2,4,5), (3,4,6,7), (0,1), (7,8); X_L = X0X1X2, Z_L = Z0Z3Z6. Encoder: cx 0,1; cx 0,2; h 4,5,6,7; cx 4,0; cx 4,1; cx 4,3; cx 5,2; cx 6,3; cx 7,0; cx 7,1; cx 7,2; cx 7,3; cx 7,8. Transversal CNOT is nine CNOTs. Qubits per lesson: 9, 18, 27, 18.
+
+**Checks and correction.** Checks are parities of the final readout: Z plaquettes for a Z readout, X plaquettes for an X readout, none for Y. Per block and shot: clean (all checks 0), corrected (pattern in the lookup table, the named qubit's bit is flipped before the logical value is read), discarded (pattern outside the table). A shot is kept if every value block is clean or corrected. Tables and the degeneracy note (X2X5 is a stabilizer, so an X on q5 is corrected by flipping q2) are in `qec/code913.py`.
+
+**Metrics.** Row fields: n_total, n_clean, n_corrected, n_discarded, n_kept, p1_corrected, p1_clean, p1_all with their deviations, discard_fraction, correct_fraction, kept_fraction, blocks[{basis, checks[4], corrections[9]}]. Cards: discarded by checks, corrected by the code, logical error after correction, same experiment on bare qubits, and for lesson 4 kept after post-selecting A = 0. Charts: after correction, clean shots only, no correction, bare qubits, with the ideal marker.
+
+**Backends.** Lesson 3 needs 27 qubits and runs live only on the Forte simulators (29). The page computes a capacity from the backend name (29 for Forte or the local harness, 25 for Aria and Braket, else 24), submits the circuits that fit through `bridge.circuits_subset`, and fills the rest from the recorded take with a status note.
+
+**Story page.** A full-page overlay per lesson, opened by "Watch the story" in the lesson panel. One master position (step, fraction) drives two levels. Logical: one wire per logical qubit, symbols revealed by a playhead (encode boxes, CNOT, per-wire checks box, meters, double classical line, dashed outcome lines, dashed post-processing box), a state token travelling with the information, entanglement ribbons, a state panel with the changed part highlighted, captions of at most two lines with an expander. Physical: the same timeline as the recorded gate layers on the 3x3 patches (gold encoder arrows, transversal arcs, yellow ring for single-qubit gates, red burst for the injected error, grey fill at measurement with check rates and red correction rings). A legend shows only what is currently drawn; constant items sit in a muted strip. Step strip with labelled dots, intro card, closing card, keyboard (Space, arrows, L, P), reduced motion respected. Implemented in `ui/story.js`, `ui/storyPhysical.js`, `ui/storyText.js`; layouts come from `qec/spacetime.py` through `bridge.spacetime(index)`.
+
+**Local simulation.** Aer extended_stabilizer gives wrong samples on these circuits (see the plan amendment), so `qec/aer_compat.py` uses stabilizer, statevector or matrix product state per circuit. It never runs inside Qollab.
