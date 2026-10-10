@@ -1,0 +1,379 @@
+{
+ "meta": {
+  "task": "Task 4: QAOA circuits, offline tuning and benchmarks (statevector only; no backend run)",
+  "timestamp_utc": "2026-10-10T22:26:52Z",
+  "versions": {
+   "python": "3.12.3",
+   "numpy": "2.5.3",
+   "scipy": "1.18.1",
+   "qiskit": "2.5.2"
+  },
+  "note": "all tuning is offline on a classical statevector and uses the training-derived objective only; no test-period data, no quantum hardware, no speed-up claim",
+  "training_rows": 418,
+  "training_first": "2006-06-02",
+  "training_last": "2014-05-30",
+  "tickers": [
+   "AAPL",
+   "GLD",
+   "XOM",
+   "JPM",
+   "TLT",
+   "JNJ",
+   "PG",
+   "XLU",
+   "VNQ",
+   "FCX",
+   "MSFT",
+   "SLV"
+  ],
+  "keep_fraction": 1.0,
+  "kept_links": 66,
+  "scale_policy": "scale = max(max|J_ij|, max|h_i|) of the model (one scale for couplings and fields); 1.0 if below 1e-12",
+  "sign_note": "mixer is rx(+2 beta): lowering the energy needs gamma and beta of opposite sign; the ramp 0.6 / 0.3 as written (same sign) is kept as a measured control"
+ },
+ "circuit_convention": "H on all qubits; per layer rzz(2*gamma*J_ij/scale), rz(2*gamma*h_i/scale), rx(2*beta); spin +1 = |0>; count keys have qubit 0 as the rightmost character",
+ "selection_rule": "lowest expected model energy (the tuning objective); never P(optimum), never test data",
+ "modes": {
+  "long_short": {
+   "eta": 1.0,
+   "balance": false,
+   "scale": 0.015081246542038977,
+   "exact_optimum": {
+    "e_min": 0.015353381303312194,
+    "e_max": 0.3677854585972922,
+    "n_optimal": 1,
+    "states": 4096,
+    "balanced_states": 4096,
+    "bitstring": "001100100100",
+    "assignment": {
+     "long": [
+      "AAPL",
+      "GLD",
+      "JPM",
+      "TLT",
+      "PG",
+      "XLU",
+      "MSFT",
+      "SLV"
+     ],
+     "short": [
+      "XOM",
+      "JNJ",
+      "VNQ",
+      "FCX"
+     ]
+    },
+    "objective": 0.015353381303312194
+   },
+   "p0_control": {
+    "gammas": [],
+    "betas": []
+   },
+   "linear_ramp": {
+    "1": {
+     "best_dgamma": 0.3,
+     "best_dbeta": -0.3,
+     "gammas": [
+      0.3
+     ],
+     "betas": [
+      -0.3
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.8954622140090821,
+     "p_optimum_per_shot": 0.0010872624888723177
+    },
+    "2": {
+     "best_dgamma": 0.5,
+     "best_dbeta": -0.3,
+     "gammas": [
+      0.25,
+      0.5
+     ],
+     "betas": [
+      -0.3,
+      -0.15
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.9159449625612811,
+     "p_optimum_per_shot": 0.002032871253218148
+    },
+    "3": {
+     "best_dgamma": 0.7,
+     "best_dbeta": -0.4,
+     "gammas": [
+      0.2333333333333333,
+      0.4666666666666666,
+      0.7
+     ],
+     "betas": [
+      -0.4,
+      -0.2666666666666667,
+      -0.13333333333333336
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.9314842254940439,
+     "p_optimum_per_shot": 0.004367741531094252
+    },
+    "4": {
+     "best_dgamma": 0.7,
+     "best_dbeta": -0.4,
+     "gammas": [
+      0.175,
+      0.35,
+      0.5249999999999999,
+      0.7
+     ],
+     "betas": [
+      -0.4,
+      -0.30000000000000004,
+      -0.2,
+      -0.1
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.9431300041114488,
+     "p_optimum_per_shot": 0.00584495870965497
+    },
+    "5": {
+     "best_dgamma": 0.7,
+     "best_dbeta": -0.4,
+     "gammas": [
+      0.13999999999999999,
+      0.27999999999999997,
+      0.42,
+      0.5599999999999999,
+      0.7
+     ],
+     "betas": [
+      -0.4,
+      -0.32000000000000006,
+      -0.24,
+      -0.16000000000000003,
+      -0.07999999999999999
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.9500260476504642,
+     "p_optimum_per_shot": 0.007317630242464758
+    }
+   },
+   "free_angles_best": {
+    "1": {
+     "gammas": [
+      0.3042180572365532
+     ],
+     "betas": [
+      -0.2691483009348666
+     ],
+     "optimizer": "L-BFGS-B",
+     "start": "lr_tuned",
+     "evaluations": 24,
+     "quality": 0.8966663677780901,
+     "p_optimum_per_shot": 0.0010481404988898183
+    },
+    "2": {
+     "gammas": [
+      0.22435654430144217,
+      0.6319752493597586
+     ],
+     "betas": [
+      -0.339028226864833,
+      -0.16359734447990845
+     ],
+     "optimizer": "L-BFGS-B",
+     "start": "lr_tuned",
+     "evaluations": 65,
+     "quality": 0.9194261277619199,
+     "p_optimum_per_shot": 0.002293286480851825
+    },
+    "3": {
+     "gammas": [
+      0.21258321382849124,
+      0.455188475822919,
+      0.6086001006677199
+     ],
+     "betas": [
+      -0.4177580972761176,
+      -0.2337843723335618,
+      -0.153474668972077
+     ],
+     "optimizer": "L-BFGS-B",
+     "start": "lr_tuned",
+     "evaluations": 98,
+     "quality": 0.9345728445736403,
+     "p_optimum_per_shot": 0.004245768824701291
+    }
+   }
+  },
+  "buy_or_skip": {
+   "eta": 1.0,
+   "balance": false,
+   "scale": 0.030098814229475513,
+   "exact_optimum": {
+    "e_min": -0.004325111842402751,
+    "e_max": 0.28186172415028343,
+    "n_optimal": 1,
+    "states": 4096,
+    "balanced_states": 4096,
+    "bitstring": "111111101110",
+    "assignment": {
+     "buy": [
+      "AAPL",
+      "TLT"
+     ],
+     "skip": [
+      "GLD",
+      "XOM",
+      "JPM",
+      "JNJ",
+      "PG",
+      "XLU",
+      "VNQ",
+      "FCX",
+      "MSFT",
+      "SLV"
+     ]
+    },
+    "objective": -0.004325111842402751
+   },
+   "p0_control": {
+    "gammas": [],
+    "betas": []
+   },
+   "linear_ramp": {
+    "1": {
+     "best_dgamma": 1.0,
+     "best_dbeta": -0.7,
+     "gammas": [
+      1.0
+     ],
+     "betas": [
+      -0.7
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.9547830995773294,
+     "p_optimum_per_shot": 0.01141672414087697
+    },
+    "2": {
+     "best_dgamma": 1.4,
+     "best_dbeta": -0.6,
+     "gammas": [
+      0.7,
+      1.4
+     ],
+     "betas": [
+      -0.6,
+      -0.3
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.9685657687976812,
+     "p_optimum_per_shot": 0.015476425115658018
+    },
+    "3": {
+     "best_dgamma": 1.4,
+     "best_dbeta": -0.6,
+     "gammas": [
+      0.4666666666666666,
+      0.9333333333333332,
+      1.4
+     ],
+     "betas": [
+      -0.6,
+      -0.4,
+      -0.2
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.971716867818097,
+     "p_optimum_per_shot": 0.018105300565952966
+    },
+    "4": {
+     "best_dgamma": 1.4,
+     "best_dbeta": -0.5,
+     "gammas": [
+      0.35,
+      0.7,
+      1.0499999999999998,
+      1.4
+     ],
+     "betas": [
+      -0.5,
+      -0.375,
+      -0.25,
+      -0.125
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.972959038090651,
+     "p_optimum_per_shot": 0.020748521701710487
+    },
+    "5": {
+     "best_dgamma": 1.3,
+     "best_dbeta": -0.5,
+     "gammas": [
+      0.26,
+      0.52,
+      0.78,
+      1.04,
+      1.3
+     ],
+     "betas": [
+      -0.5,
+      -0.4,
+      -0.3,
+      -0.2,
+      -0.09999999999999998
+     ],
+     "best_on_grid_edge": false,
+     "quality": 0.9724286736261939,
+     "p_optimum_per_shot": 0.020513009787429672
+    }
+   },
+   "free_angles_best": {
+    "1": {
+     "gammas": [
+      0.9824772061014253
+     ],
+     "betas": [
+      -0.727844955621912
+     ],
+     "optimizer": "Powell",
+     "start": "lr_tuned",
+     "evaluations": 83,
+     "quality": 0.955087606301933,
+     "p_optimum_per_shot": 0.011357735142215627
+    },
+    "2": {
+     "gammas": [
+      0.5666318114276185,
+      0.9426681103097201
+     ],
+     "betas": [
+      0.888707145697862,
+      -1.169950681019238
+     ],
+     "optimizer": "L-BFGS-B",
+     "start": "random_seed_4027",
+     "evaluations": 70,
+     "quality": 0.9764017276906025,
+     "p_optimum_per_shot": 0.012171428450607103
+    },
+    "3": {
+     "gammas": [
+      -0.45860798852211954,
+      -0.8031545437644715,
+      -1.1270092968096992
+     ],
+     "betas": [
+      -0.8844377654476373,
+      -0.5799459043445675,
+      1.336783138687431
+     ],
+     "optimizer": "L-BFGS-B",
+     "start": "random_seed_5027",
+     "evaluations": 385,
+     "quality": 0.9847298227335026,
+     "p_optimum_per_shot": 0.004130823552513056
+    }
+   }
+  }
+ },
+ "transfer_rule_larger_sizes": "for a larger size use the linear ramp (dgamma, dbeta) tuned at n = 12 for the same mode and p, with the larger model's own scale; it is not re-tuned"
+}
