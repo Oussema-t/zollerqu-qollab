@@ -33,6 +33,7 @@ def _lesson1(inject):
     for basis, prep in (("Z", False), ("X", True)):
         qc = c.new_circuit(1)
         if prep:
+            c.mark(qc, "prepare A")
             qc.h(c.data(0, 0))
         c.encode(qc, 0)
         if inject:
@@ -56,6 +57,7 @@ def _lesson2():
     out = []
     for basis in ("Z", "X"):
         qc = c.new_circuit(2)
+        c.mark(qc, "prepare A")
         qc.h(c.data(0, 0))
         c.encode(qc, 0)
         c.encode(qc, 1)
@@ -77,8 +79,10 @@ def _lesson3():
     out = []
     for basis in ("Z", "X"):
         qc = c.new_circuit(3)
+        c.mark(qc, "prepare A")
         qc.ry(THETA, c.data(0, 0))
         c.encode(qc, 0)                 # A = psi
+        c.mark(qc, "prepare B")
         qc.h(c.data(1, 0))
         c.encode(qc, 1)                 # B = |+_L>
         c.encode(qc, 2)                 # C = |0_L>
@@ -105,8 +109,10 @@ def _lesson4():
     out = []
     for basis in ("X", "Y"):
         qc = c.new_circuit(2)
+        c.mark(qc, "prepare A")
         qc.ry(THETA, c.data(0, 0))
         c.encode(qc, 0)                 # A = psi = ry(pi/4)|0>
+        c.mark(qc, "prepare B (magic state)")
         qc.h(c.data(1, 0))
         qc.t(c.data(1, 0))
         c.encode(qc, 1)                 # B = |T_L>

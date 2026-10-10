@@ -27,12 +27,21 @@ def n_qubits(nblocks):
     return 6 * nblocks
 
 
+BLOCK_NAMES = "ABC"
+
+
+def mark(qc, name):
+    """Record the start of a named phase for the spacetime view. Gates are unchanged."""
+    qc.metadata.setdefault("phases", []).append((len(qc.data), name))
+
+
 def new_circuit(nblocks):
     return QuantumCircuit(n_qubits(nblocks), n_qubits(nblocks))
 
 
 def encode(qc, b):
     """Encode the state on local q0 into the block. Not fault tolerant."""
+    mark(qc, f"encode {BLOCK_NAMES[b]}")
     q = [data(b, i) for i in range(4)]
     qc.h(q[2])
     qc.cx(q[2], q[3])
@@ -42,17 +51,20 @@ def encode(qc, b):
 
 
 def transversal_cx(qc, ctrl_b, targ_b):
+    mark(qc, f"transversal CNOT {BLOCK_NAMES[ctrl_b]}→{BLOCK_NAMES[targ_b]}")
     for i in range(4):
         qc.cx(data(ctrl_b, i), data(targ_b, i))
 
 
 def inject(qc, b, pauli, i):
+    mark(qc, f"inject {pauli} on q{i}")
     getattr(qc, pauli.lower())(data(b, i))
 
 
 def extract_syndromes(qc, nblocks, b):
     ax, az = anc_x(nblocks, b), anc_z(nblocks, b)
     q = [data(b, i) for i in range(4)]
+    mark(qc, f"syndrome extraction {BLOCK_NAMES[b]}")
     # XXXX ancilla CX order q0, q2, q1, q3 avoids the hook error: an X fault on ax
     # after the second CX would leave X2X3 = X_L * XXXX with order q0..q3, a logical
     # error no check sees. With this order the leftover is X1X2X3 (= X0 * XXXX),
@@ -67,6 +79,8 @@ def extract_syndromes(qc, nblocks, b):
 
 
 def rotate_block(qc, b, basis):
+    if basis != "Z":
+        mark(qc, f"readout rotation {BLOCK_NAMES[b]} ({basis})")
     q = [data(b, i) for i in range(4)]
     _rotate(qc, q, basis)
 
@@ -93,6 +107,7 @@ def finish(qc, nblocks, bases):
         extract_syndromes(qc, nblocks, b)
     for b, basis in enumerate(bases):
         rotate_block(qc, b, basis)
+    mark(qc, "measure")
     qc.measure(range(qc.num_qubits), range(qc.num_clbits))
 
 

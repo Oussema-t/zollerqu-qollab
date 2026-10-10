@@ -132,3 +132,21 @@ def test_xxxx_ancilla_fault_mid_extraction_is_flagged():
     meta = {"index": 0, "lesson": 1, "name": "hook", "kind": "enc", "label": "Z", "nblocks": 1,
             "bases": ["Z"], "value_blocks": [0], "keep_if_zero": [], "ideal_p1": 0.0}
     assert analyze_all([meta], [counts])[0]["flagged_fraction"] == 1.0
+
+
+def test_phases_are_recorded_without_changing_gates():
+    from qec import code412 as c
+    qc = c.new_circuit(2)
+    c.mark(qc, "prepare A")
+    qc.h(c.data(0, 0))
+    c.encode(qc, 0)
+    c.encode(qc, 1)
+    c.transversal_cx(qc, 0, 1)
+    c.finish(qc, 2, ["Z", "X"])
+    names = [n for _, n in qc.metadata["phases"]]
+    assert names == ["prepare A", "encode A", "encode B", "transversal CNOT A→B",
+                     "syndrome extraction A", "syndrome extraction B", "readout rotation B (X)", "measure"]
+    starts = [s for s, _ in qc.metadata["phases"]]
+    assert starts == sorted(starts) and starts[0] == 0
+    # gate count unchanged by marking: 1 + 5 + 5 + 4 + 10 + 10 + 4 + 12
+    assert len(qc.data) == 51
