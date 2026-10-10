@@ -2,10 +2,11 @@ import * as bridge from 'qec.bridge';
 import { LESSONS } from './ui/lessons.js';
 import { renderPatches } from './ui/patches.js';
 import { renderCards, renderCharts } from './ui/charts.js';
+import { renderSpacetime } from './ui/spacetime.js';
 
 const $ = (id) => document.getElementById(id);
 // settings and results always change together (in explore); lastRun is the latest live job, kept for export.
-const state = { settings: null, results: null, source: '', lesson: 1, backendName: '', isIonq: false, submitLocked: false, lastRun: null };
+const state = { settings: null, results: null, source: '', lesson: 1, backendName: '', isIonq: false, submitLocked: false, lastRun: null, spacetime: null, spacetimeToken: 0 };
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
 const toPlain = (x) => {
   if (!(x && typeof x.toJs === 'function')) return x;
@@ -167,6 +168,24 @@ function showLesson(n) {
   renderCharts($('charts'), rows);
   $('circuit-img').innerHTML = '';
   $('circuit-details').open = false;
+  mountSpacetime(n, rows);
+}
+
+async function mountSpacetime(lesson, rows) {
+  const token = ++state.spacetimeToken;
+  if (state.spacetime) { state.spacetime.dispose(); state.spacetime = null; }
+  const root = $('spacetime');
+  const row = rows.find((r) => r.kind === 'enc');
+  if (!row) { root.replaceChildren(); return; }
+  root.textContent = 'Building the spacetime view...';
+  try {
+    const L = JSON.parse(await bridge.spacetime.callPromising(row.index));
+    if (token !== state.spacetimeToken) return;   // the tab changed meanwhile
+    state.spacetime = await renderSpacetime(root, L, row);
+    if (token !== state.spacetimeToken) { state.spacetime.dispose(); state.spacetime = null; }
+  } catch (e) {
+    if (token === state.spacetimeToken) root.textContent = 'Spacetime view unavailable: ' + errText(e);
+  }
 }
 
 async function drawCircuit() {

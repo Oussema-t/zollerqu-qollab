@@ -46,3 +46,13 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .circuit img { max-width: 100%; background: #fff; border-radius: 8px; }
 .note { border-left: 3px solid var(--x); padding-left: 10px; color: var(--muted); }
 @media (prefers-reduced-motion: no-preference) { .face { transition: fill-opacity 200ms; } }
+.spacetime { margin-top: 16px; }
+.st-canvas { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: radial-gradient(ellipse at 50% 20%, rgba(79,156,255,0.08), transparent 70%); touch-action: none; }
+.st-canvas canvas { display: block; }
+.st-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 8px; }
+.st-bar input[type=range] { flex: 1 1 200px; accent-color: #1f6fe0; }
+.st-t { font-size: 0.9rem; color: var(--muted); min-width: 14ch; }
+.st-check { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 0.9rem; }
+.st-phases { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 8px 0 0; font-size: 0.85rem; }
+.st-phases li button { padding: 4px 8px; font-size: 0.85rem; color: var(--muted); }
+.st-phases li.on button { color: var(--fg); border-color: var(--fg); }
