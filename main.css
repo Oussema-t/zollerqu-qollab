@@ -86,3 +86,10 @@ table.classical td:nth-child(3) { font-variant-numeric: tabular-nums; white-spac
 .chart .traj { fill: none; stroke: var(--z); stroke-width: 2; }
 .chart .imp { fill: var(--z); }
 .chart .flat { fill: var(--muted); }
+.card .lbl.amber { color: var(--x); }
+.scaling { margin-top: 16px; max-width: 640px; }
+.chart .brute { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.chart .fit { stroke: var(--z); stroke-width: 1.5; stroke-opacity: 0.8; }
+.chart .range { stroke: var(--fg); stroke-width: 1.5; }
+.chart .mean { fill: var(--z); stroke: var(--bg); stroke-width: 1; }
+.chart svg text.frac { fill: var(--fg); font-size: 10px; }

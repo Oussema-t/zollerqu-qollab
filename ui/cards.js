@@ -1,4 +1,6 @@
 // ui/cards.js: the classical comparison table, the result cards and the Durr-Hoyer counters card.
+import { fitSqrtN } from './plots.js';
+
 const f2 = (v) => (v == null ? '-' : Number(v).toFixed(2));
 const same = (a, b) => a != null && b != null && Math.abs(a - b) < 1e-9;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -25,20 +27,25 @@ export function renderClassical(tableEl, cl, { k, m, quantum }, onShow) {
   tableEl.querySelectorAll('button[data-row]').forEach((b) => b.addEventListener('click', () => onShow(rows[Number(b.dataset.row)][1])));
 }
 
-function card(big, lbl, cls = '') {
-  return `<div class="card ${cls}"><div class="big">${big}</div><div class="lbl">${lbl}</div></div>`;
+function card(big, lbl, cls = '', lblCls = '') {
+  return `<div class="card ${cls}"><div class="big">${big}</div><div class="lbl ${lblCls}">${lbl}</div></div>`;
 }
 
-// s: {exact, qBest, oracleCalls, N, maxDev, localMinima}; any may be null before a run.
+// s: {exact, qBest, oracleCalls, N, maxDev, localMinima, study}; any may be null before a run (study: from a loaded take).
 export function renderCards(el, s) {
   const eq = same(s.qBest, s.exact);
+  const top = s.study ? s.study.reduce((a, r) => (r.m > a.m ? r : a)) : null;
   el.innerHTML = [
     card(s.qBest == null ? '-' : `${f2(s.qBest)} ${eq ? '=' : '&ne;'} ${f2(s.exact)}`,
-      s.qBest == null ? `Best cost found by quantum search vs exact ${f2(s.exact)}` : `Best cost: quantum vs exact (${eq ? 'equal' : 'not equal'})`,
-      s.qBest == null ? '' : eq ? 'good' : 'amber'),
+      s.qBest == null ? `Best cost found by quantum search vs exact ${f2(s.exact)}`
+        : eq ? 'Best cost: quantum vs exact (equal)'
+          : 'Best cost: quantum vs exact; not the exact minimum this time (paper guarantee: at least 1/2 within its budget); see the study for the success fraction',
+      s.qBest == null ? '' : eq ? 'good' : 'amber', s.qBest == null || eq ? '' : 'amber'),
     card(s.oracleCalls == null ? '-' : `${s.oracleCalls} / ${s.N}`, 'Oracle calls vs N classical evaluations'),
     card(s.maxDev == null ? '-' : `${(100 * s.maxDev).toFixed(1)} pp`, 'Max deviation of measured from theory'),
     card(s.localMinima == null ? '-' : String(s.localMinima), 'Local minima seen by local search'),
+    top ? card(`c = ${fitSqrtN(s.study).toFixed(1)}`, `Calls grow like c &radic;N (study fit); exact minimum at m = ${top.m}: `
+      + `${Math.round(top.exact_fraction * top.seeds)} of ${top.seeds} seeds`) : '',
   ].join('');
 }
 
@@ -47,7 +54,7 @@ export function renderCounters(el, s) {
   const eq = same(s.best, s.exact);
   el.dataset.done = String(!!s.done);
   el.innerHTML = `<h3>Minimum finding ${s.done ? '(done)' : `(round ${s.round})`}</h3>`
-    + `<dl><dt>Oracle calls so far</dt><dd><b>${s.calls}</b> of N = ${s.N}</dd>`
+    + `<dl><dt>Oracle calls (Grover iterations + one per round)</dt><dd><b>${s.calls}</b> of N = ${s.N}</dd>`
     + `<dt>Best cost</dt><dd><b class="${s.done ? (eq ? 'good' : 'amber') : ''}">${f2(s.best)}</b> vs exact ${f2(s.exact)}</dd></dl>`
     + (s.note ? `<p class="note">${esc(s.note)}</p>` : '');
 }

@@ -1,4 +1,4 @@
-// ui/plots.js: the theory-match sweep plot and the Durr-Hoyer threshold trajectory, hand-drawn SVG.
+// ui/plots.js: the theory-match sweep plot, the Durr-Hoyer threshold trajectory and the scaling study, hand-drawn SVG.
 const NS = 'http://www.w3.org/2000/svg';
 export const SERIES_COLORS = ['var(--s1)', 'var(--s2)', 'var(--s3)'];
 
@@ -96,4 +96,71 @@ export function renderTrajectory(svgEl, start, rounds, exact) {
     const c = el('circle', { cx: x(i), cy: y(v), r: on ? 3.5 : 2, class: on ? 'imp' : 'flat' }, svgEl);
     el('title', {}, c).textContent = i ? `round ${i}: j = ${rounds[i - 1].j}, threshold ${v.toFixed(2)}` : `start ${v.toFixed(2)}`;
   });
+}
+
+// c in calls = c * sqrt(N): least squares through the origin on the study means.
+export function fitSqrtN(study) {
+  const sxy = study.reduce((a, r) => a + Math.sqrt(r.N) * r.calls_mean, 0);
+  const sxx = study.reduce((a, r) => a + r.N, 0);
+  return sxy / sxx;
+}
+
+// study: [{m, N, seeds, calls_mean, calls_min, calls_max, exact_fraction}] from the recorded take; returns the fitted c.
+export function renderScaling(svgEl, study) {
+  const W = 560, H = 340, L = 52, R = 16, T = 40, B = 52;
+  const c = fitSqrtN(study);
+  frame(svgEl, W, H, `Mean oracle calls of the one-measurement loop against sqrt N for ${study.map((r) => `m = ${r.m}`).join(', ')}; `
+    + `fitted c = ${c.toFixed(1)}; brute force needs N evaluations.`);
+  const sMax = 1.08 * Math.sqrt(Math.max(...study.map((r) => r.N)));
+  const top = 1.15 * Math.max(...study.map((r) => r.calls_max));
+  const step = [1, 2, 5].flatMap((u) => [1, 10, 100, 1000, 10000].map((p) => u * p)).sort((a, b) => a - b)
+    .find((s) => top / s <= 6);
+  const yMax = Math.ceil(top / step) * step;
+  const x = (s) => L + (s / sMax) * (W - L - R);
+  const y = (v) => T + (1 - v / yMax) * (H - T - B);
+
+  const axes = el('g', { class: 'axes' }, svgEl);
+  for (let v = 0; v <= yMax; v += step) {
+    el('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), class: v === 0 ? 'axis' : 'gridline' }, axes);
+    text(axes, L - 6, y(v) + 4, String(v), { 'text-anchor': 'end' });
+  }
+  for (const r of study) {
+    const t = el('text', { x: x(Math.sqrt(r.N)), y: H - B + 16, 'text-anchor': 'middle' }, axes);
+    el('tspan', { x: x(Math.sqrt(r.N)) }, t).textContent = `m = ${r.m}`;
+    el('tspan', { x: x(Math.sqrt(r.N)), dy: 13 }, t).textContent = `(N = ${r.N})`;
+  }
+  text(axes, (L + W - R) / 2, H - 6, 'sqrt N', { 'text-anchor': 'middle' });
+  text(axes, 12, (T + H - B) / 2, 'oracle calls', { 'text-anchor': 'middle', transform: `rotate(-90 12 ${(T + H - B) / 2})` });
+
+  // y = N is a parabola in sqrt N; it leaves the frame at sqrt N = sqrt(yMax).
+  const sTop = Math.min(sMax, Math.sqrt(yMax));
+  let d = '';
+  for (let i = 0; i <= 100; i++) {
+    const s = (i / 100) * sTop;
+    d += (i ? 'L' : 'M') + x(s).toFixed(1) + ',' + y(s * s).toFixed(1);
+  }
+  el('path', { d, class: 'brute' }, svgEl);
+  el('line', { x1: x(0), y1: y(0), x2: x(sMax), y2: y(c * sMax), class: 'fit' }, svgEl);
+
+  const g = el('g', { class: 'study' }, svgEl);
+  for (const r of study) {
+    const sx = x(Math.sqrt(r.N));
+    const exact = Math.round(r.exact_fraction * r.seeds);
+    el('line', { x1: sx, x2: sx, y1: y(r.calls_min), y2: y(r.calls_max), class: 'range' }, g);
+    for (const v of [r.calls_min, r.calls_max]) el('line', { x1: sx - 4, x2: sx + 4, y1: y(v), y2: y(v), class: 'range' }, g);
+    const dot = el('circle', { cx: sx, cy: y(r.calls_mean), r: 4.5, class: 'mean' }, g);
+    el('title', {}, dot).textContent = `m = ${r.m}, N = ${r.N}: mean ${r.calls_mean} oracle calls (min ${r.calls_min}, `
+      + `max ${r.calls_max}) over ${r.seeds} seeds; exact minimum in ${exact} of ${r.seeds}`;
+    text(g, sx, y(r.calls_max) - 8, `exact ${exact}/${r.seeds}`, { 'text-anchor': 'middle', class: 'frac' });
+  }
+
+  const lg = el('g', { class: 'legend' }, svgEl);
+  el('line', { x1: L, x2: L, y1: 10, y2: 22, class: 'range' }, lg);
+  el('circle', { cx: L, cy: 16, r: 4.5, class: 'mean' }, lg);
+  text(lg, L + 10, 20, 'mean, min..max');
+  el('line', { x1: L + 130, x2: L + 152, y1: 16, y2: 16, class: 'fit' }, lg);
+  text(lg, L + 158, 20, `${c.toFixed(1)} sqrt N`);
+  el('line', { x1: L + 250, x2: L + 272, y1: 16, y2: 16, class: 'brute' }, lg);
+  text(lg, L + 278, 20, 'N (brute force)');
+  return c;
 }

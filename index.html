@@ -60,10 +60,14 @@
         <div class="card counters" id="dh-counters" data-done="false"></div>
       </div>
     </div>
+    <figure class="chart scaling" id="scaling-fig" hidden>
+      <figcaption id="scaling-cap"></figcaption>
+      <svg id="scaling" role="img" aria-label="No scaling study loaded"></svg>
+    </figure>
   </section>
 
   <footer class="foot">
-    <p>The oracle here is a lookup table compiled from the classical cost table (a reversible arithmetic circuit does not fit 29 qubits); the theory and the counters count oracle calls, which is what the quadratic speedup is about.</p>
+    <p>The oracle here is a lookup table compiled from the classical cost table (a reversible arithmetic circuit does not fit 29 qubits); the theory and the counters count oracle calls, which is what the quadratic speedup is about. The loop takes one measurement per round; every measured sample is scored once and counted.</p>
     <p>This effort is supported by Qollab &amp; IonQ.</p>
   </footer>
 </div>

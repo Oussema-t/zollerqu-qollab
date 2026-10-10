@@ -1,18 +1,19 @@
 import * as bridge from 'qopt.bridge';
 import { renderMap, servingWarehouse } from './ui/map.js';
-import { renderSweep, renderTrajectory } from './ui/plots.js';
+import { renderSweep, renderTrajectory, renderScaling } from './ui/plots.js';
 import { renderClassical, renderCards, renderCounters } from './ui/cards.js';
 
 const $ = (id) => document.getElementById(id);
 const PARAMS = ['k', 'lam', 'tau', 'c', 'wh_weight', 'staff_cost', 'm'];
 const DEFAULTS = { k: 4, lam: 10, tau: 10, c: 15000, wh_weight: 0.1, staff_cost: 3, m: 10 };
-const SWEEP_SHOTS = 1000, DH_SHOTS = 100;
+const SWEEP_SHOTS = 1000, DH_SHOTS = 1;   // the loop takes one measurement per round
 const IONQ_DH = 'Durr-Hoyer loop shown from the recorded take: IonQ backends accept one job per run';
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
 // view: what the map, table and cards show; it always belongs to the params the classical table was computed for.
 // last: the latest live run, kept for export.
+// study: the scaling study of the loaded take; it stays on screen after live runs.
 const state = { data: null, backendName: '', isLocal: true, busy: false, locked: false, seq: 0,
-  view: null, last: null };
+  view: null, last: null, study: null };
 const toPlain = (x) => {
   if (!(x && typeof x.toJs === 'function')) return x;
   const v = x.toJs({ dict_converter: Object.fromEntries });
@@ -45,7 +46,7 @@ function setBanner(text, cls = '') { const b = $('banner'); b.textContent = text
 function setStatus(text) { $('status').textContent = text; }
 function showBackendBanner() {
   setBanner(state.isLocal
-    ? `Backend: ${state.backendName}. Local simulator: the sweep job and the minimum-finding loop (one job per round) both run live.`
+    ? `Backend: ${state.backendName}. Local simulator: the sweep job and the minimum-finding loop (one job and one measurement per round) both run live.`
     : `Backend: ${state.backendName}. IonQ backends accept one job per run, so only the theory-match sweep runs live; the minimum-finding loop is shown from the recorded take.`,
   state.isLocal ? '' : 'warn');
 }
@@ -87,7 +88,29 @@ function drawTable() {
 function drawCards() {
   const v = state.view;
   renderCards($('cards'), { exact: v.exact, qBest: v.quantum ? v.quantum.cost : null, oracleCalls: v.quantum ? v.quantum.oracle_calls : null,
-    N: 2 ** v.m, maxDev: v.maxDev, localMinima: v.classical.local_search.local_minima });
+    N: 2 ** v.m, maxDev: v.maxDev, localMinima: v.classical.local_search.local_minima, study: state.study });
+}
+
+// e.g. "294 oracle calls (214 Grover iterations over 80 rounds), best cost 62.73 (exact 62.73)"
+function dhSummary(dh) {
+  const r = dh.result;
+  return `${r.oracle_calls} oracle calls (${r.grover_iterations} Grover iterations over ${dh.rounds.length} rounds), `
+    + `best cost ${r.best_cost.toFixed(2)} (exact ${state.view.exact.toFixed(2)})`;
+}
+
+// The recorded take: fetched like champaign.json, validated by the bridge. Shows its scaling study when it has one.
+async function loadTake() {
+  const r = await fetch('data/recorded_local.json');
+  if (!r.ok) throw new Error(`data/recorded_local.json: HTTP ${r.status}`);
+  const take = JSON.parse(await bridge.load_recorded.callPromising(await r.text()));
+  if (take.study && take.study.length) {
+    state.study = take.study;
+    const c = renderScaling($('scaling'), take.study);
+    $('scaling-cap').textContent = 'Mean oracle calls of the one-measurement loop over the study seeds against sqrt N; '
+      + `dashed: N evaluations of brute force; fitted c = ${c.toFixed(1)}.`;
+    $('scaling-fig').hidden = false;
+  }
+  return take;
 }
 
 function clearQuantum() {
@@ -243,10 +266,11 @@ async function runQuantum() {
     if (state.isLocal) {
       const seed = Math.max(0, parseInt($('seed').value, 10) || 0);
       state.last.dh = await liveDh(pj, seed);
-      setStatus(`Done: ${state.last.dh.result.oracle_calls} oracle calls, best cost ${state.last.dh.result.best_cost.toFixed(2)} (exact ${state.view.exact.toFixed(2)}).`);
+      setStatus(`Done: ${dhSummary(state.last.dh)}.`);
     } else {
       state.locked = true;
-      const take = JSON.parse(await bridge.load_recorded.callPromising());
+      const take = await loadTake();
+      drawCards();
       const tp = JSON.stringify({ ...DEFAULTS, ...take.params });
       const note = IONQ_DH + (tp === pj ? '.' : ` (take parameters: ${tp}).`);
       await showDhFromTake(take.dh, note);
@@ -266,7 +290,7 @@ async function loadRecorded() {
   setBusy(true);
   setStatus('Loading recorded take...');
   try {
-    const take = JSON.parse(await bridge.load_recorded.callPromising());
+    const take = await loadTake();
     const p = { ...DEFAULTS, ...take.params };
     writeParams(p);
     clearTimeout(state.debounce);
@@ -274,8 +298,9 @@ async function loadRecorded() {
     $('export').hidden = true;   // export is for live runs, not the recorded take
     showBackendBanner();
     await showSweep(JSON.stringify(take.params), JSON.stringify(take.plan), JSON.stringify(take.sweep_counts), p.m);
-    if (take.dh) await showDhFromTake(take.dh, `Recorded take, seed ${take.dh.seed}.`);
-    setStatus(`Showing the recorded take: ${take.backend}, ${take.date} (${take.source}).`);
+    if (take.dh) await showDhFromTake(take.dh, `Recorded take, seed ${take.dh.seed}, one measurement per round.`);
+    setStatus(`Showing the recorded take: ${take.backend}, ${take.date} (${take.source})`
+      + (take.dh ? `. ${dhSummary(take.dh)}.` : '.'));
   } catch (e) {
     setBanner('Recorded take not available: ' + errText(e), 'err');
     setStatus('');
