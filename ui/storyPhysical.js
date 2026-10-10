@@ -1,6 +1,7 @@
 // Physical level of the story page: one 3x3 patch per logical qubit, animated layer by layer from the spacetime layout.
 // story.js owns the timeline; this module draws the patches, the step header row, the phase bar and the dynamic legend items.
 import { PLAQUETTES } from './storyText.js';
+import { ringCut } from './patches.js';
 
 const SP = 44;                                  // dot spacing inside a patch
 // Fewer patches draw larger: one patch (with its caps) fills about 70% of the height above the legend strip.
@@ -141,11 +142,12 @@ export function buildPhysical(o) {
     const xl = el('line', { x1: x0, y1: y0, x2: x8, y2: y0, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-dasharray': '2 4', 'stroke-opacity': 0.7 }, pg);
     el('title', {}, xl).textContent = 'Logical X = X0 X1 X2 (top row)';
     const rings = el('g', { display: 'none', 'pointer-events': 'none' }, pg);
+    const cut = ringCut(blk.corrections || []);
     b.data.forEach((qid, i) => {
       const [x, y] = P(i);
       QPOS[qid] = [x, y, 9];
       const c = (blk.corrections || [])[i] || 0;
-      if (c >= 0.01) {
+      if (c >= cut) {
         const s = Math.sqrt(Math.min(1, c));
         const ring = el('circle', { cx: x, cy: y, r: 12 + 9 * s, fill: 'none', stroke: 'var(--bad)', 'stroke-width': 2, 'stroke-opacity': Math.min(1, 0.25 + 0.75 * c / 0.25) }, rings);
         el('title', {}, ring).textContent = `q${i} corrected by the decoder in ${(100 * c).toFixed(1)}% of shots`;
@@ -313,7 +315,7 @@ export function buildPhysical(o) {
     add(marks.some((m) => m.type === 'inject'), 'burst', 'red burst: injected error');
     add(lit(d), 'dataM', 'grey: measured');
     add(lit(d), 'dashed', 'dashed: not readable in this basis');
-    add(lit(d) && (row.blocks || []).some((b) => (b.corrections || []).some((c) => c >= 0.01)), 'fix', 'red ring: corrected by the decoder');
+    add(lit(d) && (row.blocks || []).some((b) => (b.corrections || []).some((c) => c >= ringCut(b.corrections))), 'fix', 'red ring: corrected by the decoder');
     add(dRead >= 0 && d >= dRead, 'logic', 'gold line: read as the logical value');
     return items;
   }

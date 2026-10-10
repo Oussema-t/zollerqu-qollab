@@ -29,7 +29,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .tabs [role="tab"][aria-selected="true"] { background: var(--card); border-color: var(--fg); font-weight: 600; }
 .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
 @media (min-width: 800px) { .grid { grid-template-columns: 1.2fr 1fr; } }
-.patches { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.patches { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; align-content: flex-start; }
 .patches svg { max-width: 100%; height: auto; }
 .patches > p, .patches > details { flex: 1 0 100%; }
 .patches line[tabindex]:is(:hover, :focus) { stroke: var(--focus); stroke-width: 7; }

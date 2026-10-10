@@ -39,6 +39,12 @@ function el(tag, attrs = {}, parent) {
   return e;
 }
 
+// A qubit is ringed only when its correction rate is at least 5% and 3x the median of the nine rates of its patch.
+export function ringCut(corr) {
+  const sorted = Array.from({ length: 9 }, (_, i) => corr[i] || 0).sort((a, b) => a - b);
+  return Math.max(0.05, 3 * sorted[4]);
+}
+
 function pct(x) { return `${(100 * x).toFixed(1)}%`; }
 
 // Rate or note drawn on a face; a halo keeps it readable on a fully lit face, and it never steals the hover.
@@ -106,11 +112,12 @@ export function renderPatches(root, lesson, rows, settings) {
     el('title', {}, zl).textContent = 'Logical Z = Z0 Z3 Z6 (left column)';
     const xl = el('line', { x1: 0, y1: 0, x2: 2 * S, y2: 0, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-dasharray': '2 4', tabindex: 0, role: 'img', 'aria-label': 'Logical X = X0 X1 X2 (top row)' }, g);
     el('title', {}, xl).textContent = 'Logical X = X0 X1 X2 (top row)';
-    // data qubits, with a red ring where the decoder applied a correction
+    // data qubits, with a red ring where the decoder corrected far more often than on the typical qubit
+    const cut = ringCut(corr);
     for (let i = 0; i < 9; i++) {
       const [x, y] = pos(i);
       const c = corr[i] || 0;
-      if (c >= 0.01) {
+      if (c >= cut) {
         const ring = el('circle', {
           cx: x, cy: y, r: 14, fill: 'none', stroke: 'var(--bad)', 'stroke-width': 3,
           'stroke-opacity': Math.min(1, 0.25 + 0.75 * c / 0.25),
