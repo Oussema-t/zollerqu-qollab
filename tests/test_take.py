@@ -13,7 +13,7 @@ DATA = json.loads((ROOT / "data" / "champaign.json").read_text(encoding="utf-8")
 
 
 def test_take_shape():
-    assert TAKE["source"] == "local-aer" and TAKE["params"] == {"m": 10}
+    assert TAKE["source"] == "local-aer" and TAKE["params"] == {"m": 12}
     assert len(TAKE["sweep_counts"]) == sum(len(s["js"]) for s in TAKE["plan"])
     assert TAKE["dh"]["seed"] == 7 and TAKE["dh"]["rounds"]
 
@@ -37,7 +37,7 @@ def test_dh_one_shot_per_round():
     assert TAKE["dh"]["dh_shots"] == 1
     res = TAKE["dh"]["result"]
     assert res["oracle_calls"] == 1 + res["grover_iterations"] + len(TAKE["dh"]["rounds"])
-    assert res["N"] == 210
+    assert res["N"] == 495
 
 
 def test_scaling_study():

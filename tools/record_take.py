@@ -17,7 +17,7 @@ from qopt.cost import cost_table
 from qopt.search import feasible_count, find_min
 
 OUT = Path("data/recorded_local.json")
-PARAMS = {"m": 10}
+PARAMS = {"m": 12}
 DH_SEED = 7
 DH_SHOTS = 1
 STUDY_SEEDS = 20

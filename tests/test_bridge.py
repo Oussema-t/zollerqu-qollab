@@ -97,7 +97,7 @@ def test_export_take_round_trips():
 
 def test_load_recorded_parses():
     take = json.loads(bridge.load_recorded())
-    assert take["source"] == "local-aer" and take["params"] == {"m": 10}
+    assert take["source"] == "local-aer" and take["params"] == {"m": 12}
 
 
 def test_load_recorded_returns_given_text_unchanged():
