@@ -1,0 +1,69 @@
+<div class="app" id="app">
+  <header class="hdr">
+    <h1>Store placement by quantum minimum finding</h1>
+    <p class="sub">Pick k of the candidate sites in Champaign County, Illinois, and let Grover search with a tightening threshold (Durr-Hoyer) find the cheapest placement among all 2<sup>m</sup> bitstrings.</p>
+    <p class="banner" id="banner" aria-live="polite"></p>
+    <p class="credit">Population: US Census Bureau TIGERweb, 2020 block groups. Travel times: OSRM demo server, map data (c) OpenStreetMap contributors.</p>
+  </header>
+
+  <section class="setup" aria-labelledby="setup-h">
+    <h2 id="setup-h">The placement problem</h2>
+    <fieldset id="controls">
+      <legend class="sr-only">Cost model parameters</legend>
+      <div class="row">
+        <label>Stores to open, k <span><input id="k" type="range" min="2" max="5" step="1" value="4"> <output for="k" id="k-out">4</output></span></label>
+        <label>Crowding penalty per close pair, lam <span><input id="lam" type="range" min="0" max="40" step="1" value="10"> <output for="lam" id="lam-out">10</output></span></label>
+        <label>Crowding distance, tau (minutes) <span><input id="tau" type="range" min="4" max="14" step="1" value="10"> <output for="tau" id="tau-out">10</output></span></label>
+        <label>People per staff team, capacity <span><input id="c" type="range" min="5000" max="30000" step="1000" value="15000"> <output for="c" id="c-out">15000</output></span></label>
+        <label>Warehouse weight <span><input id="wh_weight" type="range" min="0" max="1" step="0.05" value="0.1"> <output for="wh_weight" id="wh_weight-out">0.1</output></span></label>
+        <label>Staff cost per team <span><input id="staff_cost" type="range" min="1" max="5" step="0.5" value="3"> <output for="staff_cost" id="staff_cost-out">3</output></span></label>
+        <label>Candidate sites, m
+          <select id="m"><option value="10" selected>10 (N = 1024)</option><option value="12">12 (N = 4096, slow)</option></select>
+        </label>
+      </div>
+    </fieldset>
+    <div class="row">
+      <label>Seed for the minimum-finding run <input id="seed" type="number" min="0" max="999999" step="1" value="7"></label>
+      <button id="run" class="primary">Run quantum search</button>
+      <button id="load-recorded">Load recorded take</button>
+      <button id="export" hidden>Export this run</button>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+  </section>
+
+  <section class="panel" aria-labelledby="map-h">
+    <h2 id="map-h">Map and classical answers</h2>
+    <div class="grid">
+      <figure class="map">
+        <svg id="map"></svg>
+        <figcaption>Circles: census block groups, area by population, coloured by the open site that serves them. Squares: candidate sites (number = bit of the placement; grey = beyond m). Triangles: warehouses (filled = the one charged for this placement). <span id="map-what"></span></figcaption>
+      </figure>
+      <div>
+        <table class="classical" id="classical"></table>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="q-h">
+    <h2 id="q-h">Quantum search</h2>
+    <div class="cards" id="cards"></div>
+    <div class="charts">
+      <figure class="chart">
+        <figcaption>Theory match: Grover success probability against sin<sup>2</sup>((2j+1)&theta;), sin &theta; = &radic;(M/N). Lines: theory; dots: measured, 1000 shots each.</figcaption>
+        <svg id="sweep" role="img" aria-label="No sweep yet"></svg>
+      </figure>
+      <div class="dh">
+        <figure class="chart">
+          <figcaption>Minimum finding: threshold per round</figcaption>
+          <svg id="traj" role="img" aria-label="No minimum-finding run yet"></svg>
+        </figure>
+        <div class="card counters" id="dh-counters" data-done="false"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>The oracle here is a lookup table compiled from the classical cost table (a reversible arithmetic circuit does not fit 29 qubits); the theory and the counters count oracle calls, which is what the quadratic speedup is about.</p>
+    <p>This effort is supported by Qollab &amp; IonQ.</p>
+  </footer>
+</div>
