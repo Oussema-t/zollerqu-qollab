@@ -1,0 +1,8 @@
+[   72.2 s] notebook cells loaded in large mode
+[  768.0 s] Task 04 shards finished: [task04-shard0] Task 04 shard 0 of 7 finished (31 computed, 0 reused); [task04-shard1] Task 04 shard 1 of 7 finished (31 computed, 0 reused); [task04-shard2] Task 04 shard 2 of 7 finished (31 computed, 0 reused); [task04-shard3] Task 04 shard 3 of 7 finished (31 computed, 0 reused); [task04-shard4] Task 04 shard 4 of 7 finished (31 computed, 0 reused); [task04-shard5] Task 04 shard 5 of 7 finished (31 computed, 0 reused); [task04-shard6] Task 04 shard 6 of 7 finished (30 computed, 0 reused)
+(7, 216)
+[  816.0 s] Task 04 final run done (216 reused, 0 computed, failures 0)
+[ 1116.8 s] varQITE calibration done
+[ 2294.8 s] varQITE shards finished: [task04b-shard0] varQITE shard 0 of 7 finished (14 trainings, 0 failures); [task04b-shard1] varQITE shard 1 of 7 finished (14 trainings, 0 failures); [task04b-shard2] varQITE shard 2 of 7 finished (14 trainings, 0 failures); [task04b-shard3] varQITE shard 3 of 7 finished (14 trainings, 0 failures); [task04b-shard4] varQITE shard 4 of 7 finished (14 trainings, 0 failures); [task04b-shard5] varQITE shard 5 of 7 finished (13 trainings, 0 failures); [task04b-shard6] varQITE shard 6 of 7 finished (13 trainings, 0 failures)
+(7, 106)
+[ 2297.3 s] Task 04b final run done (96 runs, failures 0)

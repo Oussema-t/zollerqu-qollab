@@ -1,0 +1,146 @@
+TASK 04 RESULT: local noiseless QAOA benchmark (mode 'large'): 216 instances, 1416 QAOA groups, 2928 QAOA runs, 254015 objective evaluations, 1080 classical records
+  measured wall-clock: 46 s in this run (0 instances computed, 216 loaded from the checkpoint results/task04_checkpoint_large.json.gz); calibration 37 s
+  objective: Task-04-local instances with lambda = 10 (2 equal devices), 3.98 (CPU + GPU (GPU 4x)); mu = 0 -> the priority penalty is INACTIVE, so case 9 equals case 8 here
+  LR-QAOA angles, chosen once per scenario on 4 separate calibration meshes (2 main seed 101, 2 main seed 102, 6 three sources seed 101, 6 three sources seed 102; layers [1, 2]):
+    2 equal devices: by mean energy (delta_gamma, delta_beta) = (0.260, 0.200); by success probability (1.780, 1.450); paper default (0.6, 0.3)
+    CPU + GPU (GPU 4x): by mean energy (delta_gamma, delta_beta) = (0.960, 0.550); by success probability (1.180, 0.400); paper default (0.6, 0.3)
+  SPSA and simulated annealing settings, chosen on the same calibration meshes: equal: SPSA perturbation 0.02, first step 0.01; annealing start temperature 1.0 x energy spread, end/start 0.01; cpu_gpu: SPSA perturbation 0.1, first step 0.03; annealing start temperature 1.0 x energy spread, end/start 0.01
+  Qiskit circuit versus numpy simulator:
+    2 equal devices, case 2 main, 12 qubits, p = 2: max probability difference 3.9e-18; rzz gates 132 (expected 132, 66 per layer), depth 25; mean cost 0.709 vs uniform 1.476 vs wrong mixer sign 3.206
+    CPU + GPU (GPU 4x), case 2 main, 12 qubits, p = 2: max probability difference 1.5e-16; rzz gates 132 (expected 132, 66 per layer), depth 27; mean cost 0.436 vs uniform 2.321 vs wrong mixer sign 7.306
+  gate counts of the circuit: n = 12, p = 1: 66 rzz, depth 13; n = 12, p = 2: 132 rzz, depth 25; n = 16, p = 1: 120 rzz, depth 17; n = 16, p = 2: 240 rzz, depth 33; n = 20, p = 1: 190 rzz, depth 21; n = 20, p = 2: 380 rzz, depth 41; n = 24, p = 1: 276 rzz, depth 25; n = 24, p = 2: 552 rzz, depth 49
+  tests:
+    mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+    warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+    CVaR estimator: passed
+    count-key decoder (rightmost bit = region 0): passed
+    Qiskit circuit = numpy simulator (standard and three warm-start circuits): passed, max probability error 3.9e-18, 1.5e-16
+    sign convention: LR-QAOA mean cost below the uniform mean: 72/72 instance-layer pairs; mixer-sign flip makes it worse than uniform on the example instances
+    p = 0 control is uniform; exact and sampled values consistent: passed
+    exact optimum and degeneracy equal Task 03 (same lambda): 0 instances compared; the others use a different lambda and were re-enumerated
+    symmetry reduction keeps the optimum and is used only at alpha = 0.5: passed (48 reduced groups)
+    same evaluation budget for every optimiser: budget 200; evaluations used (min-max): COBYLA 19-200, Nelder-Mead 36-200, Powell 50-200, L-BFGS-B 21-200, SPSA 200-200
+    classical baselines use the same Ising objective: passed (1080 records)
+    reproducible with fixed seeds (optimiser run, annealing run): passed (2 main, equal)
+    unit tests added after mutation testing (LR schedule, metrics, outcome model, SPSA, masks, scaled energies, relaxation, annealing / local search descent, spectral threshold, piece count, noise formula): passed (2 example instances)
+    no missing or non-finite results: passed (2928 runs)
+  QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    scenario method                    p   P(opt) P(<=1.05) x unif. x share  mean r P(bal.) hit 1.05 noise est.     rand.starts evals below unif.
+    ('x share' = ratio to the classical sampler that puts each region on device B with probability alpha, exact per-shot value)
+    equal    uniform control           0   0.0005    0.0005     1.0     1.0  0.8687   0.251    0.386     0.0005               -     0        0/6
+    equal    WS relax. A: start only   0   0.0005    0.0005     1.0     1.0  0.8687   0.251    0.386     0.0005               -     0        6/6
+    equal    WS rounded A: start only  0   0.0159    0.0159    32.5    32.5  0.8994   0.301    0.542     0.0159               -     0        3/6
+    equal    WS rounded B: start only  0   0.0159    0.0159    32.5    32.5  0.8994   0.301    0.542     0.0159               -     0        3/6
+    equal    LR-QAOA                   1   0.0012    0.0012     2.5     2.5  0.9421   0.522    0.704     0.0010               -     0        0/6
+    equal    LR-QAOA                   2   0.0014    0.0014     2.9     2.9  0.9469   0.550    0.756     0.0010               -     0        0/6
+    equal    LR (success-cal.)         1   0.0003    0.0003     0.6     0.6  0.8615   0.058    0.246     0.0003               -     0        6/6
+    equal    LR (success-cal.)         2   0.0061    0.0061    12.5    12.5  0.8179   0.192    0.656     0.0034               -     0        2/6
+    equal    LR (0.6/0.3)              1   0.0031    0.0031     6.3     6.3  0.8898   0.337    0.954     0.0024               -     0        0/6
+    equal    LR (0.6/0.3)              2   0.0037    0.0037     7.6     7.6  0.9369   0.484    0.975     0.0022               -     0        0/6
+    equal    QAOA COBYLA               1   0.0013    0.0013     2.7     2.7  0.9438   0.544    0.738     0.0011  0.0013+-0.0002    32        0/6
+    equal    QAOA COBYLA               2   0.0025    0.0025     5.1     5.1  0.9543   0.688    0.915     0.0015  0.0022+-0.0013   200        0/6
+    equal    QAOA Nelder-Mead          1   0.0013    0.0013     2.7     2.7  0.9438   0.544    0.738     0.0011  0.0013+-0.0002    44        0/6
+    equal    QAOA Nelder-Mead          2   0.0026    0.0026     5.2     5.2  0.9543   0.697    0.922     0.0016  0.0019+-0.0007   157        0/6
+    equal    QAOA Powell               1   0.0013    0.0013     2.7     2.7  0.9438   0.544    0.738     0.0011  0.0011+-0.0006   109        0/6
+    equal    QAOA Powell               2   0.0026    0.0026     5.3     5.3  0.9543   0.696    0.922     0.0016  0.0008+-0.0006   200        0/6
+    equal    QAOA L-BFGS-B             1   0.0013    0.0013     2.7     2.7  0.9438   0.544    0.738     0.0011  0.0013+-0.0002    23        0/6
+    equal    QAOA L-BFGS-B             2   0.0026    0.0026     5.2     5.2  0.9543   0.697    0.922     0.0016  0.0023+-0.0021    92        0/6
+    equal    QAOA SPSA (shots)         1   0.0013    0.0013     2.8     2.8  0.9437   0.546    0.740     0.0011  0.0013+-0.0006   200        0/6
+    equal    QAOA SPSA (shots)         2   0.0018    0.0018     3.6     3.6  0.9499   0.604    0.826     0.0011  0.0015+-0.0009   200        0/6
+    equal    CVaR COBYLA               1   0.0018    0.0018     3.6     3.6  0.9345   0.561    0.816     0.0014  0.0035+-0.0050    24        0/6
+    equal    CVaR COBYLA               2   0.0020    0.0020     4.1     4.1  0.9443   0.597    0.856     0.0013  0.0044+-0.0045    31        0/6
+    equal    CVaR SPSA                 1   0.0019    0.0019     3.8     3.8  0.9337   0.561    0.840     0.0015  0.0028+-0.0053   200        0/6
+    equal    CVaR SPSA                 2   0.0024    0.0024     4.8     4.8  0.9422   0.613    0.903     0.0014  0.0049+-0.0059   200        0/6
+    equal    WS relax. A               1   0.0013    0.0013     2.7     2.7  0.9438   0.544    0.738     0.0011  0.0013+-0.0002    32        0/6
+    equal    WS relax. A               2   0.0025    0.0025     5.1     5.1  0.9543   0.687    0.915     0.0015  0.0022+-0.0013   200        0/6
+    equal    WS rounded A              1   0.0307    0.0307    62.8    62.8  0.9545   0.572    0.613     0.0222  0.0201+-0.0239    37        3/6
+    equal    WS rounded A              2   0.0476    0.0476    97.6    97.6  0.9648   0.713    0.697     0.0248  0.0402+-0.0410   200        1/6
+    equal    WS rounded B              1   0.5000    0.5000  1024.0  1024.0  0.9915   0.833    0.500     0.3593  0.2306+-0.4115    19        3/6
+    equal    WS rounded B              2   0.5000    0.5000  1024.0  1024.0  0.9915   0.833    0.500     0.2582  0.3388+-0.4677    27        3/6
+    equal    sym-reduced               1   0.0014    0.0014     2.9     2.9  0.9436   0.542    0.746     0.0012  0.0011+-0.0005    32        0/6
+    equal    sym-reduced               2   0.0026    0.0026     5.4     5.4  0.9541   0.683    0.908     0.0017  0.0018+-0.0009   200        0/6
+    cpu_gpu  uniform control           0   0.0002    0.0004     1.0     0.1  0.7808   0.049    0.295     0.0004               -     0        0/6
+    cpu_gpu  WS relax. A: start only   0   0.0032    0.0038    10.3     1.0  0.9548   0.307    0.630     0.0038               -     0        0/6
+    cpu_gpu  WS rounded A: start only  0   0.0264    0.0299    81.8     8.0  0.9009   0.187    0.854     0.0299               -     0        1/6
+    cpu_gpu  WS rounded B: start only  0   0.0000    0.0000     0.1     0.0  0.6395   0.004    0.023     0.0000               -     0        6/6
+    cpu_gpu  LR-QAOA                   1   0.0064    0.0082    22.3     2.2  0.9587   0.361    0.981     0.0060               -     0        0/6
+    cpu_gpu  LR-QAOA                   2   0.0050    0.0073    20.0     1.9  0.9670   0.415    0.993     0.0040               -     0        0/6
+    cpu_gpu  LR (success-cal.)         1   0.0050    0.0066    18.2     1.8  0.9387   0.376    0.984     0.0049               -     0        0/6
+    cpu_gpu  LR (success-cal.)         2   0.0069    0.0093    25.3     2.5  0.9664   0.464    0.997     0.0050               -     0        0/6
+    cpu_gpu  LR (0.6/0.3)              1   0.0013    0.0018     4.9     0.5  0.9187   0.183    0.802     0.0014               -     0        0/6
+    cpu_gpu  LR (0.6/0.3)              2   0.0016    0.0023     6.2     0.6  0.9284   0.220    0.870     0.0014               -     0        0/6
+    cpu_gpu  QAOA COBYLA               1   0.0050    0.0068    18.6     1.8  0.9603   0.401    0.981     0.0050  0.0068+-0.0046    32        0/6
+    cpu_gpu  QAOA COBYLA               2   0.0077    0.0107    29.3     2.9  0.9705   0.434    0.998     0.0057  0.0353+-0.0689   200        0/6
+    cpu_gpu  QAOA Nelder-Mead          1   0.0050    0.0068    18.6     1.8  0.9603   0.401    0.981     0.0050  0.0068+-0.0046    51        0/6
+    cpu_gpu  QAOA Nelder-Mead          2   0.0079    0.0109    29.8     2.9  0.9705   0.433    0.998     0.0058  0.0215+-0.0535   181        0/6
+    cpu_gpu  QAOA Powell               1   0.0050    0.0068    18.6     1.8  0.9603   0.401    0.981     0.0050  0.0068+-0.0046    69        0/6
+    cpu_gpu  QAOA Powell               2   0.0079    0.0109    29.8     2.9  0.9705   0.433    0.998     0.0058  0.0295+-0.0639   200        0/6
+    cpu_gpu  QAOA L-BFGS-B             1   0.0050    0.0068    18.6     1.8  0.9603   0.401    0.981     0.0050  0.0068+-0.0046    25        0/6
+    cpu_gpu  QAOA L-BFGS-B             2   0.0079    0.0109    29.8     2.9  0.9705   0.433    0.998     0.0058  0.0310+-0.0655    76        0/6
+    cpu_gpu  QAOA SPSA (shots)         1   0.0055    0.0072    19.8     1.9  0.9602   0.393    0.981     0.0053  0.0089+-0.0156   200        0/6
+    cpu_gpu  QAOA SPSA (shots)         2   0.0069    0.0095    26.0     2.5  0.9697   0.418    0.997     0.0051  0.0137+-0.0287   200        0/6
+    cpu_gpu  CVaR COBYLA               1   0.0056    0.0072    19.7     1.9  0.9562   0.323    0.829     0.0053  0.0146+-0.0315    24        1/6
+    cpu_gpu  CVaR COBYLA               2   0.0054    0.0076    20.9     2.0  0.9665   0.422    0.994     0.0041  0.0182+-0.0361    31        0/6
+    cpu_gpu  CVaR SPSA                 1   0.0192    0.0210    57.4     5.6  0.9546   0.313    0.701     0.0152  0.0119+-0.0236   200        2/6
+    cpu_gpu  CVaR SPSA                 2   0.0122    0.0150    41.0     4.0  0.9570   0.310    0.886     0.0079  0.0172+-0.0407   200        0/6
+    cpu_gpu  WS relax. A               1   0.0104    0.0117    32.0     3.1  0.9733   0.451    0.877     0.0085  0.0092+-0.0172   156        0/6
+    cpu_gpu  WS relax. A               2   0.0164    0.0182    49.7     4.8  0.9772   0.450    0.956     0.0096  0.0119+-0.0215   200        0/6
+    cpu_gpu  WS rounded A              1   0.0995    0.1158   316.2    30.8  0.9686   0.518    0.963     0.0833  0.1158+-0.0530    32        0/6
+    cpu_gpu  WS rounded A              2   0.1572    0.1818   496.6    48.4  0.9785   0.608    0.982     0.0940  0.1652+-0.0840   200        0/6
+    cpu_gpu  WS rounded B              1   0.8333    0.8333  2275.6   221.7  0.9997   1.000    0.833     0.5987  0.8333+-0.3727    19        1/6
+    cpu_gpu  WS rounded B              2   0.8333    0.8333  2275.6   221.7  0.9997   1.000    0.833     0.4302  0.5562+-0.4961    27        1/6
+    cpu_gpu  ablation: fields only     1   0.0023    0.0036     9.8     1.0  0.9631   0.279    0.801     0.0027               -     0        0/6
+    cpu_gpu  ablation: fields only     2   0.0027    0.0039    10.5     1.0  0.9638   0.233    0.734     0.0022               -     0        0/6
+    cpu_gpu  ablation: couplings only  1   0.0004    0.0006     1.6     0.2  0.7810   0.055    0.433     0.0005               -     0        0/6
+    cpu_gpu  ablation: couplings only  2   0.0001    0.0001     0.4     0.0  0.7999   0.013    0.134     0.0003               -     0        6/6
+  depth stress test (LR-QAOA, n = 12), P(cost <= 1.05 x optimum) per shot noiseless -> with the crude noise estimate (e = 0.005):
+    equal, n = 12: uniform 0.0005; p=1: 0.0012 -> 0.0010, p=2: 0.0014 -> 0.0010, p=3: 0.0017 -> 0.0009, p=4: 0.0021 -> 0.0009, p=5: 0.0025 -> 0.0009
+    equal, n = 16: uniform 0.0001; p=1: 0.0002 -> 0.0001, p=2: 0.0002 -> 0.0001, p=3: 0.0003 -> 0.0001, p=4: 0.0003 -> 0.0001, p=5: 0.0003 -> 0.0001
+    equal, n = 20: uniform 0.0000; p=1: 0.0000 -> 0.0000, p=2: 0.0000 -> 0.0000, p=3: 0.0000 -> 0.0000, p=4: 0.0000 -> 0.0000, p=5: 0.0000 -> 0.0000
+    cpu_gpu, n = 12: uniform 0.0004; p=1: 0.0082 -> 0.0060, p=2: 0.0073 -> 0.0040, p=3: 0.0067 -> 0.0027, p=4: 0.0067 -> 0.0021, p=5: 0.0072 -> 0.0017
+    cpu_gpu, n = 16: uniform 0.0000; p=1: 0.0010 -> 0.0006, p=2: 0.0007 -> 0.0002, p=3: 0.0009 -> 0.0002, p=4: 0.0009 -> 0.0001, p=5: 0.0009 -> 0.0001
+    cpu_gpu, n = 20: uniform 0.0000; p=1: 0.0002 -> 0.0001, p=2: 0.0001 -> 0.0000, p=3: 0.0001 -> 0.0000, p=4: 0.0001 -> 0.0000, p=5: 0.0001 -> 0.0000
+  complexity ladder and other cases, P(cost <= 1.05 x optimum) per shot at p = 2, n = 12 (classical columns: share of 100 repeats that found such a split with 1000 candidates):
+    equal: case                   uniform      LR-QAOA  QAOA COBYLA  CVaR COBYLA WS rounded A  annealing local srch spectral
+           2 main                  0.0005       0.0013       0.0023       0.0021       0.0005       0.63       0.83     0.00
+           9 priority              0.0005       0.0015       0.0027       0.0019       0.0948       0.67       0.90     1.00
+    cpu_gpu: case                   uniform      LR-QAOA  QAOA COBYLA  CVaR COBYLA WS rounded A  annealing local srch spectral
+             2 main                  0.0005       0.0074       0.0093       0.0072       0.1995       0.95       1.00     1.00
+             9 priority              0.0002       0.0072       0.0121       0.0081       0.1642       0.69       0.74     0.67
+  same budget of 1000 candidate splits, probability that they contain (an optimum | a split with cost <= 1.05 x optimum), mean over cases:
+    equal: uniform random (0.39 | 0.39); random, target share (0.39 | 0.39); local search (0.86 | 0.86); simulated annealing (0.65 | 0.65); spectral bisection (0.50 | 0.50); LR-QAOA p=1 (0.70 | 0.70); LR-QAOA p=2 (0.76 | 0.76); QAOA COBYLA p=2 (0.92 | 0.92); CVaR COBYLA p=2 (0.86 | 0.86); WS rounded A p=2 (0.70 | 0.70); LR-QAOA p=2 + noise est. (0.62 | 0.62)
+    cpu_gpu: uniform random (0.22 | 0.30); random, target share (0.43 | 0.63); local search (0.87 | 0.87); simulated annealing (0.80 | 0.82); spectral bisection (0.83 | 0.83); LR-QAOA p=1 (0.92 | 0.98); LR-QAOA p=2 (0.96 | 0.99); QAOA COBYLA p=2 (0.97 | 1.00); CVaR COBYLA p=2 (0.96 | 0.99); WS rounded A p=2 (0.98 | 0.98); LR-QAOA p=2 + noise est. (0.87 | 0.95)
+  MODELLED outcome of each method's best split (assumptions, no measurement), difference to the split with the best modelled runtime:
+    equal (best modelled runtime: 155.7 h, 99.6 kWh on average): Ising optimum (exact) +2.2 % time, +0.8 % kWh; uniform random +2.2 % time, +0.8 % kWh; local search +2.2 % time, +0.8 % kWh; simulated annealing +2.2 % time, +0.8 % kWh; spectral bisection +6.3 % time, +2.3 % kWh; LR-QAOA p=2: lowest-cost shot +2.9 % time, +1.0 % kWh; LR-QAOA p=2: runtime-scored shot +0.2 % time; QAOA COBYLA p=2: lowest-cost shot +2.2 % time, +0.8 % kWh
+    cpu_gpu (best modelled runtime: 63.0 h, 48.5 kWh on average): Ising optimum (exact) +7.1 % time, +2.6 % kWh; uniform random +7.1 % time, +2.6 % kWh; local search +7.1 % time, +2.6 % kWh; simulated annealing +7.1 % time, +2.6 % kWh; spectral bisection +9.2 % time, +3.7 % kWh; LR-QAOA p=2: lowest-cost shot +7.1 % time, +2.6 % kWh; LR-QAOA p=2: runtime-scored shot +0.0 % time; QAOA COBYLA p=2: lowest-cost shot +7.1 % time, +2.6 % kWh
+  interpretation (computed from these results):
+    equal: vs uniform guessing: LR-QAOA p = 2 raises P(cost <= 1.05 x optimum) per shot from 0.0005 to 0.0014 (2.9x); below uniform on 0 of 6 cases. The fairer random reference is the sampler with the target share (0.0005 per shot): LR-QAOA is 2.9x that, QAOA COBYLA 5.1x.
+    equal: reliability: QAOA COBYLA (the standard choice, fixed in advance) gives an exact optimum with probability 0.0025 per shot and a split within 5 % with 0.0025; the best of 8 standard variants, picked AFTER seeing the results, is QAOA Powell with 0.0026.
+    equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.65, local search 0.86 (+-0.03); LR-QAOA 0.76 -> BEHIND the best classical heuristic; QAOA COBYLA 0.92 -> ahead of it.
+    equal: with the crude noise estimate P(cost <= 1.05 x optimum) per shot for LR-QAOA p = 2 drops from 0.0014 to 0.0010.
+    cpu_gpu: vs uniform guessing: LR-QAOA p = 2 raises P(cost <= 1.05 x optimum) per shot from 0.0004 to 0.0073 (20.0x); below uniform on 0 of 6 cases. The fairer random reference is the sampler with the target share (0.0038 per shot): LR-QAOA is 1.9x that, QAOA COBYLA 2.9x.
+    cpu_gpu: ablation (LR-QAOA p = 2, same angles): cost layer with only the single-region terms 0.0039, only the pair terms 0.0001, both 0.0073 per shot -> the single-region terms alone only bias each region towards device B (what the target-share sampler does classically); the pair terms add the rest.
+    cpu_gpu: reliability: QAOA COBYLA (the standard choice, fixed in advance) gives an exact optimum with probability 0.0077 per shot and a split within 5 % with 0.0107; the best of 8 standard variants, picked AFTER seeing the results, is CVaR SPSA with 0.0150.
+    cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.82, local search 0.87 (+-0.03); LR-QAOA 0.99 -> ahead of the best classical heuristic; QAOA COBYLA 1.00 -> ahead of it.
+    cpu_gpu: with the crude noise estimate P(cost <= 1.05 x optimum) per shot for LR-QAOA p = 2 drops from 0.0073 to 0.0040.
+    Budget caveat: the 1000-candidate comparison counts only the final shots. The optimised variants also spent up to 200 objective evaluations to find their angles (on hardware: that many circuits of 1000 shots each); LR-QAOA uses a fixed schedule and spends none.
+    A classical candidate (one energy evaluation) is also far cheaper than a quantum shot, so equal candidate counts favour QAOA.
+    Scale caveat: at n = 12 there are only 4096 splits, so checking ALL of them costs about 4 such budgets and is exact.
+    The rounded warm-start variants start from the classical spectral split: their success is partly classical (compare with 'spectral bisection' and their 'start only' rows). Mixer B at its recovery angles returns the spectral split itself with certainty (a stationary point that COBYLA does not leave), so its row is the spectral split, not a quantum result.
+    The relaxation warm start is degenerate here: its optimum is c_i = alpha for EVERY region (largest spread 1.2e-07), because equal values make both the cut and the balance term zero. At alpha = 0.5 it is identical to standard QAOA; at alpha = 0.8 its start state is the target-share sampler. It carries no information about the split.
+    'LR (success-cal.)' transfers badly: for equal devices its beta lies close to pi/2, which in that symmetric case acts like a small NEGATIVE beta (the landscape repeats every pi/2); the schedule chosen by success probability on the calibration meshes does not generalise.
+    Every result above is a noiseless simulation or a model. Nothing here shows quantum advantage, a speed-up or an energy saving.
+  skipped / reduced configurations:
+    168 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    12 instance(s): reduced QAOA sweep (n = 20 > 16): LR-QAOA and COBYLA from the LR start only
+    12 instance(s): QAOA statevector skipped (n = 24 > 20); classical baselines and gate/noise estimates only
+  failures: 0 (none)
+  references (verified against the primary sources before coding):
+    LR-QAOA: J. A. Montanez-Barrera, K. Michielsen, 'Toward a linear-ramp QAOA protocol: evidence of a scaling advantage in solving some combinatorial optimization problems', npj Quantum Information 11, 131 (2025), doi:10.1038/s41534-025-01082-1, arXiv:2405.09169
+    CVaR: P. Kl. Barkoutsos, G. Nannicini, A. Robert, I. Tavernelli, S. Woerner, 'Improving Variational Quantum Optimization using CVaR', Quantum 4, 256 (2020), doi:10.22331/q-2020-04-20-256, arXiv:1907.04769
+    warm-start QAOA: D. J. Egger, J. Marecek, S. Woerner, 'Warm-starting quantum optimization', Quantum 5, 479 (2021), doi:10.22331/q-2021-06-17-479, arXiv:2009.10095
+    SPSA: J. C. Spall, 'Implementation of the simultaneous perturbation algorithm for stochastic optimization', IEEE Trans. Aerospace and Electronic Systems 34(3), 817-823 (1998), doi:10.1109/7.705889
+    Ising graph partitioning: A. Lucas, 'Ising formulations of many NP problems', Frontiers in Physics 2:5 (2014), doi:10.3389/fphy.2014.00005, arXiv:1302.5843
+    verification: citations and formulas were checked against the primary sources on 2026-10-10 before coding; our own choices (calibration by mean energy, epsilon = 0.05 for the continuous warm start, complement start for mixer B with fields, SPSA first-step size) are marked as ours in the code
+  files: results/task04_summary_large.json, results/task04_runs_large.csv, results/task04_checkpoint_large.json.gz (full run records incl. convergence histories)
+  plots: results/task04_optimum_probability_large.png, results/task04_convergence_large.png, results/task04_difficulty_heatmap_large.png, results/task04_quantum_vs_classical_large.png, results/task04_noise_estimate_large.png, results/task04_modelled_outcome_large.png
