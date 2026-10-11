@@ -41,23 +41,34 @@ def wait_showing(page, timeout):
     page.wait_for_selector("#tabs", state="visible", timeout=30_000)
 
 
+STEP_HOLD = 4   # seconds a step caption stays up before the next step may replace it
+
+
 def play_through(page, label, timeout_s):
-    """Press Play and follow the playhead step by step until the last step is reached."""
+    """Press Play and follow the playhead step by step until the last step is reached.
+    The playhead runs on its own; only the caption is held, STEP_HOLD s per step, so it may trail the playhead."""
     n = page.evaluate("window.__story.steps")
     assert n == len(LESSON3_STEPS), f"story has {n} steps, recorder knows {len(LESSON3_STEPS)}"
     caption(page, f"{label} level: {LESSON3_STEPS[page.evaluate('window.__story.pos.step')]}")   # moves it to the top
+    shown, shown_at = -1, 0.0
     page.get_by_role("button", name="Play").click()
-    shown = -1
     deadline = time.time() + timeout_s
     while time.time() < deadline:
         s = page.evaluate("window.__story.pos.step")
-        if s != shown:
-            shown = s
+        if s != shown and time.time() - shown_at >= STEP_HOLD:
+            shown, shown_at = s, time.time()
             caption(page, f"{label} level: {LESSON3_STEPS[s]}")
-        if s >= n - 1:
+        if shown >= n - 1:
+            time.sleep(max(0.0, STEP_HOLD - (time.time() - shown_at)))
             return
         time.sleep(0.25)
     raise TimeoutError(f"{label} level did not reach the last step within {timeout_s} s (at step {shown})")
+
+
+def card_numbers(page):
+    """The cards on the page as 'value label' strings, read at run time from #cards."""
+    lines = [l.strip() for l in page.inner_text("#cards").splitlines() if l.strip()]
+    return {lab: val for val, lab in zip(lines[0::2], lines[1::2])}
 
 
 def ffmpegs():
@@ -90,7 +101,12 @@ def record(page, a):
 
     caption(page, "Logical teleportation on a tiny surface code. Three logical qubits, each a 3x3 patch of the "
                   "rotated surface code, distance 3.")
-    time.sleep(4)
+    time.sleep(8)
+
+    # the lesson tabs only appear once there is data, so this one is spoken over the setup screen
+    caption(page, "Lesson 1: one logical qubit on nine physical qubits. Four X and four Z checks read from the "
+                  "final measurement; a lookup table corrects any single error.")
+    time.sleep(7)
 
     if a.live:
         caption(page, f"Submitting one job with all circuits at {a.shots} shots per circuit. "
@@ -106,9 +122,18 @@ def record(page, a):
         wait_showing(page, 60_000)
     time.sleep(3)
 
+    status = page.inner_text("#status").strip()
+    caption(page, f"Status line: \"{status}\"")
+    time.sleep(6)
+
+    page.click("#tab-2")
+    caption(page, "Lesson 2: a logical CNOT is nine physical CNOTs. It makes a logical Bell pair of patches A and B, "
+                  "and on trapped ions it needs no SWAP gates.")
+    time.sleep(7)
+
     caption(page, "27 physical qubits. Three patches: A carries the state, B and C share a logical Bell pair.")
     page.click("#tab-3")
-    time.sleep(4)
+    time.sleep(6)
 
     page.click("#story-open")
     page.wait_for_function("() => !!window.__story", timeout=30_000)
@@ -119,19 +144,35 @@ def record(page, a):
     play_through(page, "Physical", 120)
     time.sleep(3)
 
+    caption(page, "Physical level: the same timeline on the 3x3 patches. Gold arrows encode, arcs are the transversal "
+                  "CNOTs, the red burst is the injected error, grey fill is measurement with the check rates.")
+    time.sleep(8)
+
     page.keyboard.press("Escape")
     page.wait_for_function("() => !window.__story", timeout=10_000)
     caption(page, "Cards and charts: discarded, corrected, logical error after correction, and the same "
                   "experiment on bare qubits.")
     page.locator("#cards").evaluate("e => e.scrollIntoView({ behavior: 'smooth', block: 'center' })")
-    time.sleep(2)
+    time.sleep(8)
+
+    nums = list(card_numbers(page).items())
+    assert len(nums) >= 4, f"expected 4 cards, got {nums}"
+    (v1, _), (v2, _), (v3, _), (v4, _) = nums[:4]
+    caption(page, f"Lesson 3 on this take: {v1} discarded, {v2} corrected, {v3} logical error after correction, "
+                  f"{v4} on bare physical qubits.")
+    time.sleep(8)
+
+    page.click("#tab-4")
+    caption(page, "Lesson 4: the T gate is teleported in with a magic state, and we keep only the shots where "
+                  "patch A reads 0; the kept fraction should be about one half.")
+    time.sleep(7)
 
     caption(page, "Lesson 1 locates and corrects a single injected error; try it live on the page.")
     page.click("#tab-1")
-    time.sleep(4)
+    time.sleep(5)
 
     caption(page, "Team ZollerQu. This effort is supported by Qollab & IonQ.")
-    time.sleep(4)
+    time.sleep(6)
 
 
 def main():
