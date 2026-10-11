@@ -1,0 +1,146 @@
+{
+ "rule": "Pick the QAOA settings for the 29-qubit run from the large-mode n = 20 results only (never from the n = 29 instances).\n\nRule, per device scenario:\n  1. best fixed schedule: among every LR-QAOA schedule family and depth p = 1..5 tested at n = 20, the one with the highest\n     mean P(cost <= 1.05 x optimum) over the 6 instances (2 cases x 3 seeds); no training on the target instance;\n  2. trained angles: QAOA + COBYLA at the best trained depth at n = 20, transferred as the mean of its 6 optimised angle sets\n     (the angles concentrate across instances; the spread is saved below);\n  3. LR-QAOA p = 2 (energy-calibrated), the row used in the n <= 24 scaling table, for continuity.",
+ "source": "results_large_hpc/task04_runs_large.csv (n = 20, 2 cases x 3 seeds)",
+ "choice": {
+  "2 equal devices": {
+   "best_fixed": {
+    "variant": "LR-QAOA (paper default 0.6/0.3)",
+    "p": 5,
+    "p_near_n20": 0.00013874541595062376
+   },
+   "trained": {
+    "p": 2,
+    "p_near_n20": 1.9676683504299847e-05,
+    "angles": [
+     0.1564476765472673,
+     0.6080485294756829,
+     0.24036152460083357,
+     0.07693101533949077
+    ]
+   },
+   "continuity": {
+    "variant": "LR-QAOA",
+    "p": 2,
+    "p_near_n20": 1.2176113313210389e-05
+   },
+   "cobyla_angles_n20": {
+    "1": {
+     "mean": [
+      0.22108027301686328,
+      0.20552139236172015
+     ],
+     "std": [
+      0.02133720045203955,
+      0.008296068720210294
+     ],
+     "n_sets": 6
+    },
+    "2": {
+     "mean": [
+      0.1564476765472673,
+      0.6080485294756829,
+      0.24036152460083357,
+      0.07693101533949077
+     ],
+     "std": [
+      0.016566698054874655,
+      0.04724913638229475,
+      0.004359100730675606,
+      0.0035928523143851504
+     ],
+     "n_sets": 6
+    }
+   }
+  },
+  "CPU + GPU (GPU 4x)": {
+   "best_fixed": {
+    "variant": "LR-QAOA (success-calibrated)",
+    "p": 5,
+    "p_near_n20": 0.00034584105003868337
+   },
+   "trained": {
+    "p": 2,
+    "p_near_n20": 0.0002472940270384014,
+    "angles": [
+     0.5474780646584014,
+     1.5660966714546023,
+     0.5089035550410314,
+     0.2476626024049161
+    ]
+   },
+   "continuity": {
+    "variant": "LR-QAOA",
+    "p": 2,
+    "p_near_n20": 0.0001311818713450922
+   },
+   "cobyla_angles_n20": {
+    "1": {
+     "mean": [
+      0.8886702501747278,
+      0.5640701800792418
+     ],
+     "std": [
+      0.10114518070985937,
+      0.018827673718170113
+     ],
+     "n_sets": 6
+    },
+    "2": {
+     "mean": [
+      0.5474780646584014,
+      1.5660966714546023,
+      0.5089035550410314,
+      0.2476626024049161
+     ],
+     "std": [
+      0.07694184753812343,
+      0.15384471608658432,
+      0.026121736783450294,
+      0.009301400315689398
+     ],
+     "n_sets": 6
+    }
+   }
+  }
+ },
+ "n20_mean_p_near": {
+  "2 equal devices": {
+   "LR-QAOA p=1": 9.88300941381659e-06,
+   "LR-QAOA p=2": 1.2176113313210389e-05,
+   "LR-QAOA p=3": 1.5808642443393052e-05,
+   "LR-QAOA p=4": 1.8670878086232603e-05,
+   "LR-QAOA p=5": 1.9999771207784892e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=1": 1.4503415863387773e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=2": 2.7590275552062357e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=3": 6.556968612020194e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=4": 9.849880746916032e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=5": 0.00013874541595062376,
+   "LR-QAOA (success-calibrated) p=1": 1.2350127367328737e-06,
+   "LR-QAOA (success-calibrated) p=2": 1.894194091506021e-05,
+   "LR-QAOA (success-calibrated) p=3": 2.105778947942092e-05,
+   "LR-QAOA (success-calibrated) p=4": 1.413495092064756e-05,
+   "LR-QAOA (success-calibrated) p=5": 4.143129783225854e-05,
+   "QAOA + COBYLA p=1": 8.31539739899982e-06,
+   "QAOA + COBYLA p=2": 1.9676683504299847e-05
+  },
+  "CPU + GPU (GPU 4x)": {
+   "LR-QAOA p=1": 0.00017521533561598587,
+   "LR-QAOA p=2": 0.0001311818713450922,
+   "LR-QAOA p=3": 0.00014280058727762063,
+   "LR-QAOA p=4": 0.0001454163790175805,
+   "LR-QAOA p=5": 0.00014163889953423586,
+   "LR-QAOA (paper default 0.6/0.3) p=1": 1.536548391351536e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=2": 2.3069920123191414e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=3": 4.595234733065159e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=4": 8.471239231173031e-05,
+   "LR-QAOA (paper default 0.6/0.3) p=5": 0.00013018118462566683,
+   "LR-QAOA (success-calibrated) p=1": 0.0001473107341169598,
+   "LR-QAOA (success-calibrated) p=2": 0.000222123069788774,
+   "LR-QAOA (success-calibrated) p=3": 0.00027431847184529164,
+   "LR-QAOA (success-calibrated) p=4": 0.00030902341232730393,
+   "LR-QAOA (success-calibrated) p=5": 0.00034584105003868337,
+   "QAOA + COBYLA p=1": 0.00013330002375123483,
+   "QAOA + COBYLA p=2": 0.0002472940270384014
+  }
+ }
+}

@@ -2673,6 +2673,6 @@
   "objective_evaluations": 187303,
   "instances_computed": 0,
   "instances_from_checkpoint": 18,
-  "measured_wall_seconds": 22.034328540990828
+  "measured_wall_seconds": 32.589830124983564
  }
 }
