@@ -1,0 +1,71 @@
+{
+ "method": "Qiskit transpiler only: optimisation level 1, basis rzz / rz / rx / sx / x, SWAP routing on CouplingMap.from_heavy_hex, five seeds; all-to-all = the same basis without a coupling map (one rzz = one native ZZ on IonQ Forte)",
+ "rows": [
+  {
+   "circuit": "one dense QAOA layer, 12 qubits",
+   "qubits": 12,
+   "all_to_all_two_qubit_gates": 66,
+   "all_to_all_two_qubit_depth": 11,
+   "heavy_hex_qubits": 19,
+   "heavy_hex_distance": 3,
+   "heavy_hex_seeds": [
+    2026,
+    2027,
+    2028,
+    2029,
+    2030
+   ],
+   "heavy_hex_two_qubit_gates": {
+    "min": 210,
+    "median": 216.0,
+    "max": 222
+   },
+   "heavy_hex_two_qubit_depth_min": 70,
+   "ratio_median": 3.272727272727273
+  },
+  {
+   "circuit": "one dense QAOA layer, 29 qubits",
+   "qubits": 29,
+   "all_to_all_two_qubit_gates": 406,
+   "all_to_all_two_qubit_depth": 29,
+   "heavy_hex_qubits": 57,
+   "heavy_hex_distance": 5,
+   "heavy_hex_seeds": [
+    2026,
+    2027,
+    2028,
+    2029,
+    2030
+   ],
+   "heavy_hex_two_qubit_gates": {
+    "min": 1477,
+    "median": 1498.0,
+    "max": 1588
+   },
+   "heavy_hex_two_qubit_depth_min": 170,
+   "ratio_median": 3.689655172413793
+  },
+  {
+   "circuit": "varQITE ZY (the circuit run on the IonQ Forte 1 noise model), 12 qubits",
+   "qubits": 12,
+   "all_to_all_two_qubit_gates": 66,
+   "all_to_all_two_qubit_depth": 21,
+   "heavy_hex_qubits": 19,
+   "heavy_hex_distance": 3,
+   "heavy_hex_seeds": [
+    2026,
+    2027,
+    2028,
+    2029,
+    2030
+   ],
+   "heavy_hex_two_qubit_gates": {
+    "min": 234,
+    "median": 237.0,
+    "max": 255
+   },
+   "heavy_hex_two_qubit_depth_min": 103,
+   "ratio_median": 3.590909090909091
+  }
+ ]
+}

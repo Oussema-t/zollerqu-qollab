@@ -36,6 +36,8 @@ The report is [`report/main.pdf`](report/main.pdf) (6 pages). Figure 1 shows all
 | `scripts/hpc/` | `launch_29_qubits.sh` (create a Hetzner server, upload, start) and `watch_and_delete.sh` (pull the results, then delete the server); no secrets inside |
 | `docs/literature/` | Literature checks: structured reports with DOIs, sign conventions and quotes, plus numerical convention checks |
 | `scripts/hpc_driver.py` | Runs the notebook's Task 04 / 04b cells on a server in parallel shards, merges them and finishes |
+| `slides/` | The 2–3 minute video deck: `mesh_ZollerQu.pptx`, `mesh_ZollerQu.pdf`, `speaker_notes.md` (script, alt text, open placeholders) and `figures/`. Built by `make_figures.py` (every number read from the result files) and `make_slides.py` (needs `pip install python-pptx`) |
+| `scripts/heavy_hex_gate_counts.py` | Two-qubit gates on all-to-all connectivity against the same circuits routed on a heavy-hex layout, counted with the Qiskit transpiler only |
 | `docs/` | The task prompt and handoff used to build the notebook |
 
 ## Notebook tasks

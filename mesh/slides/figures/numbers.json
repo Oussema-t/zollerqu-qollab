@@ -1,0 +1,142 @@
+{
+ "numbers": {
+  "ionq_p_opt": 0.278,
+  "ionq_shots": 1000,
+  "ionq_optimal_shots": 278,
+  "ionq_standard_error": 0.01416742743055351,
+  "ionq_p_balanced": 0.572,
+  "ionq_most_frequent_is_optimum": true,
+  "ionq_distinct_splits": 367,
+  "ionq_shots_per_optimum": 3.597122302158273,
+  "ionq_date": "2026-10-11",
+  "noiseless_p_opt": 0.7501245422257501,
+  "crude_estimate_p_opt": 0.5388361246018893,
+  "aer_estimate_p_opt": 0.5492047164486868,
+  "noiseless_shots_per_optimum": 1.3331119616921556,
+  "random_p_opt": 0.00048828125,
+  "random_tries_per_optimum": 2048.0,
+  "gain_over_random": 569.344,
+  "zy_two_qubit_gates": 66,
+  "zy_training_circuits": 7581,
+  "annealing_median_evaluations": 1181.0,
+  "local_search_median_evaluations": 1111.0,
+  "annealing_hit_1000": 0.5,
+  "local_search_hit_1000": 0.51,
+  "n_splits": 4096,
+  "n_candidates": 104,
+  "cpu_gpu_random_p_opt": 0.000244140625,
+  "cpu_gpu_best_quantum": "CVaR-QAOA + SPSA, p = 2",
+  "cpu_gpu_best_quantum_p_opt": 0.005781363141601704,
+  "cpu_gpu_best_quantum_gates": 132,
+  "cpu_gpu_varqite_zy_p_opt": 4.018777515870255e-13,
+  "gates_12": {
+   "all_to_all": 66,
+   "heavy_hex": 216.0,
+   "ratio": 3.272727272727273
+  },
+  "gates_29": {
+   "all_to_all": 406,
+   "heavy_hex": 1498.0,
+   "ratio": 3.689655172413793
+  },
+  "gates_zy": {
+   "all_to_all": 66,
+   "heavy_hex": 237.0,
+   "ratio": 3.590909090909091
+  },
+  "q29": {
+   "equal": {
+    "qaoa": 0.007444560279611397,
+    "local": 0.049999999999999996,
+    "annealing": 0.10000000000000002,
+    "spectral": 0.5
+   },
+   "cpu_gpu": {
+    "qaoa": 0.00703447573706902,
+    "local": 0.4549999999999999,
+    "annealing": 0.4283333333333333,
+    "spectral": 1.0
+   },
+   "instances": 12
+  },
+  "triangles": 1670,
+  "gpu_share_of_optimum": 0.8125748502994012,
+  "target_share": 0.8,
+  "scaling_percent": {
+   "sizes": [
+    12,
+    16,
+    20,
+    29
+   ],
+   "series": {
+    "2 equal devices": {
+     "spectral bisection": [
+      50.0,
+      33.33333333333333,
+      50.0,
+      50.0
+     ],
+     "local search": [
+      86.16666666666667,
+      44.83333333333333,
+      17.833333333333336,
+      5.0
+     ],
+     "simulated annealing": [
+      65.0,
+      31.5,
+      15.833333333333336,
+      10.000000000000002
+     ],
+     "QAOA (noiseless)": [
+      91.52054579861262,
+      29.119600829701657,
+      1.9483345430770644,
+      0.7444560279611396
+     ]
+    },
+    "CPU + GPU (GPU 4x)": {
+     "spectral bisection": [
+      83.33333333333334,
+      100.0,
+      100.0,
+      100.0
+     ],
+     "local search": [
+      86.83333333333333,
+      96.16666666666666,
+      77.33333333333333,
+      45.49999999999999
+     ],
+     "simulated annealing": [
+      81.66666666666666,
+      48.49999999999999,
+      39.33333333333333,
+      42.83333333333333
+     ],
+     "QAOA (noiseless)": [
+      99.79151696631703,
+      66.96787162908686,
+      21.483103286675757,
+      0.7034475737069019
+     ]
+    }
+   }
+  },
+  "top_counts": [
+   146,
+   132
+  ]
+ },
+ "figure_sources": {
+  "fig_problem.png": "data/frozen_meshes/2_main_seed7.npz, data/frozen_regions.npz, qollab/selected_circuits.json (exact optimum for CPU + GPU)",
+  "fig_formula.png": "the Ising energy used in the notebook (Task 03) and in qollab/main.py",
+  "fig_circuit.png": "sketch of the QAOA circuit built by qollab/main.py (build_circuit)",
+  "fig_gates.png": "results/ionq_selection/heavy_hex_gate_counts.json (scripts/heavy_hex_gate_counts.py, transpiler only)",
+  "fig_ionq_result.png": "qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json (IonQ Forte 1 noise model on Qollab), qollab/selected_circuits.json (noiseless value, estimate, random guessing)",
+  "fig_scaling.png": "report/scaling.json (12, 16, 20 qubits: results_large_hpc/, server simulation 2026-10-10) and results/hpc_n29/summary_q29.csv (29 qubits, server simulation 2026-10-10); QAOA at 29 qubits = best fixed schedule p = 5",
+  "fig_samples.png": "qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json (shots per optimum), qollab/selected_circuits.json (classical median evaluations from results/ionq_selection/, noiseless value)",
+  "fig_qollab_placeholder.png": "qollab/results_ionq/2026-10-11_varqite_zy_equal_qollab_console.html (recorded console output); to be replaced by a live screenshot"
+ }
+}
