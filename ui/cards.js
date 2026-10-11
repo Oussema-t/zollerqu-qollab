@@ -55,7 +55,7 @@ export function renderCounters(el, s) {
   const eq = same(s.best, s.exact);
   el.dataset.done = String(!!s.done);
   el.innerHTML = `<h3>Minimum finding ${s.done ? '(done)' : `(round ${s.round})`}</h3>`
-    + `<dl><dt>Placements scored (1 start + Grover iterations + one per round)</dt><dd><b>${s.calls}</b> against the C(${s.m},${s.k}) = ${s.N} placements brute force scores</dd>`
+    + `<dl><dt>Placements scored (1 start + Grover iterations + one per round)</dt><dd><b>${s.calls}</b> of C(${s.m},${s.k}) = ${s.N}</dd>`
     + `<dt>Best cost</dt><dd><b class="${s.done ? (eq ? 'good' : 'amber') : ''}">${fc(s.best)}</b> vs exact ${fc(s.exact)}</dd></dl>`
     + (s.note ? `<p class="note">${esc(s.note)}</p>` : '');
 }

@@ -4,9 +4,7 @@ __pycache__/
 node_modules/
 .venv/
 dev/out/*.log
-paper/*.aux
-paper/*.log
-paper/*.out
 dist/
 dev/out/*.webm
 dev/out/frame-*.png
+dev/out/*.png
