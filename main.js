@@ -5,7 +5,7 @@ import { renderClassical, renderCards, renderCounters } from './ui/cards.js';
 
 const $ = (id) => document.getElementById(id);
 const PARAMS = ['k', 'lam', 'tau', 'c', 'wh_weight', 'staff_cost', 'm'];
-const DEFAULTS = { k: 4, lam: 10, tau: 10, c: 15000, wh_weight: 0.1, staff_cost: 3, m: 10 };
+const DEFAULTS = { k: 4, lam: 10, tau: 10, c: 15000, wh_weight: 0.1, staff_cost: 3, m: 8 };
 const SWEEP_SHOTS = 1000, DH_SHOTS = 1;   // the loop takes one measurement per round
 const IONQ_DH = 'Durr-Hoyer loop shown from the recorded take: IonQ backends accept one job per run';
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
@@ -15,6 +15,8 @@ const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, t
 const state = { data: null, backendName: '', isLocal: true, busy: false, locked: false, seq: 0,
   view: null, last: null, study: null };
 const errText = (e) => (e && e.message ? e.message : String(e));
+// Costs are multiples of 1/8 (the model's integers over 8): shown exactly, never rounded to an arbitrary decimal.
+const fc = (v) => String(Number(v));
 
 function backendLabel() {
   try { return String(backend.name && typeof backend.name === 'function' ? backend.name() : backend.name); }
@@ -60,29 +62,29 @@ function showPlacement(sites, what) {
 
 function drawTable() {
   const v = state.view;
-  renderClassical($('classical'), v.classical, { N: v.N, quantum: v.quantum },
+  renderClassical($('classical'), v.classical, { N: v.N, m: v.m, k: v.k, travelConst: v.travelConst, quantum: v.quantum },
     (sites) => showPlacement(sites, `Showing sites ${sites.join(', ')}.`));
 }
 
 function drawCards() {
   const v = state.view;
   renderCards($('cards'), { exact: v.exact, qBest: v.quantum ? v.quantum.cost : null, oracleCalls: v.quantum ? v.quantum.oracle_calls : null,
-    N: v.N, maxDev: v.maxDev, localMinima: v.classical.local_search.local_minima, study: state.study });
+    N: v.N, m: v.m, k: v.k, maxDev: v.maxDev, localMinima: v.classical.local_search.local_minima, study: state.study });
 }
 
-// e.g. "96 placements scored (1 start + 71 Grover iterations + 24 rounds), best cost 62.73 (exact 62.73)".
+// e.g. "96 placements scored (1 start + 71 Grover iterations + 24 rounds), best cost 8.625 (exact 8.625)".
 // The start term is what the bridge's total leaves after Grover iterations and rounds (1 by the counting rule).
 function dhSummary(dh, exact) {
   const r = dh.result, n = dh.rounds.length;
   return `${r.oracle_calls} placements scored (${r.oracle_calls - r.grover_iterations - n} start + ${r.grover_iterations} Grover iterations + ${n} rounds), `
-    + `best cost ${r.best_cost.toFixed(2)} (exact ${exact.toFixed(2)})`;
+    + `best cost ${fc(r.best_cost)} (exact ${fc(exact)})`;
 }
 
-// The m select names N = C(m,k); the selected option carries the bridge's feasible count.
+// The m select names the C(m,k) placements; the selected option carries the bridge's count.
 function labelM(k, nFeasible) {
   for (const o of $('m').options) {
-    const slow = o.value === '12' ? ', slow' : '';
-    o.textContent = `${o.value} sites (N = C(${o.value},${k})${o.selected ? ` = ${nFeasible}` : ''}${slow})`;
+    const slow = o.value === '8' ? '' : ', slow';
+    o.textContent = `${o.value} candidate locations (C(${o.value},${k})${o.selected ? ` = ${nFeasible}` : ''} placements${slow})`;
   }
 }
 
@@ -94,8 +96,9 @@ async function loadTake() {
   if (take.study && take.study.length) {
     state.study = take.study;
     const c = renderScaling($('scaling'), take.study);
-    $('scaling-cap').textContent = 'Mean placements scored by the loop over the study seeds against sqrt N, N = C(m,4) feasible placements; '
-      + `dashed: N, the brute-force count; fitted c = ${c.toFixed(1)}.`;
+    $('scaling-cap').textContent = 'Mean placements scored by the loop over the study seeds against the square root of C(m,4), '
+      + 'the placements of k = 4 stores opened among m candidate locations; '
+      + `dashed: C(m,4), the brute-force count; fitted c = ${c.toFixed(1)}.`;
     $('scaling-fig').hidden = false;
   }
   return take;
@@ -111,23 +114,23 @@ function clearQuantum() {
   c.innerHTML = '<h3>Minimum finding</h3><p class="lbl">Placements scored and best cost appear here during a run.</p>';
 }
 
-// Recompute the cost table and the classical answers for p; the quantum panel is cleared because it no longer matches.
+// Recompute the classical answers for p; the quantum panel is cleared because it no longer matches.
 async function refreshClassical(p) {
   const seq = ++state.seq;
   const pj = JSON.stringify(p);
-  setStatus('Computing the cost table and the classical answers...');
+  setStatus('Computing the classical answers...');
   try {
     const table = JSON.parse(await bridge.cost_table_json.callPromising(pj));
     const classical = JSON.parse(await bridge.classical.callPromising(pj));
     if (seq !== state.seq) return false;   // a newer control change superseded this one
-    state.view = { pj, p, m: p.m, k: table.k, N: table.n_feasible, exact: table.best_cost, bestSites: table.best_sites,
+    state.view = { pj, p, m: p.m, k: table.k, N: table.n_feasible, travelConst: table.travel_constant, exact: table.best_cost, bestSites: table.best_sites,
       classical, quantum: null, maxDev: null };
     labelM(table.k, table.n_feasible);
     showPlacement(table.best_sites, `Showing the exact optimum, sites ${table.best_sites.join(', ')}.`);
     drawTable();
     drawCards();
     clearQuantum();
-    setStatus(`N = ${table.n_feasible} feasible placements (C(${table.m},${table.k})); exact minimum ${table.best_cost.toFixed(2)}.`);
+    setStatus(`k = ${table.k} stores opened among m = ${table.m} candidate locations: C(${table.m},${table.k}) = ${table.n_feasible} placements; exact minimum ${fc(table.best_cost)}.`);
     return true;
   } catch (e) {
     if (seq === state.seq) { setBanner('Classical step failed: ' + errText(e), 'err'); setStatus(''); }
@@ -143,7 +146,7 @@ async function showSweep(pj, planJson, countsJson) {
 }
 
 // Draw one state of the Durr-Hoyer loop: trajectory, counters, and (when known) the current best placement.
-// own: {N, exact} of a recorded take at other parameters; it then goes to the counters panel only, not the map, table or cards.
+// own: {N, m, k, exact} of a recorded take at other parameters; it then goes to the counters panel only, not the map, table or cards.
 function showDh(start, rounds, { result = null, sites = null, note = '', startCalls = 0, own = null } = {}) {
   const v = state.view;
   const ref = own || v;
@@ -151,7 +154,7 @@ function showDh(start, rounds, { result = null, sites = null, note = '', startCa
   const best = result ? result.best_cost : last ? (last.improved ? last.best_sample_cost : last.T) : start;
   renderTrajectory($('traj'), start, rounds, ref.exact);
   renderCounters($('dh-counters'), { round: rounds.length, calls: result ? result.oracle_calls : last ? last.oracle_calls_cum : startCalls,
-    N: ref.N, best, exact: ref.exact, done: !!result, note });
+    N: ref.N, m: ref.m, k: ref.k, best, exact: ref.exact, done: !!result, note });
   if (own) return;
   if (sites) showPlacement(sites, `Showing the minimum-finding best placement, sites ${sites.join(', ')}.`);
   if (result) {
@@ -162,14 +165,14 @@ function showDh(start, rounds, { result = null, sites = null, note = '', startCa
 }
 
 // The take's loop enters the table and cards only when its params (after defaults) equal the current ones;
-// otherwise only the counters panel shows it, against its own N and exact minimum. Returns that exact minimum.
+// otherwise only the counters panel shows it, against its own placement count and exact minimum. Returns that exact minimum.
 async function showDhFromTake(take, note) {
   const dh = take.dh;
   const tp = { ...DEFAULTS, ...take.params };
   let own = null;
   if (!sameParams(tp, state.view.p)) {
     const t = JSON.parse(await bridge.cost_table_json.callPromising(JSON.stringify(tp)));
-    own = { N: t.n_feasible, exact: t.best_cost };
+    own = { N: t.n_feasible, m: t.m, k: t.k, exact: t.best_cost };
     note = `${note} This is the recorded take at its own parameters (m = ${tp.m}, k = ${tp.k}).`;
   }
   const sites = JSON.parse(await bridge.placement_sites.callPromising(dh.result.best_index));
@@ -181,7 +184,7 @@ async function liveDh(pj, seed) {
   const start = JSON.parse(await bridge.dh_start.callPromising(pj, seed));
   const rounds = [];
   showDh(start.T, rounds, { sites: start.best_sites, startCalls: 'oracle_calls' in start ? start.oracle_calls : 1 });
-  setStatus(`Minimum finding: random start, threshold ${start.T.toFixed(2)}.`);
+  setStatus(`Minimum finding: random start, threshold ${fc(start.T)}.`);
   for (let i = 0; i < 200; i++) {
     const countsJson = await bridge.dh_run_round.callPromising(backend, DH_SHOTS);
     const fb = JSON.parse(await bridge.dh_feed.callPromising(countsJson));
@@ -196,7 +199,7 @@ async function liveDh(pj, seed) {
     // The round record carries the new threshold but not its placement; the map keeps the last known one.
     const sites = 'best_index' in r ? JSON.parse(await bridge.placement_sites.callPromising(r.best_index)) : null;
     showDh(start.T, rounds, { sites });
-    setStatus(`Round ${rounds.length}: j = ${r.j}, best sample ${r.best_sample_cost == null ? '-' : r.best_sample_cost.toFixed(2)}`
+    setStatus(`Round ${rounds.length}: j = ${r.j}, best sample ${r.best_sample_cost == null ? '-' : fc(r.best_sample_cost)}`
       + `${r.improved ? ' (new threshold)' : ''}, ${r.oracle_calls_cum} placements scored so far.`);
   }
   throw new Error('Minimum finding did not stop within 200 rounds');

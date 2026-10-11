@@ -13,16 +13,17 @@ import numpy as np
 from qopt import bridge
 from qopt.aer_run import aer_run
 from qopt.classical import brute_force
-from qopt.cost import cost_table
+from qopt.cost import model, model_table
 from qopt.search import feasible_count, find_min
 
 OUT = Path("data/recorded_local.json")
-PARAMS = {"m": 12}
+PARAMS = {"m": 8}
 DH_SEED = 7
 DH_SHOTS = 1
-STUDY_SEEDS = 20
-STUDY_M12_SEEDS = 5
-STUDY_M12_LIMIT_S = 120
+# Seeds per m (candidate locations). The in-circuit oracle makes a Grover iteration cost about 1 s on Aer at m = 8
+# (20 qubits) and about 4x that at m = 10 (22 qubits), so the study keeps the recorder near 20 minutes: 20 seeds at
+# m = 6, 5 at m = 8, 2 at m = 10, none at m = 12 (24 qubits).
+STUDY_SEEDS = {6: 20, 8: 5, 10: 2}
 
 
 def aer_seed(seed, round_index):
@@ -31,12 +32,13 @@ def aer_seed(seed, round_index):
 
 
 def study_entry(data, m, seeds):
-    cost = cost_table(data, {}, m)
+    mdl = model(data, {}, m)
+    cost = model_table(mdl)
     exact = brute_force(cost)[1]
     runs = []
     for seed in seeds:
         rounds = itertools.count()
-        res = find_min(cost, lambda c, sh: aer_run(c, sh, seed=aer_seed(seed, next(rounds))),
+        res = find_min(mdl, lambda c, sh: aer_run(c, sh, seed=aer_seed(seed, next(rounds))),
                        np.random.default_rng(seed), shots=1)
         runs.append(res)
     calls = [r["oracle_calls"] for r in runs]
@@ -49,15 +51,10 @@ def study_entry(data, m, seeds):
 
 def scaling_study(data):
     study = []
-    for m in (6, 8, 10):
-        study.append(study_entry(data, m, range(STUDY_SEEDS)))
-    t0 = time.time()
-    first = study_entry(data, 12, [0])
-    elapsed = time.time() - t0
-    if elapsed > STUDY_M12_LIMIT_S:
-        print(f"study: skipping m=12, first loop took {elapsed:.1f}s (> {STUDY_M12_LIMIT_S}s)")
-    else:
-        study.append(study_entry(data, 12, range(STUDY_M12_SEEDS)))
+    for m, seeds in STUDY_SEEDS.items():
+        t0 = time.time()
+        study.append(study_entry(data, m, range(seeds)))
+        print(f"study m={m}: {seeds} seeds in {time.time() - t0:.1f}s", flush=True)
     print("study (one shot per round):")
     print("   m      N  seeds  calls_mean  min   max  grover_mean  rounds_mean  exact")
     for e in study:

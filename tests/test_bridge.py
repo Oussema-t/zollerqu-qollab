@@ -38,16 +38,18 @@ def test_page_does_not_fetch_project_files():
 
 def test_cost_table_json():
     out = json.loads(bridge.cost_table_json(json.dumps(PARAMS)))
-    assert set(out) == {"m", "k", "N", "n_feasible", "best_index", "best_cost", "best_sites"}
+    assert set(out) == {"m", "k", "N", "n_feasible", "best_index", "best_cost", "best_sites", "travel_constant"}
+    assert out["travel_constant"] * 8 == round(out["travel_constant"] * 8)  # reported to the nearest 1/8
+    assert out["best_cost"] * 8 == round(out["best_cost"] * 8)
     assert out["m"] == 6 and out["k"] == 3 and out["n_feasible"] == out["N"] == 20
     table = cost_table(random_data(30, 12, seed=11), PARAMS, 6)
     assert out["best_index"] == brute_force(table)[0]
     assert out["best_sites"] == [i for i in range(6) if out["best_index"] >> i & 1]
 
 
-def test_cost_table_json_default_m_is_10():
+def test_cost_table_json_default_m_is_8():
     out = json.loads(bridge.cost_table_json(json.dumps({"k": 2})))
-    assert out["m"] == 10 and out["n_feasible"] == out["N"] == 45
+    assert out["m"] == 8 and out["n_feasible"] == out["N"] == 28
 
 
 def test_classical():
@@ -75,11 +77,17 @@ def test_sweep_round_trip():
     assert all(s["max_dev"] < 0.05 for s in out)
 
 
-def test_run_sweep_counts_per_circuit():
+def test_run_sweep_counts_per_circuit(monkeypatch):
+    from functools import partial
+
     from qiskit.providers.basic_provider import BasicSimulator
+    from qopt import search
+    # two circuits per series (j = 0, 1): BasicSimulator needs minutes for the full 17-qubit sweep
+    monkeypatch.setattr(search, "sweep_plan", partial(search.sweep_plan, max_circuits=2))
     counts = json.loads(bridge.run_sweep(BasicSimulator(), json.dumps(PARAMS), 50))
     assert len(counts) == len(bridge.sweep_circuits_py(json.dumps(PARAMS)))
     assert all(isinstance(c, dict) and sum(c.values()) == 50 for c in counts)
+    assert all(len(key) == 6 for c in counts for key in c)  # only the m site qubits are measured
 
 
 def test_dh_run_round_counts():
@@ -128,7 +136,7 @@ def test_export_take_round_trips():
 
 def test_load_recorded_parses():
     take = json.loads(bridge.load_recorded())
-    assert take["source"] == "local-aer" and take["params"] == {"m": 12}
+    assert take["source"] == "local-aer" and take["params"] == {"m": 8}
 
 
 def test_load_recorded_returns_given_text_unchanged():

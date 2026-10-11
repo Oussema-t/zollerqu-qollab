@@ -201,3 +201,38 @@ Change: the bridge runs the jobs; the page only passes `backend` in and gets JSO
 - Unlocked page: the same pattern once this one runs on Qollab.
 
 IonQ: the backend object is the same Python object either way; Python's job.result() blocks inside the callPromising call, and Qollab routes IonQ requests while main.js runs, which the keep-alive guarantees. The page loses the per-5-second status text during a remote job.
+
+## Amendment 9 (Oct 11 midday, Tushar: "build a circuit that works without the classical lookup")
+
+**Problem.** `qopt/search.py:41-42` builds the threshold oracle as `DiagonalGate` over the full cost table, so every cost is evaluated before the first circuit runs. The quantum part then searches a table that already exists. Tushar rejects this. The oracle must compute the cost of a placement inside the circuit from per-site and per-pair coefficients (poly(m) numbers), never from the N-entry table.
+
+**Cost model change (both sides, so the minimum agrees exactly).** The exact model in `qopt/cost.py:9-32` is nonlinear in the placement (nearest-open-site assignment, `ceil` staffing, `min` over warehouses) and has no arithmetic circuit that fits 24 qubits. Replace it by the quadratic (QUBO) form
+
+    cost(S) = sum_{i in S} a_i + sum_{i<j in S} b_ij,            integers after scaling
+
+with coefficients derived from `data/champaign.json` (keys `blocks`, `t_block_site`, `t_site_site`, `t_wh_site`, 158 blocks, 12 sites):
+- travel, second-order inclusion-exclusion of the covering benefit: with D_b = max_i t(b,i) over the m candidate sites and g_i(b) = (D_b - t(b,i)) pop_b / sum pop, the covered-minutes benefit is sum_b pop_b D_b / sum pop - sum_i x_i G_i + sum_{i<j} x_i x_j H_ij, where G_i = sum_b g_i(b) and H_ij = sum_b min(g_i(b), g_j(b)). Exact for one or two open sites, an approximation for k = 4; it is the cost both sides score, so the comparison stays exact.
+- staff, per site: ceil(pop(catchment_i) / c) * staff_cost with catchment_i = blocks whose nearest candidate among the m is i (fixed, not placement dependent).
+- crowding, per pair: lam if t_site_site[i][j] < tau else 0 (unchanged, `qopt/cost.py:26-28`).
+- warehouse, per site: wh_weight * min_w t_wh_site[w][i].
+- a_i = -G_i + staff_i + warehouse_i, b_ij = H_ij + crowd_ij, plus the constant sum_b pop_b D_b / sum pop reported but not searched over.
+- Scaling (Tushar: no arbitrary decimals, always a power of two): SCALE = 8, so every coefficient is rounded to the nearest 1/8 = 0.125 and every cost and threshold on the page is dyadic (1.25, 0.375, 62.625, never 1.26); A_i = round(a_i * SCALE), B_ij = round(b_ij * SCALE); the integer register holds eighths and the page divides by 8 for display; `cost_table` (kept, used by the classical baselines and the tests only) returns (sum A + sum B) / SCALE so classical and quantum score the identical integer. Sliders keep their meaning (`main.js:7-8` PARAMS/DEFAULTS unchanged).
+
+**Oracle circuit** (`qopt/search.py`, replaces `oracle()`; `grover_circuit` keeps its signature `(cost, T, j, strict, k)` but takes the coefficients: new signature `grover_circuit(model, T, j, strict=False)` where `model = {"m", "k", "A": [m ints], "B": {(i,j): int}, "scale"}`; `cost` arrays derived from `model` where tests need them):
+- registers: m site qubits, one accumulator of n = B_bits + 1 qubits (two's complement; B_bits = bit length of max |cost_int - T_int| over feasible placements plus 1, computed classically from the coefficient bounds sum of the k largest |A| plus the k(k-1)/2 largest |B|, never from the table), one AND ancilla.
+- compute: QFT on the accumulator; for each site i, A_i added in the Fourier basis controlled on qubit i (Draper constant addition: cp rotations, no carries); for each pair with B_ij != 0, Toffoli(i, j -> anc), add B_ij controlled on anc, Toffoli again; subtract T_int (strict: T_int, non-strict: T_int + 1) unconditionally; inverse QFT. The accumulator now holds cost_int - T_int; its top bit is 1 iff cost_int < T_int.
+- mark: Z on the top bit. uncompute: the inverse of compute. Net effect on the site register: phase -1 exactly on placements with cost < T, ancilla and accumulator back to |0>.
+- diffusion and Dicke preparation unchanged (`qopt/search.py:60-87`), applied on the site register only.
+- `to_basis` unchanged; `BASIS` unchanged.
+
+**Qubits.** m + n + 1: m = 10, n = 11 gives 22 (built-in simulator 24q). Gate count per Grover iteration is reported by `tools/time_grover.py` after the change; the sweep and loop defaults move to m = 8 (N = 70) for the live demo if an iteration at m = 10 takes over 20 s on BasicSimulator, with m = 10 and 12 in the recorded take (Aer, `tools/record_take.py`). Decision recorded in the implementation summary, not guessed here.
+
+**Tests (TDD, failing first).**
+- `tests/test_cost.py`: coefficient construction on the 4-block/3-site fixture (`tests/conftest.py:7`), hand-checked: a_i, b_ij, and `cost_table` == (sum A + sum B)/SCALE for every feasible subset.
+- `tests/test_search.py`: replace `test_oracle_phases_match_threshold`, `test_strict_oracle_excludes_threshold`, `test_oracle_never_marks_infeasible_entries` (lines 23-56) with statevector tests on m = 5, k = 2 random coefficients: the oracle's action on every feasible basis state is -1 iff cost_int < T_int (strict) / <= (non-strict), ancilla and accumulator return to zero on every basis state (also infeasible ones). Keep `test_success_probability_matches_theory` and `test_find_min_reaches_brute_force_optimum` (lines 92-158) running against the new circuit at m = 6 or 8, k = 3.
+- `tests/test_bridge.py`: `test_run_sweep_counts_per_circuit`, `test_dh_run_round_counts` pass unchanged on BasicSimulator (circuit width now m + n + 1; counts keys carry only the m site bits: measure only the site register).
+- `tests/test_classical.py`, `tests/test_take.py`, `tests/test_dev_server.py` pass.
+
+**Page and docs.** `index.html` footer and the `#map-what` text: replace the lookup-table sentence with one sentence saying the oracle adds each open site's cost and each open pair's penalty into an arithmetic register inside the circuit and flips the phase on the sign bit. README "The problem" cost table, "Quantum part" oracle paragraph and "What is proven" third bullet rewritten to the QUBO model and the in-circuit oracle; the no-speedup-at-this-size sentence stays (it is true). `data/recorded_local.json` regenerated with `tools/record_take.py`.
+
+**Out of scope.** The exact nonlinear model, IonQ runs, any change to the Dicke preparation or the loop.

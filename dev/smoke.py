@@ -21,10 +21,10 @@ WORK = re.compile(r"^\d+ (partial )?placements scored\b")
 
 
 def check_table(page, n_rows, n):
-    """No MILP row; N = n in the caption; every Work cell opens with its count and one of the two units."""
+    """No MILP row; the C(m,k) = n placements in the caption; every Work cell opens with its count and one of the two units."""
     text = page.locator("#classical").inner_text()
     assert "MILP" not in text, "MILP row still on the page"
-    assert f"N = {n}" in page.locator("#classical caption").inner_text(), f"table caption does not say N = {n}"
+    assert f") = {n} placements" in page.locator("#classical caption").inner_text(), f"table caption does not say C(m,k) = {n}"
     work = page.locator("#classical td.work").all_inner_texts()
     assert len(work) == n_rows, f"expected {n_rows} rows, got {work}"
     bad = [w for w in work if not WORK.match(w)]
@@ -47,9 +47,9 @@ def main():
         page.wait_for_selector("#classical tbody tr", timeout=120_000)
         page.wait_for_function("!document.getElementById('run').disabled", timeout=60_000)
         print("classical:", page.locator("#classical tbody").inner_text().replace("\n", " / "))
-        check_table(page, 3, 210)
+        check_table(page, 3, 70)
         m_label = page.locator("#m option:checked").inner_text()
-        assert m_label == "10 sites (N = C(10,4) = 210)", f"m select label: {m_label}"
+        assert m_label == "8 candidate locations (C(8,4) = 70 placements)", f"m select label: {m_label}"
         print("m select:", m_label)
         page.screenshot(path=str(OUT / "01-classical.png"), full_page=True)
 
@@ -65,7 +65,7 @@ def main():
         print("scaling fractions:", page.locator("#scaling text.frac").evaluate_all("els => els.map(e => e.textContent)"))
         print("take status:", page.locator("#status").inner_text())
         print("take cards:", cards(page))
-        print("take table:", check_table(page, 4, 495))
+        print("take table:", check_table(page, 4, 70))
         page.screenshot(path=str(OUT / "02-take.png"), full_page=True)
 
         page.click("#run")
@@ -74,7 +74,7 @@ def main():
         page.wait_for_selector("#dh-counters[data-done='true']", timeout=480_000)
         assert page.locator("#scaling-fig").is_visible(), "scaling plot gone after the live run"
         print("live cards:", cards(page))
-        print("live table:", check_table(page, 4, 495))
+        print("live table:", check_table(page, 4, 70))
         print("counters:", page.locator("#dh-counters").inner_text().replace("\n", " / "))
         print("status:", page.locator("#status").inner_text())
         print("banner:", page.locator("#banner").inner_text())

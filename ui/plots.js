@@ -1,6 +1,8 @@
 // ui/plots.js: the theory-match sweep plot, the Durr-Hoyer threshold trajectory and the scaling study, hand-drawn SVG.
 const NS = 'http://www.w3.org/2000/svg';
 export const SERIES_COLORS = ['var(--s1)', 'var(--s2)', 'var(--s3)'];
+// Costs are multiples of 1/8: shown exactly, never rounded to an arbitrary decimal.
+const fc = (v) => String(Number(v));
 
 function el(name, attrs, parent) {
   const e = document.createElementNS(NS, name);
@@ -20,11 +22,11 @@ function frame(svgEl, W, H, label) {
   svgEl.setAttribute('aria-label', label);
 }
 
-// series: [{M, T, points: [{j, measured, theory}], max_dev}] from sweep_analyze_json; N = C(m,k) feasible placements.
+// series: [{M, T, points: [{j, measured, theory}], max_dev}] from sweep_analyze_json; N = the C(m,k) placements.
 export function renderSweep(svgEl, series, N) {
   const W = 560, H = 320, L = 48, R = 16, T = 40, B = 44;
   frame(svgEl, W, H, 'Measured Grover success probability against the theory curve for ' +
-    series.map((s) => `M = ${s.M}`).join(', ') + ` of N = ${N}.`);
+    series.map((s) => `M = ${s.M}`).join(', ') + ` marked of the ${N} placements.`);
   const jMax = Math.max(...series.flatMap((s) => s.points.map((p) => p.j)));
   const x = (j) => L + (j / jMax) * (W - L - R);
   const y = (v) => T + (1 - v) * (H - T - B);
@@ -71,7 +73,7 @@ export function renderTrajectory(svgEl, start, rounds, exact) {
   const W = 360, H = 200, L = 48, R = 12, T = 14, B = 34;
   const best = [start];
   for (const r of rounds) best.push(r.improved ? r.best_sample_cost : best[best.length - 1]);
-  frame(svgEl, W, H, `Threshold per round: started at ${start.toFixed(2)}, now ${best[best.length - 1].toFixed(2)}; exact minimum ${exact.toFixed(2)}.`);
+  frame(svgEl, W, H, `Threshold per round: started at ${fc(start)}, now ${fc(best[best.length - 1])}; exact minimum ${fc(exact)}.`);
   const n = Math.max(1, best.length - 1);
   const lo = Math.min(exact, ...best), hi = Math.max(exact, ...best);
   const span = hi - lo || 1;
@@ -80,8 +82,8 @@ export function renderTrajectory(svgEl, start, rounds, exact) {
 
   const axes = el('g', { class: 'axes' }, svgEl);
   el('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, class: 'axis' }, axes);
-  text(axes, L - 6, y(hi) + 4, hi.toFixed(1), { 'text-anchor': 'end' });
-  text(axes, L - 6, y(lo) + 4, lo.toFixed(1), { 'text-anchor': 'end' });
+  text(axes, L - 6, y(hi) + 4, fc(hi), { 'text-anchor': 'end' });
+  text(axes, L - 6, y(lo) + 4, fc(lo), { 'text-anchor': 'end' });
   text(axes, (L + W - R) / 2, H - 8, `round (${rounds.length} so far)`, { 'text-anchor': 'middle' });
   el('line', { x1: L, x2: W - R, y1: y(exact), y2: y(exact), class: 'exact' }, svgEl);
   text(svgEl, W - R, y(exact) - 4, 'exact', { 'text-anchor': 'end', class: 'muted' });
@@ -94,7 +96,7 @@ export function renderTrajectory(svgEl, start, rounds, exact) {
   best.forEach((v, i) => {
     const on = i === 0 || rounds[i - 1].improved;
     const c = el('circle', { cx: x(i), cy: y(v), r: on ? 3.5 : 2, class: on ? 'imp' : 'flat' }, svgEl);
-    el('title', {}, c).textContent = i ? `round ${i}: j = ${rounds[i - 1].j}, threshold ${v.toFixed(2)}` : `start ${v.toFixed(2)}`;
+    el('title', {}, c).textContent = i ? `round ${i}: j = ${rounds[i - 1].j}, threshold ${fc(v)}` : `start ${fc(v)}`;
   });
 }
 
@@ -109,8 +111,8 @@ export function fitSqrtN(study) {
 export function renderScaling(svgEl, study) {
   const W = 560, H = 340, L = 52, R = 16, T = 40, B = 52;
   const c = fitSqrtN(study);
-  frame(svgEl, W, H, `Mean placements scored by the one-measurement loop against sqrt N, N = C(m,4) feasible placements, for ${study.map((r) => `m = ${r.m}`).join(', ')}; `
-    + `fitted c = ${c.toFixed(1)}; brute force scores N.`);
+  frame(svgEl, W, H, `Mean placements scored by the one-measurement loop against the square root of C(m,4), the number of placements of k = 4 stores opened among m candidate locations, for ${study.map((r) => `m = ${r.m}`).join(', ')}; `
+    + `fitted c = ${c.toFixed(1)}; brute force scores all C(m,4).`);
   const sMax = 1.08 * Math.sqrt(Math.max(...study.map((r) => r.N)));
   const top = 1.15 * Math.max(...study.map((r) => r.calls_max));
   const step = [1, 2, 5].flatMap((u) => [1, 10, 100, 1000, 10000].map((p) => u * p)).sort((a, b) => a - b)
@@ -127,9 +129,9 @@ export function renderScaling(svgEl, study) {
   for (const r of study) {
     const t = el('text', { x: x(Math.sqrt(r.N)), y: H - B + 16, 'text-anchor': 'middle' }, axes);
     el('tspan', { x: x(Math.sqrt(r.N)) }, t).textContent = `m = ${r.m}`;
-    el('tspan', { x: x(Math.sqrt(r.N)), dy: 13 }, t).textContent = `(N = ${r.N})`;
+    el('tspan', { x: x(Math.sqrt(r.N)), dy: 13 }, t).textContent = `(C(${r.m},4) = ${r.N})`;
   }
-  text(axes, (L + W - R) / 2, H - 6, 'sqrt N', { 'text-anchor': 'middle' });
+  text(axes, (L + W - R) / 2, H - 6, 'sqrt C(m,4)', { 'text-anchor': 'middle' });
   text(axes, 12, (T + H - B) / 2, 'placements scored', { 'text-anchor': 'middle', transform: `rotate(-90 12 ${(T + H - B) / 2})` });
 
   // y = N is a parabola in sqrt N; it leaves the frame at sqrt N = sqrt(yMax).
@@ -149,7 +151,7 @@ export function renderScaling(svgEl, study) {
     el('line', { x1: sx, x2: sx, y1: y(r.calls_min), y2: y(r.calls_max), class: 'range' }, g);
     for (const v of [r.calls_min, r.calls_max]) el('line', { x1: sx - 4, x2: sx + 4, y1: y(v), y2: y(v), class: 'range' }, g);
     const dot = el('circle', { cx: sx, cy: y(r.calls_mean), r: 4.5, class: 'mean' }, g);
-    el('title', {}, dot).textContent = `m = ${r.m}, N = ${r.N}: mean ${r.calls_mean} placements scored (min ${r.calls_min}, `
+    el('title', {}, dot).textContent = `m = ${r.m}, C(${r.m},4) = ${r.N} placements: mean ${r.calls_mean} placements scored (min ${r.calls_min}, `
       + `max ${r.calls_max}) over ${r.seeds} seeds; exact minimum in ${exact} of ${r.seeds}`;
     text(g, sx, y(r.calls_max) - 8, `exact ${exact}/${r.seeds}`, { 'text-anchor': 'middle', class: 'frac' });
   }
@@ -159,8 +161,8 @@ export function renderScaling(svgEl, study) {
   el('circle', { cx: L, cy: 16, r: 4.5, class: 'mean' }, lg);
   text(lg, L + 10, 20, 'mean, min..max');
   el('line', { x1: L + 130, x2: L + 152, y1: 16, y2: 16, class: 'fit' }, lg);
-  text(lg, L + 158, 20, `${c.toFixed(1)} sqrt N`);
+  text(lg, L + 158, 20, `${c.toFixed(1)} sqrt C(m,4)`);
   el('line', { x1: L + 250, x2: L + 272, y1: 16, y2: 16, class: 'brute' }, lg);
-  text(lg, L + 278, 20, 'N (brute force)');
+  text(lg, L + 278, 20, 'C(m,4) (brute force)');
   return c;
 }

@@ -2,7 +2,7 @@ import numpy as np
 
 from qopt import classical
 from qopt.classical import brute_force, greedy, local_search
-from qopt.cost import cost_table, cost_terms
+from qopt.cost import cost_table, model, model_cost
 from tests.conftest import TOY_PARAMS, random_data
 
 
@@ -17,18 +17,18 @@ def test_greedy_returns_k_sites_with_their_cost():
     data = random_data(40, 8, seed=2)
     sites, cost, evals = greedy(data, {"k": 3}, 8)
     assert len(sites) == 3 and len(set(sites)) == 3 and all(0 <= s < 8 for s in sites)
-    assert np.isclose(cost, cost_terms(data, {"k": 3}, sites)["total"])
+    assert cost == model_cost(model(data, {"k": 3}, 8), sites)  # the same quadratic cost the oracle adds
     assert evals == 8 + 7 + 6
 
 
-def test_greedy_evaluations_count_real_cost_terms_calls(monkeypatch):
+def test_greedy_evaluations_count_real_cost_calls(monkeypatch):
     calls = []
 
     def counting(*args):
         calls.append(args)
-        return cost_terms(*args)
+        return model_cost(*args)
 
-    monkeypatch.setattr(classical, "cost_terms", counting)
+    monkeypatch.setattr(classical, "model_cost", counting)
     _, _, evals = greedy(random_data(40, 8, seed=2), {"k": 3}, 8)
     assert evals == len(calls)
 

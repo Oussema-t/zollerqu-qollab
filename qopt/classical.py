@@ -1,7 +1,7 @@
-"""Classical baselines on the same cost model."""
+"""Classical baselines on the same quadratic cost model the quantum oracle adds in-circuit."""
 import numpy as np
 
-from qopt.cost import DEFAULTS, cost_terms
+from qopt.cost import model, model_cost
 
 
 def brute_force(cost):
@@ -11,11 +11,11 @@ def brute_force(cost):
 
 
 def greedy(data, params, m):
-    """Add the site that lowers the cost most, k times. Evaluations = cost_terms calls (partial placements)."""
-    k = {**DEFAULTS, **params}["k"]
+    """Add the site that lowers the cost most, k times. Evaluations = model_cost calls (partial placements)."""
+    mdl = model(data, params, m)
     sites, evaluations = [], 0
-    for _ in range(k):
-        scores = {i: cost_terms(data, params, sites + [i])["total"] for i in range(m) if i not in sites}
+    for _ in range(mdl["k"]):
+        scores = {i: model_cost(mdl, sites + [i]) for i in range(m) if i not in sites}
         evaluations += len(scores)
         best = min(scores, key=scores.get)
         sites.append(best)
