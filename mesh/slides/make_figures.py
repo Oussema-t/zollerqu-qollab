@@ -264,6 +264,113 @@ plt.close(fig)
 numbers["top_counts"] = counts[:2]
 SOURCES["fig_qollab_placeholder.png"] = "qollab/results_ionq/2026-10-11_varqite_zy_equal_qollab_console.html (recorded console output); to be replaced by a live screenshot"
 
+# ---------------------------------------------------------------- 9. the nine mesh objects (frozen seed-7 meshes) ----
+import importlib.util  # noqa: E402
+import os  # noqa: E402
+
+_here = os.getcwd()
+_spec = importlib.util.spec_from_file_location("make_mesh_figure", ROOT / "report" / "make_mesh_figure.py")
+_mesh_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mesh_mod)                       # (it changes into the repo root; restored below)
+mesh_ns = _mesh_mod.load_mesh_cells()
+os.chdir(_here)
+case_names = list(mesh_ns["BENCHMARK_CASES"])
+fig, axes = plt.subplots(3, 3, figsize=(7.4, 6.6))
+for ax, name in zip(axes.flat, case_names):
+    spec, mesh = mesh_ns["MESH_CASES"][name], mesh_ns["mesh_cases"][name]
+    ax.add_collection(PolyCollection(mesh["points"][mesh["triangles"]], facecolors=PANEL, edgecolors=ACCENT, linewidths=0.15, rasterized=True))
+    for zone in spec.get("work_zones", []):
+        x0, y0, x1, y1 = zone["box"]
+        ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0, facecolor=GPU_FILL, alpha=0.55, edgecolor="none"))
+    for zone in spec.get("cost_zones", []):
+        x0, y0, x1, y1 = zone["box"]
+        ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0, facecolor="none", edgecolor=WHITE, hatch="...", lw=0.6))
+    for zone in spec.get("priority_zones", []):
+        ax.add_patch(plt.Circle(zone["center"], zone["radius"], fill=False, edgecolor=WHITE, lw=1.4))
+    for feature in spec["features"]:
+        if feature["kind"] == "heat source":
+            ax.scatter(*feature["center"], s=30 + 90 * feature["strength"], marker="*", c=WHITE, edgecolors=BG, linewidths=0.5, zorder=5)
+    lo, hi = spec["hull"].min(axis=0), spec["hull"].max(axis=0)
+    ax.set_xlim(lo[0] - 0.05, hi[0] + 0.05)
+    ax.set_ylim(lo[1] - 0.05, hi[1] + 0.05)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    ax.set_title(f"{name}\n{len(mesh['triangles']):,} triangles", fontsize=12, color=WHITE)
+fig.tight_layout(h_pad=0.6, w_pad=0.4)
+fig.savefig(FIG / "fig_meshes.png", dpi=220)
+plt.close(fig)
+numbers.update(n_mesh_objects=len(case_names), mesh_case_names=case_names,
+               mesh_triangles={name: int(len(mesh_ns["mesh_cases"][name]["triangles"])) for name in case_names},
+               n_distinct_shapes=len({mesh_ns["MESH_CASES"][name].get("mesh_of", name) for name in case_names}))
+SOURCES["fig_meshes.png"] = "data/frozen_meshes/*_seed7.npz via the notebook mesh cells (Tasks 01-01d); same objects as report/fig_meshes.pdf"
+
+# ---------------------------------------------------------------- 10. how far QAOA itself improves (HPC tuning study) ----
+tuning = json.loads((ROOT / "results" / "qaoa_tuning" / "tuning_n12_large_calibration.json").read_text())
+scaling_files = [json.loads(path.read_text()) for path in sorted((ROOT / "results" / "qaoa_tuning" / "scaling").glob("n*_p*.json"))]
+earlier = json.loads((ROOT / "scripts" / "q29_choice.json").read_text())["choice"]
+
+
+def tuned12(scenario, p, kind="standard"):
+    rows = [r for r in tuning["scenarios"][scenario]["rows"] if r["p"] == p]
+    if kind == "LR":
+        return next(r for r in rows if r["method"] == "LR-QAOA (energy-calibrated)")["test"]
+    pool = [r for r in rows if ("warm" in r["method"]) == (kind == "warm")]
+    return max(pool, key=lambda r: r["calibration_p_near"])["test"]
+
+
+def tuned_n(scenario, n, p):
+    rec = next((r for r in scaling_files if r["scenario"] == scenario and r["n"] == n and r["p"] == p), None)
+    return None if rec is None else rec["methods"][f"re-optimised at n = {n}"]["test_mean"]
+
+
+SC = {"2 equal devices": "equal devices", "CPU + GPU (GPU 4x)": "CPU + GPU"}
+P_SHOW = 6                                                # the deepest depth finished at every size
+fig, axes = plt.subplots(1, 2, figsize=(11.5, 6.4))
+ax = axes[0]
+for scenario, line in zip(SC, ("-", "--")):
+    ax.plot(tuning["layers"], [100 * tuned12(scenario, p)["p_near"] for p in tuning["layers"]], color=ACCENT, lw=3, ls=line, marker="o",
+            label=f"tuned QAOA, {SC[scenario]}")
+    ax.plot(tuning["layers"], [100 * tuned12(scenario, p, "LR")["p_near"] for p in tuning["layers"]], color=GREY, lw=2, ls=line, marker="s", ms=5,
+            label=f"LR-QAOA, {SC[scenario]}")
+    old = tuning["scenarios"][scenario]["references"]["per-shot QAOA + COBYLA p=2 (existing)"]
+    ax.scatter([2], [100 * old], marker="x", s=140, color=WHITE, zorder=6, label="before: trained per mesh, p = 2" if line == "-" else None)
+ax.set_yscale("log")
+ax.set_xticks(tuning["layers"])
+ax.set_xlabel("QAOA layers p")
+ax.set_ylabel("near-best splits per shot (%)")
+ax.set_title("12 qubits, 9 test meshes", loc="left", fontsize=18, color=WHITE)
+ax.legend(fontsize=14, loc="lower right")
+ax.grid(alpha=0.6, which="major")
+ax = axes[1]
+for scenario, line in zip(SC, ("-", "--")):
+    sizes = [12] + [n for n in (16, 20) if tuned_n(scenario, n, P_SHOW)]
+    vals = [100 * tuned12(scenario, P_SHOW)["p_near"]] + [100 * tuned_n(scenario, n, P_SHOW)["p_near"] for n in sizes[1:]]
+    ax.plot(sizes, vals, color=ACCENT, lw=3, ls=line, marker="o", label=f"tuned QAOA p = {P_SHOW}, {SC[scenario]}")
+    ax.scatter([20], [100 * earlier[scenario]["best_fixed"]["p_near_n20"]], marker="x", s=140, color=WHITE, zorder=6,
+               label="before: best setting at 20 qubits (p = 5)" if line == "-" else None)
+    uni = [np.mean([row["per-shot random (uniform)"]["p_near"] for row in r["classical"]]) for n in sizes[1:]
+           for r in scaling_files if r["scenario"] == scenario and r["n"] == n and r["p"] == P_SHOW]
+    if line == "-":
+        ax.plot(sizes[1:], [100 * u for u in uni], color=MUTED, lw=1.5, ls=":", label="random guess (equal devices)")
+ax.set_yscale("log")
+ax.set_xticks([12, 16, 20])
+ax.set_xlabel("qubits (mesh regions)")
+ax.set_title("bigger meshes (angles re-tuned on HPC)", loc="left", fontsize=18, color=WHITE)
+ax.legend(fontsize=14, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
+ax.grid(alpha=0.6, which="major")
+fig.tight_layout()
+fig.savefig(FIG / "fig_tuning.png", dpi=220)
+plt.close(fig)
+numbers["tuning"] = dict(
+    n12={SC[s]: dict(p8=tuned12(s, 8)["p_near"], p8_opt=tuned12(s, 8)["p_opt"], p3_hit=tuned12(s, 3)["hit_near"], p8_hit=tuned12(s, 8)["hit_near"],
+                     before=tuning["scenarios"][s]["references"]["per-shot QAOA + COBYLA p=2 (existing)"],
+                     warm_p8=tuned12(s, 8, "warm")["p_near"], warm_p8_hit=tuned12(s, 8, "warm")["hit_near"]) for s in SC},
+    n20={SC[s]: dict(p=P_SHOW, p_near=tuned_n(s, 20, P_SHOW)["p_near"], hit=tuned_n(s, 20, P_SHOW)["hit_near"],
+                     p5=tuned_n(s, 20, 5)["p_near"], before_p5=earlier[s]["best_fixed"]["p_near_n20"]) for s in SC if tuned_n(s, 20, P_SHOW)},
+    gates12_p8=8 * 66, calibration_meshes=18, test_meshes_12=len(tuning["scenarios"]["2 equal devices"]["test_instances"]))
+SOURCES["fig_tuning.png"] = ("results/qaoa_tuning/tuning_n12_large_calibration.json (12 qubits, HPC), results/qaoa_tuning/scaling/n16_*, n20_* "
+                             "(HPC), scripts/q29_choice.json (the earlier best setting at 20 qubits); noiseless simulation")
+
 (FIG / "numbers.json").write_text(json.dumps(dict(numbers=numbers, figure_sources=SOURCES), indent=1))
 print(f"{len(SOURCES)} figures and numbers.json written to {FIG}")
 for key in ("ionq_p_opt", "noiseless_p_opt", "random_p_opt", "gain_over_random", "ionq_shots_per_optimum", "zy_training_circuits", "gpu_share_of_optimum", "n_candidates"):

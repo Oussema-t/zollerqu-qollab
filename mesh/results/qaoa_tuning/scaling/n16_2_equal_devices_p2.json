@@ -1,0 +1,329 @@
+{
+ "n": 16,
+ "scenario": "2 equal devices",
+ "p": 2,
+ "source": "tuning_n12_large_calibration.json",
+ "start_method": "QAOA, all angles optimised (L-BFGS-B)",
+ "start_calibration_p_near_n12": 0.009708944655499315,
+ "optimiser": "L-BFGS-B",
+ "budget": 300,
+ "calibration_instances": [
+  "1 control, seed 101",
+  "1 control, seed 102",
+  "2 main, seed 101",
+  "2 main, seed 102",
+  "3 hard, seed 101",
+  "3 hard, seed 102",
+  "4 structural, seed 101",
+  "4 structural, seed 102",
+  "5 L uniform, seed 101",
+  "5 L uniform, seed 102",
+  "6 three sources, seed 101",
+  "6 three sources, seed 102",
+  "7 materials, seed 101",
+  "7 materials, seed 102",
+  "8 coupling, seed 101",
+  "8 coupling, seed 102",
+  "9 priority, seed 101",
+  "9 priority, seed 102"
+ ],
+ "test_instances": [
+  "2 main, seed 7",
+  "2 main, seed 8",
+  "2 main, seed 9",
+  "9 priority, seed 7",
+  "9 priority, seed 8",
+  "9 priority, seed 9"
+ ],
+ "circuit": {
+  "two_qubit_gates": 240,
+  "depth": 33,
+  "depth_two_qubit": 30
+ },
+ "classical": [
+  {
+   "uniform random sampling": {
+    "hit_opt": 0.03,
+    "hit_near": 0.03
+   },
+   "random with target share": {
+    "hit_opt": 0.05,
+    "hit_near": 0.05
+   },
+   "simulated annealing": {
+    "hit_opt": 0.24,
+    "hit_near": 0.24
+   },
+   "local search (restarts)": {
+    "hit_opt": 0.28,
+    "hit_near": 0.28
+   },
+   "spectral bisection": {
+    "hit_opt": 0.0,
+    "hit_near": 0.0
+   },
+   "per-shot random (uniform)": {
+    "p_opt": 3.0517578125e-05,
+    "p_near": 3.0517578125e-05
+   }
+  },
+  {
+   "uniform random sampling": {
+    "hit_opt": 0.02,
+    "hit_near": 0.02
+   },
+   "random with target share": {
+    "hit_opt": 0.06,
+    "hit_near": 0.06
+   },
+   "simulated annealing": {
+    "hit_opt": 0.29,
+    "hit_near": 0.29
+   },
+   "local search (restarts)": {
+    "hit_opt": 0.44,
+    "hit_near": 0.44
+   },
+   "spectral bisection": {
+    "hit_opt": 0.0,
+    "hit_near": 0.0
+   },
+   "per-shot random (uniform)": {
+    "p_opt": 3.0517578125e-05,
+    "p_near": 3.0517578125e-05
+   }
+  },
+  {
+   "uniform random sampling": {
+    "hit_opt": 0.04,
+    "hit_near": 0.05
+   },
+   "random with target share": {
+    "hit_opt": 0.05,
+    "hit_near": 0.09
+   },
+   "simulated annealing": {
+    "hit_opt": 0.32,
+    "hit_near": 0.52
+   },
+   "local search (restarts)": {
+    "hit_opt": 0.21,
+    "hit_near": 0.34
+   },
+   "spectral bisection": {
+    "hit_opt": 0.0,
+    "hit_near": 0.0
+   },
+   "per-shot random (uniform)": {
+    "p_opt": 3.0517578125e-05,
+    "p_near": 6.103515625e-05
+   }
+  },
+  {
+   "uniform random sampling": {
+    "hit_opt": 0.03,
+    "hit_near": 0.03
+   },
+   "random with target share": {
+    "hit_opt": 0.03,
+    "hit_near": 0.03
+   },
+   "simulated annealing": {
+    "hit_opt": 0.33,
+    "hit_near": 0.33
+   },
+   "local search (restarts)": {
+    "hit_opt": 0.45,
+    "hit_near": 0.45
+   },
+   "spectral bisection": {
+    "hit_opt": 1.0,
+    "hit_near": 1.0
+   },
+   "per-shot random (uniform)": {
+    "p_opt": 3.0517578125e-05,
+    "p_near": 3.0517578125e-05
+   }
+  },
+  {
+   "uniform random sampling": {
+    "hit_opt": 0.03,
+    "hit_near": 0.03
+   },
+   "random with target share": {
+    "hit_opt": 0.04,
+    "hit_near": 0.04
+   },
+   "simulated annealing": {
+    "hit_opt": 0.22,
+    "hit_near": 0.22
+   },
+   "local search (restarts)": {
+    "hit_opt": 0.57,
+    "hit_near": 0.57
+   },
+   "spectral bisection": {
+    "hit_opt": 0.0,
+    "hit_near": 0.0
+   },
+   "per-shot random (uniform)": {
+    "p_opt": 3.0517578125e-05,
+    "p_near": 3.0517578125e-05
+   }
+  },
+  {
+   "uniform random sampling": {
+    "hit_opt": 0.03,
+    "hit_near": 0.06
+   },
+   "random with target share": {
+    "hit_opt": 0.08,
+    "hit_near": 0.09
+   },
+   "simulated annealing": {
+    "hit_opt": 0.27,
+    "hit_near": 0.31
+   },
+   "local search (restarts)": {
+    "hit_opt": 0.44,
+    "hit_near": 0.5
+   },
+   "spectral bisection": {
+    "hit_opt": 1.0,
+    "hit_near": 1.0
+   },
+   "per-shot random (uniform)": {
+    "p_opt": 3.0517578125e-05,
+    "p_near": 6.103515625e-05
+   }
+  }
+ ],
+ "methods": {
+  "transferred from 12 qubits": {
+   "angles": [
+    1.0944823744981202,
+    1.2992258395925005,
+    1.4432570294268245,
+    0.5819244168979547
+   ],
+   "calibration_p_near": 0.00034206673133229727,
+   "training_evaluations": 0,
+   "training_instances": 0,
+   "training_seconds": 0.0,
+   "test_mean": {
+    "p_opt": 0.0001728317139385675,
+    "p_near": 0.00028119108501493566,
+    "mean_ratio": 0.8157636375617457,
+    "hit_opt": 0.14555758385545434,
+    "hit_near": 0.21651537158028575
+   },
+   "test": [
+    {
+     "p_opt": 0.0005767313357310048,
+     "p_near": 0.0005767313357310048,
+     "mean_ratio": 0.830486147837288,
+     "hit_opt": 0.43836196881642486,
+     "hit_near": 0.43836196881642486
+    },
+    {
+     "p_opt": 0.00013612833937452857,
+     "p_near": 0.00013612833937452857,
+     "mean_ratio": 0.850049093196943,
+     "hit_opt": 0.12727746734995837,
+     "hit_near": 0.12727746734995837
+    },
+    {
+     "p_opt": 0.00011727558066919559,
+     "p_near": 0.0007662628709568704,
+     "mean_ratio": 0.8252951650384925,
+     "hit_opt": 0.11066604179691075,
+     "hit_near": 0.5353898445523791
+    },
+    {
+     "p_opt": 4.084304628407147e-05,
+     "p_near": 4.084304628407147e-05,
+     "mean_ratio": 0.7838975779523444,
+     "hit_opt": 0.040021010199253415,
+     "hit_near": 0.040021010199253415
+    },
+    {
+     "p_opt": 3.304246541763189e-05,
+     "p_near": 3.304246541763189e-05,
+     "mean_ratio": 0.8043970645922252,
+     "hit_opt": 0.03250305463809622,
+     "hit_near": 0.03250305463809622
+    },
+    {
+     "p_opt": 0.00013296951615497283,
+     "p_near": 0.0001341384523255066,
+     "mean_ratio": 0.8004567767531809,
+     "hit_opt": 0.12451596033208234,
+     "hit_near": 0.1255388839256023
+    }
+   ]
+  },
+  "re-optimised at n = 16": {
+   "angles": [
+    1.2759090559801594,
+    0.6978869213009707,
+    1.8141900907048507,
+    0.3162821810319485
+   ],
+   "calibration_p_near": 0.0018470213768857224,
+   "training_evaluations": 105,
+   "training_instances": 18,
+   "training_seconds": 127.2291579246521,
+   "test_mean": {
+    "p_opt": 0.0006642394691776543,
+    "p_near": 0.000931218510769871,
+    "mean_ratio": 0.8637152530605793,
+    "hit_opt": 0.46463641625296265,
+    "hit_near": 0.5554192010082827
+   },
+   "test": [
+    {
+     "p_opt": 0.0004895231096763452,
+     "p_near": 0.0004895231096763452,
+     "mean_ratio": 0.8567036959275344,
+     "hit_opt": 0.3871548378403227,
+     "hit_near": 0.3871548378403227
+    },
+    {
+     "p_opt": 0.00021449450354138022,
+     "p_near": 0.00021449450354138022,
+     "mean_ratio": 0.864098460187121,
+     "hit_opt": 0.1930693183753719,
+     "hit_near": 0.1930693183753719
+    },
+    {
+     "p_opt": 0.000522968271787168,
+     "p_near": 0.00110989546865374,
+     "mean_ratio": 0.850847993004662,
+     "hit_opt": 0.4073226153414258,
+     "hit_near": 0.6706096834003257
+    },
+    {
+     "p_opt": 0.0010199317641984632,
+     "p_near": 0.0010199317641984632,
+     "mean_ratio": 0.8705273752993865,
+     "hit_opt": 0.6395681014902611,
+     "hit_near": 0.6395681014902611
+    },
+    {
+     "p_opt": 0.0009202232010092631,
+     "p_near": 0.0009202232010092631,
+     "mean_ratio": 0.8674197740952914,
+     "hit_opt": 0.6017386640977243,
+     "hit_near": 0.6017386640977243
+    },
+    {
+     "p_opt": 0.0008182959648533059,
+     "p_near": 0.001833243017540034,
+     "mean_ratio": 0.8726942198494799,
+     "hit_opt": 0.5589649603726702,
+     "hit_near": 0.8403746008456904
+    }
+   ]
+  }
+ }
+}

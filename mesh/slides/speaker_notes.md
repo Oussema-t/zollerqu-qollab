@@ -1,6 +1,6 @@
 # Speaker notes: mesh partitioning on IonQ (Team ZollerQu)
 
-Spoken script for slides 1-8: 379 words, about 2:30-2:50 at a calm pace. The appendix is not spoken.
+Spoken script for slides 1-8: 439 words, about 2:30-2:50 at a calm pace. The appendix is not spoken.
 
 ## Slide 1: Title
 
@@ -16,27 +16,27 @@ We group the mesh into twelve regions, one qubit each: zero means device A, one 
 
 ## Slide 4: Quantum method
 
-The circuit starts from all splits, applies a cost layer with one two-qubit gate per pair of regions, then a mixer. We compared one hundred and four circuits, including IonQ's varQITE. Training is offline and noiseless. On Qollab we send one fixed circuit per job.
+We tested nine mesh objects: a plate, L-shaped plates and a plate with a hole, with heat sources, heavy materials, strong coupling and a priority zone.
 
 ## Slide 5: Why IonQ
 
-Our balance term couples every pair of regions. IonQ connects every pair of qubits, so one layer needs sixty-six two-qubit gates. Routed on a heavy-hex layout it needs about three times more, counted with the transpiler only.
+The circuit starts from all splits, applies a cost layer with one two-qubit gate per pair of regions, then a mixer. We compared one hundred and four circuits, including IonQ's varQITE. Training is offline and noiseless. On Qollab we send one fixed circuit per job.
 
 ## Slide 6: Main IonQ result
 
-The main result, for two equal devices. On the IonQ Forte 1 noise model, twenty-eight percent of one thousand shots were the exact best split, and it was the most frequent answer. Random guessing gives five hundredths of a percent. Without noise we reach seventy-five percent: noise costs twice what we estimated.
+Our balance term couples every pair of regions. IonQ connects every pair of qubits, so one layer needs sixty-six two-qubit gates. Routed on a heavy-hex layout it needs about three times more, counted with the transpiler only.
 
 ## Slide 7: Scaling and honest comparison
 
-Now the honest part. As the mesh grows, classical methods win: at twenty-nine regions, simulated without noise, our best circuit finds a near-best split in under one percent of runs, spectral bisection in half or more. On IonQ's simulator we needed four shots per optimum against eleven hundred classical evaluations. But varQITE first needed seven thousand six hundred training circuits, and a shot is not the same work as a classical evaluation.
+The main result, for two equal devices. On the IonQ Forte 1 noise model, twenty-eight percent of one thousand shots were the exact best split, and it was the most frequent answer. Random guessing gives five hundredths of a percent. Without noise we reach seventy-five percent: noise costs twice what we estimated.
 
 ## Slide 8: Demo, limits and next steps
 
-[CUT TO THE LIVE QOLLAB DEMO] On Qollab we press Run and choose IonQ Forte 1. Limits: a noisy simulator, not hardware. For a CPU plus a GPU the varQITE circuit fails, and we proved why. Beyond twelve qubits classical methods win. Next, we repair that circuit. Thank you. This effort is supported by Qollab and IonQ.
+Now the honest part. As the mesh grows, classical methods win: at twenty-nine regions, simulated without noise, our best circuit finds a near-best split in under one percent of runs, spectral bisection in half or more. On IonQ's simulator we needed four shots per optimum against eleven hundred classical evaluations. But varQITE first needed seven thousand six hundred training circuits, and a shot is not the same work as a classical evaluation.
 
 ## Slide 9: Appendix: both device scenarios
 
-Appendix, not spoken: the two device scenarios side by side. For CPU plus GPU the published varQITE circuit is capped by a qubit that stays fifty-fifty; the best other circuit reaches about half a percent without noise.
+Then we tuned QAOA on separate calibration meshes, comparing seven QAOA types. At twelve qubits the best setting gives about twenty times more near-best answers per shot, and it still helps at twenty qubits.
 
 ## Figure alt text
 
@@ -54,6 +54,10 @@ Appendix, not spoken: the two device scenarios side by side. For CPU plus GPU th
   Source: report/scaling.json (12, 16, 20 qubits: results_large_hpc/, server simulation 2026-10-10) and results/hpc_n29/summary_q29.csv (29 qubits, server simulation 2026-10-10); QAOA at 29 qubits = best fixed schedule p = 5
 - **fig_samples.png**: Horizontal bar chart on a log scale of tries per optimum: random guessing 2,048, simulated annealing 1,181, local search 1,111, IonQ noise model 3.6, noiseless 1.3.  
   Source: qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json (shots per optimum), qollab/selected_circuits.json (classical median evaluations from results/ionq_selection/, noiseless value)
+- **fig_meshes.png**: Nine small drawings of triangle meshes in a 3 by 3 grid: a rectangle, L-shaped plates and a plate with a round hole. White stars mark heat sources, shaded blocks heavy material, dotted blocks strongly coupled zones, a circle a priority zone. Each drawing is labelled with its case name and triangle count (1,670 to 2,166).  
+  Source: data/frozen_meshes/*_seed7.npz via the notebook mesh cells (Tasks 01-01d); same objects as report/fig_meshes.pdf
+- **fig_tuning.png**: Two line charts on a log scale. Left: share of near-best shots at 12 qubits against the number of QAOA layers, rising for tuned QAOA to 7.1 percent for equal devices and 19.5 percent for CPU plus GPU at 8 layers, above LR-QAOA, with crosses for the earlier setting at 2 layers. Right: tuned QAOA with 6 layers at 12, 16 and 20 qubits, falling with size but far above crosses for the earlier best setting at 20 qubits and above random guessing.  
+  Source: results/qaoa_tuning/tuning_n12_large_calibration.json (12 qubits, HPC), results/qaoa_tuning/scaling/n16_*, n20_* (HPC), scripts/q29_choice.json (the earlier best setting at 20 qubits); noiseless simulation
 - **fig_qollab_placeholder.png**: Placeholder for a live Qollab screenshot. It shows lines of the recorded console output: running on ionq_simulator, 1,000 shots, measured P(optimum) 0.2780, and the two optimal splits measured 146 and 132 times.  
   Source: qollab/results_ionq/2026-10-11_varqite_zy_equal_qollab_console.html (recorded console output); to be replaced by a live screenshot
 

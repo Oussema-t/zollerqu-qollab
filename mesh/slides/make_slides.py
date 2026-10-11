@@ -80,6 +80,13 @@ ALT = {
     "fig_samples.png": f"Horizontal bar chart on a log scale of tries per optimum: random guessing {N['random_tries_per_optimum']:,.0f}, simulated annealing "
                        f"{N['annealing_median_evaluations']:,.0f}, local search {N['local_search_median_evaluations']:,.0f}, IonQ noise model {N['ionq_shots_per_optimum']:.1f}, "
                        f"noiseless {N['noiseless_shots_per_optimum']:.1f}.",
+    "fig_meshes.png": f"Nine small drawings of triangle meshes in a 3 by 3 grid: a rectangle, L-shaped plates and a plate with a round hole. "
+                      f"White stars mark heat sources, shaded blocks heavy material, dotted blocks strongly coupled zones, a circle a priority zone. "
+                      f"Each drawing is labelled with its case name and triangle count ({min(N['mesh_triangles'].values()):,} to {max(N['mesh_triangles'].values()):,}).",
+    "fig_tuning.png": "Two line charts on a log scale. Left: share of near-best shots at 12 qubits against the number of QAOA layers, rising for tuned QAOA "
+                      f"to {100 * N['tuning']['n12']['equal devices']['p8']:.1f} percent for equal devices and {100 * N['tuning']['n12']['CPU + GPU']['p8']:.1f} percent for CPU plus GPU at 8 layers, "
+                      "above LR-QAOA, with crosses for the earlier setting at 2 layers. Right: tuned QAOA with 6 layers at 12, 16 and 20 qubits, falling with size "
+                      "but far above crosses for the earlier best setting at 20 qubits and above random guessing.",
     "fig_qollab_placeholder.png": "Placeholder for a live Qollab screenshot. It shows lines of the recorded console output: running on ionq_simulator, "
                                   f"1,000 shots, measured P(optimum) {p_ionq:.4f}, and the two optimal splits measured {N['top_counts'][0]} and {N['top_counts'][1]} times.",
 }
@@ -128,6 +135,17 @@ slide("FORMULATION", "From mesh to Ising energy", [
     source(0.6, 6.45, 12.0, "exact best split: classical check of all splits"),
 ], notes='We group the mesh into twelve regions, one qubit each: zero means device A, one means device B. The energy adds the border that is cut and a penalty when the work share misses its target. Twelve qubits let us check every split and know the exact best one.')
 
+tri = N["mesh_triangles"]
+slide("BENCHMARK", f"{N['n_mesh_objects']} mesh objects, one method", [
+    image("fig_meshes.png", 0.55, 1.55, 5.45, 4.86, ALT["fig_meshes.png"]),
+    text(6.6, 1.7, 2.0, str(N["n_mesh_objects"]), size=66, colour=WHITE, bold=True),
+    text(8.2, 1.9, 4.6, f"objects, built from {N['n_distinct_shapes']} different\nmeshes ({min(tri.values()):,} to {max(tri.values()):,} triangles)", size=20),
+    text(6.6, 3.2, 6.2, "Shapes: a plate, L-shaped plates and a plate\nwith a hole", size=20),
+    text(6.6, 4.15, 6.2, "What changes the work: heat sources, heavy\nmaterial, strongly coupled zones, a priority zone", size=20),
+    text(6.6, 5.1, 6.2, "Every object: both device scenarios, grouped\ninto 12 to 29 regions (one qubit each)", size=20),
+    source(6.6, 6.05, 6.2, "frozen meshes in data/frozen_meshes (identical on every machine)"),
+], notes="We tested nine mesh objects: a plate, L-shaped plates and a plate with a hole, with heat sources, heavy materials, strong coupling and a priority zone.")
+
 slide("QUANTUM METHOD", "Fixed circuits, trained offline", [
     image("fig_circuit.png", 0.45, 1.7, 7.0, 4.3, ALT["fig_circuit.png"]),
     text(7.9, 1.85, 2.2, str(N["n_candidates"]), size=66, colour=WHITE, bold=True),
@@ -168,6 +186,21 @@ slide("SCALING  ·  HONEST COMPARISON", "Bigger meshes: classical methods win", 
     text(8.3, 5.5, 4.7, f"Caveats: varQITE first needed {N['zy_training_circuits']:,}\nnoiseless training circuits. A shot is not\nthe same work as a classical evaluation.", size=18),
 ], notes="Now the honest part. As the mesh grows, classical methods win: at twenty-nine regions, simulated without noise, our best circuit finds a near-best split in under one percent of runs, spectral bisection in half or more. On IonQ's simulator we needed four shots per optimum against eleven hundred classical evaluations. But varQITE first needed seven thousand six hundred training circuits, and a shot is not the same work as a classical evaluation.")
 
+t12, t20 = N["tuning"]["n12"], N["tuning"]["n20"]
+eq12, cg12 = t12["equal devices"], t12["CPU + GPU"]
+slide("IMPROVING QAOA  ·  HPC", f"Tuning QAOA itself: about {eq12['p8'] / eq12['before']:.0f}x more near-best answers", [
+    text(0.6, 1.6, 4.7, "QAOA types we built", size=20, colour=ACCENT, bold=True),
+    text(0.6, 2.05, 4.75, "standard QAOA, all angles tuned\n   (5 optimisers: COBYLA, Nelder-Mead,\n   Powell, L-BFGS-B, SPSA)\nLR-QAOA (linear ramp)\n"
+                          "warm-start QAOA (spectral split)\nCVaR-QAOA\nsymmetry-reduced QAOA\nIceberg-protected QAOA (error detection)\n"
+                          "device-choice QAOA (many devices)", size=16),
+    source(0.6, 5.75, 4.7, f"settings chosen on {N['tuning']['calibration_meshes']} separate calibration\nmeshes, then frozen; scored on unseen meshes"),
+    image("fig_tuning.png", 5.35, 1.45, 7.6, 4.23, ALT["fig_tuning.png"]),
+    text(5.45, 5.72, 7.5, f"12 qubits, 8 layers: {pct(eq12['p8'])} / {pct(cg12['p8'])} near-best (before {pct(eq12['before'], 2)} / {pct(cg12['before'], 2)})\n"
+                          f"20 qubits, {t20['equal devices']['p']} layers: {pct(t20['equal devices']['p_near'], 2)} / {pct(t20['CPU + GPU']['p_near'], 2)} (before "
+                          f"{pct(t20['equal devices']['before_p5'], 3)} / {pct(t20['CPU + GPU']['before_p5'], 3)})", size=15),
+    source(5.45, 6.45, 7.5, "per shot, equal devices / CPU + GPU; noiseless simulation, HPC server, 11 Oct 2026;\ndeeper circuits lose more under noise (0.5 % per gate estimate: best at 5 layers)"),
+], notes="Then we tuned QAOA on separate calibration meshes, comparing seven QAOA types. At twelve qubits the best setting gives about twenty times more near-best answers per shot, and it still helps at twenty qubits.", title_size=32)
+
 slide("DEMO  ·  LIMITS  ·  NEXT STEPS", "Run it on Qollab", [
     image("fig_qollab_placeholder.png", 0.5, 1.6, 5.75, 3.5, ALT["fig_qollab_placeholder.png"]),
     text(0.6, 5.2, 5.8, "Qollab project: [pending]      Video: [pending]", size=18),
@@ -200,9 +233,9 @@ slide("APPENDIX", "Both device scenarios at 12 qubits", table + [
          "fifty-fifty; the best other circuit reaches about half a percent without noise.")
 
 # ---------------------------------------------------------------- checks: speaker notes length ----
-spoken = " ".join(s["notes"] for s in slides[:8])
+spoken = " ".join(s["notes"] for s in slides[:10])     # 10 spoken slides; the appendix is not spoken
 words = len(spoken.replace("[CUT TO THE LIVE QOLLAB DEMO]", "").split())
-assert 330 <= words <= 380, f"speaker notes have {words} words (target 330-380)"
+assert 330 <= words <= 440, f"speaker notes have {words} words (target 330-440, about 3 minutes)"
 
 
 # ---------------------------------------------------------------- renderer 1: PDF with matplotlib (also measures overflow) ----

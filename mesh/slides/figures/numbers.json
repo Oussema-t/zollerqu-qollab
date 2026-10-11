@@ -127,7 +127,72 @@
   "top_counts": [
    146,
    132
-  ]
+  ],
+  "n_mesh_objects": 9,
+  "mesh_case_names": [
+   "1 control",
+   "2 main",
+   "3 hard",
+   "4 structural",
+   "5 L uniform",
+   "6 three sources",
+   "7 materials",
+   "8 coupling",
+   "9 priority"
+  ],
+  "mesh_triangles": {
+   "1 control": 1784,
+   "2 main": 1670,
+   "3 hard": 1802,
+   "4 structural": 2166,
+   "5 L uniform": 1724,
+   "6 three sources": 1996,
+   "7 materials": 1996,
+   "8 coupling": 1996,
+   "9 priority": 1996
+  },
+  "n_distinct_shapes": 6,
+  "tuning": {
+   "n12": {
+    "equal devices": {
+     "p8": 0.07059621124440467,
+     "p8_opt": 0.056772968017426956,
+     "p3_hit": 0.9997856223165348,
+     "p8_hit": 1.0,
+     "before": 0.0035901582633629295,
+     "warm_p8": 0.4913181125136541,
+     "warm_p8_hit": 0.9127091710890356
+    },
+    "CPU + GPU": {
+     "p8": 0.19487465802306297,
+     "p8_opt": 0.1408281940373471,
+     "p3_hit": 0.9999999998866022,
+     "p8_hit": 1.0,
+     "before": 0.010836424664740711,
+     "warm_p8": 0.7250978030892414,
+     "warm_p8_hit": 1.0
+    }
+   },
+   "n20": {
+    "equal devices": {
+     "p": 6,
+     "p_near": 0.006230625961305713,
+     "hit": 0.9810907039629981,
+     "p5": 0.0038520032770774128,
+     "before_p5": 0.00013874541595062376
+    },
+    "CPU + GPU": {
+     "p": 6,
+     "p_near": 0.01685772452550242,
+     "hit": 0.9959620290597293,
+     "p5": 0.012614318740117944,
+     "before_p5": 0.00034584105003868337
+    }
+   },
+   "gates12_p8": 528,
+   "calibration_meshes": 18,
+   "test_meshes_12": 9
+  }
  },
  "figure_sources": {
   "fig_problem.png": "data/frozen_meshes/2_main_seed7.npz, data/frozen_regions.npz, qollab/selected_circuits.json (exact optimum for CPU + GPU)",
@@ -137,6 +202,8 @@
   "fig_ionq_result.png": "qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json (IonQ Forte 1 noise model on Qollab), qollab/selected_circuits.json (noiseless value, estimate, random guessing)",
   "fig_scaling.png": "report/scaling.json (12, 16, 20 qubits: results_large_hpc/, server simulation 2026-10-10) and results/hpc_n29/summary_q29.csv (29 qubits, server simulation 2026-10-10); QAOA at 29 qubits = best fixed schedule p = 5",
   "fig_samples.png": "qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json (shots per optimum), qollab/selected_circuits.json (classical median evaluations from results/ionq_selection/, noiseless value)",
-  "fig_qollab_placeholder.png": "qollab/results_ionq/2026-10-11_varqite_zy_equal_qollab_console.html (recorded console output); to be replaced by a live screenshot"
+  "fig_qollab_placeholder.png": "qollab/results_ionq/2026-10-11_varqite_zy_equal_qollab_console.html (recorded console output); to be replaced by a live screenshot",
+  "fig_meshes.png": "data/frozen_meshes/*_seed7.npz via the notebook mesh cells (Tasks 01-01d); same objects as report/fig_meshes.pdf",
+  "fig_tuning.png": "results/qaoa_tuning/tuning_n12_large_calibration.json (12 qubits, HPC), results/qaoa_tuning/scaling/n16_*, n20_* (HPC), scripts/q29_choice.json (the earlier best setting at 20 qubits); noiseless simulation"
  }
 }
