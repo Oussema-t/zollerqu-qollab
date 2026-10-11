@@ -1,0 +1,7 @@
+Second Qollab run of varqite_zy_equal on ionq_simulator (IonQ Forte 1 noise model), 11 Oct 2026, 1,000 shots.
+Console summary as pasted by the team (the RAW COUNTS line of this run was not saved, so only these numbers are recorded):
+  P(optimum) measured 0.2760 | noiseless prediction 0.7501 | random guessing 0.00049
+  P(within 5 % of opt) 0.2760; P(balanced) 0.554; mean cost 0.6035 (optimum 0.2557); 373 different splits measured
+  samples to solution: 3.6 shots per optimum
+  most frequent splits: x154 and x122 = the two exact optima (000011001111, 111100110000)
+First run (2026-10-11_varqite_zy_equal_ionq_simulator.json): P(optimum) 0.278. The second run reproduces it (0.276).
