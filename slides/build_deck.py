@@ -62,6 +62,9 @@ TUNING_FILE = "results/stocks_qaoa_tuning_n12.json"
 N29_FILE = "results/stocks_qaoa_n29.json"
 CANDIDATES_FILE = "qollab/circuit_candidates.json"
 EXP29_FILE = "results/stocks_exp29_summary.json"
+ICE_VERIFY_FILE = "results/iceberg_verification.json"
+ICE_SWEEP_FILE = "results/qollab_iceberg_sweeps_20261011.json"
+ICE_STUDY_FILE = "results/iceberg_noise_study.json"
 LINKS = {"Qollab project": None, "Demo video": None}   # set a URL to show that line on the closing slide
 CIRCUIT = "B CVaR 0.1 p=3"
 MODE = "buy_or_skip"
@@ -197,6 +200,30 @@ def collect():
     put("exp_greedy_10000", exp["classical"]["budgets"]["10000"]["greedy descent (restarted)"]["hit_rate"], f"{EXP29_FILE}: classical.budgets['10000'] greedy")
     put("exp_repetitions", exp["classical"]["repetitions"], f"{EXP29_FILE}: classical.repetitions")
 
+    ver = load(ICE_VERIFY_FILE)
+    groups = {"start": ("initial bit flip", "state preparation (GHZ + H)", "flag (state-preparation check)"), "checks": ("syndrome check",),
+              "gates": ("logical coupling rzz(i, j)", "logical field rzz(i, b)", "logical mixer rxx(t, i)")}
+    for name, places in groups.items():
+        tot = {"detected": 0, "harmless": 0, "harmful": 0}
+        for f in ver["faults"]:
+            for bucket, e in f["by_location"].items():
+                if bucket.split(" | ")[0] in places:
+                    for v in tot:
+                        tot[v] += e[v]
+        put(f"ice_{name}_ok", (tot["detected"] + tot["harmless"]) / sum(tot.values()), f"{ICE_VERIFY_FILE}: faults by_location, (detected + harmless) / all")
+        put(f"ice_{name}_faults", sum(tot.values()), f"{ICE_VERIFY_FILE}: faults by_location, count")
+    put("ice_faults_total", sum(f["faults"] for f in ver["faults"]), f"{ICE_VERIFY_FILE}: faults[].faults")
+    put("ice_readout_ok", 1.0 if max(r["max_pass_after_one_readout_flip"] for r in ver["equivalence"]) < 1e-12 else 0.0,
+        f"{ICE_VERIFY_FILE}: equivalence[].max_pass_after_one_readout_flip (0 = every single readout flip caught)")
+    put("ice_max_tvd", max(r["tvd_vs_plain"] for r in ver["equivalence"]), f"{ICE_VERIFY_FILE}: equivalence[].tvd_vs_plain")
+    p3 = next(r for r in ver["equivalence"] if r["circuit"] == "B LR-QAOA p=3" and r["checks"] == 1)
+    put("ice_qubits", p3["qubits"], f"{ICE_VERIFY_FILE}: equivalence['B LR-QAOA p=3', 1 check].qubits")
+    put("ice_gates_p3", p3["two_qubit_gates"], f"{ICE_VERIFY_FILE}: equivalence['B LR-QAOA p=3', 1 check].two_qubit_gates")
+    put("plain_gates_p3", n["gates_circuit"], "198 two-qubit gates of a plain 3-layer circuit (same as the IonQ circuit)")
+    sweep = load(ICE_SWEEP_FILE)["runs"]
+    put("ice_jobs", sum(1 for run in sweep for r in run["rows"] if r["error_detection"] == "iceberg"), f"{ICE_SWEEP_FILE}: runs[].rows (Iceberg jobs)")
+    put("ice_all_kept", all(r["kept_share"] == 1.0 for run in sweep for r in run["rows"] if r["error_detection"] == "iceberg"), f"{ICE_SWEEP_FILE}: kept_share == 1")
+    # the local noise prediction (ICE_STUDY_FILE) is not shown: its first result was not understood in time to be trusted
     return n, src
 
 
@@ -441,6 +468,28 @@ def fig_main(n):
     fig.text(0.008, 0.945, "evaluations until the best portfolio is found (median)", fontsize=MIN_PT, color=MUTED, ha="left", va="center")
     fig.text(left + (0.975 - left) / 2, 0.045, "log scale · fewer is better", fontsize=MIN_PT, color=MUTED, ha="center", va="center")
     return save(fig, "main_result.png")
+
+
+def fig_iceberg(n):
+    """Iceberg slide: share of single faults that are caught or harmless, by place in the circuit (exact fault injection)."""
+    rows = [("start state + flag", n["ice_start_ok"]), ("syndrome checks", n["ice_checks_ok"]), ("readout bit flips", n["ice_readout_ok"]),
+            ("QAOA gates (rzz, rxx)", n["ice_gates_ok"])]
+    fig = plt.figure(figsize=(7.3, 4.2))
+    ax = fig.add_axes([0.36, 0.2, 0.6, 0.67])
+    y = np.arange(len(rows))[::-1]
+    for (label, value), yy in zip(rows, y):
+        ax.barh(yy, 100 * value, height=0.55, color=TEAL if value > 0.999 else AMBER)
+        ax.text(100 * value + 2, yy, f"{100 * value:.0f} %", va="center", ha="left", fontsize=20, fontweight="bold", color=WHITE)
+    ax.set_yticks(y, [r[0] for r in rows], color=WHITE)
+    ax.set_xlim(0, 125)
+    ax.set_xticks([0, 50, 100])
+    ax.set_xticklabels(["0", "50", "100 %"])
+    ax.xaxis.grid(True)
+    ax.set_axisbelow(True)
+    ax.spines["left"].set_visible(False)
+    ax.set_xlabel("single faults caught or harmless", labelpad=6)
+    fig.text(0.008, 0.945, f"every single fault injected ({n['ice_faults_total']:,}), exact", fontsize=MIN_PT, color=MUTED, ha="left", va="center")
+    return save(fig, "iceberg.png")
 
 
 def fig_depth29(n):
@@ -747,9 +796,9 @@ def build_slides(n, figures, tickers, buy, corr):
     # 3 ---------------------------------------------------------------- formulation
     s = Slide(3, "FORMULATION", "One qubit per asset, one Ising energy", source=[
         f"Exact best portfolio found by checking all {n['states']:,} portfolios (classical); risk and return from {n['train_first'][:4]}-{n['train_last'][:4]} data"], notes=(
-        "Each asset becomes one qubit: zero means buy, one means skip. "
-        f"Risk minus return becomes an Ising energy with one coupling per pair of assets: {n['pairs_12']} couplings. "
-        f"For twelve assets we check every portfolio: the best is Apple plus long-term Treasury bonds."))
+        "Each asset is one qubit: zero means buy, one means skip. "
+        "Risk minus return becomes an Ising energy with one coupling per pair. "
+        "Checking every portfolio, the best is Apple plus Treasury bonds."))
     s.text(MX, 1.75, 6.3, ["Score to minimise: risk minus return"], size=MIN_PT, color=MUTED)
     s.image(figures["score"], MX, 2.05, 6.2, 1.45, "Formula: J of x equals x transposed C x over n squared V ref (the risk), minus eta times mu transposed x over n sigma ref (the return).")
     s.text(MX, 3.58, 6.3, ["The same score as an Ising energy"], size=MIN_PT, color=MUTED)
@@ -762,8 +811,8 @@ def build_slides(n, figures, tickers, buy, corr):
     # 4 ---------------------------------------------------------------- quantum method
     s = Slide(4, "QUANTUM METHOD", "QAOA circuits, trained offline, one IonQ job", source=[
         f"12 qubits: {n['circuits_compared']} circuits + a random-guess control, noiseless simulation · 16-29 qubits: server simulation"], notes=(
-        "The circuit is QAOA: Hadamard gates, a cost layer with one ZZ gate per pair, then a mixer. "
-        "At twelve qubits the best is CVaR-QAOA, sent to IonQ as one job; at twenty-nine we use linear-ramp QAOA with angles from twelve."))
+        "The circuit is QAOA: Hadamards, a cost layer with one ZZ gate per pair, then a mixer. "
+        "At twelve qubits the best is CVaR-QAOA; at twenty-nine, linear-ramp QAOA with angles from twelve."))
     s.image(figures["circuit"], MX, 1.62, CW, 2.6, "Circuit sketch: four of the twelve qubit lines. Each starts with an H gate, passes a cost layer block (one ZZ gate per pair, 66, and one Z rotation per qubit) and a mixer block (RX on every qubit), repeated three times, then is measured; 1,000 shots give 1,000 portfolios.")
     card_w, gap_w, y0, card_h = (CW - 0.5) / 3, 0.25, 4.4, 1.72
     cards = [("COMPARED", "8 circuit types", WHITE, [f"{n['circuits_compared']} circuits, trained offline", "on a classical simulator"]),
@@ -807,7 +856,7 @@ def build_slides(n, figures, tickers, buy, corr):
     s = Slide(6, "WHY IONQ", f"All-to-all links: {n['gates_ratio_12']:.1f}× fewer two-qubit gates", source=[
         f"Gate counts from transpiling only (Qiskit {n['qiskit']}, level 1); heavy-hex = median of {n['routing_seeds']} routing seeds",
         "on a generic heavy-hex map. No circuit was run on a heavy-hex device."], notes=(
-        "Every pair of assets is coupled, and trapped ions link every pair of qubits directly. "
+        "Trapped ions link every pair of qubits directly. "
         f"One layer needs {n['gates_all_12']} two-qubit gates; on a heavy-hex grid it needs {n['gates_hh_12']}: "
         f"{n['gates_ratio_12']:.1f} times more, and {n['gates_ratio_29']:.1f} times at twenty-nine qubits."))
     s.image(figures["gates"], MX, 1.65, 7.0, 4.15, f"Column chart of two-qubit gates in one QAOA layer. At 12 qubits: {n['gates_all_12']} on all-to-all against {n['gates_hh_12']} on a heavy-hex grid. At 29 qubits: {n['gates_all_29']} against {n['gates_hh_29']:,}.")
@@ -820,10 +869,10 @@ def build_slides(n, figures, tickers, buy, corr):
     s = Slide(7, "MAIN RESULT", f"IonQ noise model: {ratio} random guessing", source=[
         f"{label_noisy}: 1 job, {shots:,} shots, 11 Oct 2026 · noiseless simulation",
         f"Classical: median of {n['classical_runs']} runs. Sampler medians come from the hit rate per shot. Training not counted."], notes=(
-        f"The main result, on the IonQ Forte 1 noise model: {hits} of {shots:,} shots were the exact best portfolio, "
+        f"On the IonQ Forte 1 noise model, {hits} of {shots:,} shots were the exact best portfolio, "
         f"{n['ratio_random']:.0f} times more than random guessing. "
         f"The noiseless simulation gives {per_thousand(n['p_noiseless'])}, so noise costs a factor of {n['noise_factor']:.0f}. "
-        "Classical greedy search is in the same range."))
+        "Greedy search is in the same range."))
     s.rect(MX, 1.7, 4.45, 4.15)
     s.text(MX + 0.3, 1.92, 3.9, [label_noisy.replace(" (Qollab)", "")], size=MIN_PT, color=MUTED)
     y = s.stat(MX + 0.3, 2.28, 3.9, f"{hits} / {shots:,}", ["shots are the exact best", f"of {n['states']:,} portfolios"], size=54, color=AMBER)
@@ -844,7 +893,7 @@ def build_slides(n, figures, tickers, buy, corr):
         f"Classical: greedy descent and annealing, {n['exp_repetitions']} runs, the same {n['budget']:,} evaluations"], notes=(
         f"At twenty-nine assets the three-layer circuit finds the best portfolio in {100 * w[3]:.0f} percent of runs, classical methods in {100 * n['exp_greedy_1000']:.0f}. "
         f"With more layers, the noiseless circuit reaches {100 * w[16]:.0f} percent at sixteen. "
-        "But that is six and a half thousand two-qubit gates, far beyond today's noise. No advantage is claimed."))
+        "That needs six and a half thousand two-qubit gates, far beyond today's noise. No advantage is claimed."))
     s.image(figures["depth"], MX, 1.65, 7.3, 4.2, (
         f"Line chart for 29 assets: share of 1,000-shot runs that contain the exact best portfolio, against the number of layers, in noiseless simulation. "
         f"With the ramp tuned on a wider grid: {100 * w[3]:.1f} % at 3 layers, {100 * w[12]:.0f} % at 12, {100 * w[16]:.0f} % at 16, {100 * w[24]:.1f} % at 24 and "
@@ -857,15 +906,34 @@ def build_slides(n, figures, tickers, buy, corr):
                                     ["A shot is not the same work", "as a classical evaluation"]], size=MIN_PT, gap=0.17, color=WHITE)
     slides.append(s)
 
-    # 8 ---------------------------------------------------------------- demo, limits, next steps
-    s = Slide(9, "DEMO, LIMITS, NEXT STEPS", "Try it on Qollab: one click, one IonQ job", notes=(
-        "[CUT TO LIVE QOLLAB DEMO] Here is the project on Qollab, with the code in main.py. "
-        "We press Run, select the IonQ Forte 1 noise model, and one job returns counts and plots. "
-        "[BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. "
-        "Next: other circuits, shorter circuits, and the depth noise allows."))
+    # 9 ---------------------------------------------------------------- Iceberg error detection
+    s = Slide(9, "ERROR DETECTION", "Iceberg code: verified, but it costs gates", source=[
+        f"Faults: exact simulation of every single fault (1, 2 layers) · Qollab IonQ simulator: {n['ice_jobs'] * 2} jobs, 11 Oct 2026",
+        "Detection, not correction: shots that fail a check are discarded"], notes=(
+        f"We also protected the circuit with the Iceberg error-detection code: twelve logical qubits on {n['ice_qubits']}. "
+        "Every state-preparation, check and readout fault is caught, and four in five gate faults. "
+        "On Qollab's IonQ simulator every shot passed; the price is more gates."))
+    s.image(figures["iceberg"], MX, 1.65, 7.3, 4.2, (
+        f"Bar chart: share of single faults that are caught or harmless, from injecting every single fault ({n['ice_faults_total']:,}) in exact simulation. "
+        f"Start state and flag {100 * n['ice_start_ok']:.0f} %, syndrome checks {100 * n['ice_checks_ok']:.0f} %, readout bit flips {100 * n['ice_readout_ok']:.0f} %, "
+        f"QAOA gates {100 * n['ice_gates_ok']:.0f} %; the rest are XX, YY and ZZ errors on a gate's own pair, which a distance-2 code cannot see."))
+    y = s.stat(8.3, 1.7, 4.43, f"{n['ice_qubits']} qubits", ["12 logical on 14, + 1 flag", "+ 2 helpers per check"], size=44)
+    y = s.stat(8.3, y + 0.2, 4.43, f"+{100 * (n['ice_gates_p3'] / n['plain_gates_p3'] - 1):.0f} %", [f"two-qubit gates at 3 layers", f"({n['ice_gates_p3']} vs {n['plain_gates_p3']})"], size=44)
+    lines = [["IonQ simulator via Qollab:", "every check passed, results", "match the noiseless ones"]]
+    if n.get("ice_pred_kept_p3") is not None:
+        lines.append([f"With noise (local model): {100 * n['ice_pred_kept_p3']:.0f} %", "of shots kept at 3 layers"])
+    s.bullets(8.3, y + 0.22, 4.43, lines, size=MIN_PT, gap=0.12, color=WHITE)
+    slides.append(s)
+
+    # 10 ---------------------------------------------------------------- demo, limits, next steps
+    s = Slide(10, "DEMO, LIMITS, NEXT STEPS", "Try it on Qollab: one click runs it all", notes=(
+        "[CUT TO LIVE QOLLAB DEMO] Here is our Qollab project; the code is in main.py. "
+        "We press Run, choose the IonQ Forte 1 noise model, and get counts and plots. "
+        "[BACK TO SLIDE] Limits: a noisy simulator and strong classical baselines. "
+        "Next: Iceberg under real noise, and shorter circuits."))
     s.rect(MX, 1.7, 5.6, 4.15)
     y = s.text(MX + 0.3, 1.95, 5.0, ["Live demo on Qollab"], size=24, bold=True) + 0.32
-    steps = [["Open the project:", "the code is in main.py"], ["Run → Select QPU →", "IonQ Forte 1 (29q) noise model"], ["One job returns the counts,", "the table and the plots"]]
+    steps = [["Open the project:", "the code is in main.py"], ["Run → Select QPU →", "IonQ Forte 1 (29q) noise model"], ["Each job returns counts,", "a table and plots"]]
     for k, lines in enumerate(steps, 1):
         s.dot(MX + 0.3, y + 0.09, 0.5, TEAL)
         s.text(MX + 0.3, y + 0.09 + (0.5 - 0.3) / 2 - 0.01, 0.5, [str(k)], size=MIN_PT, bold=True, align="c")
@@ -875,13 +943,13 @@ def build_slides(n, figures, tickers, buy, corr):
                                          [f"Noise cuts the hits from {per_thousand(n['p_noiseless'])} to {hits} per 1,000"],
                                          ["Classical heuristics match or beat it"]], size=MIN_PT, gap=0.14)
     y = s.text(6.75, y + 0.42, 5.98, ["Next steps"], size=22, bold=True)
-    s.bullets(6.75, y + 0.16, 5.98, [[f"Run the other {n['selected_other']} selected circuits"],
+    s.bullets(6.75, y + 0.16, 5.98, [["Iceberg on the Forte 1 noise model"],
                                      [f"Shorter circuits: {n['gates_all_12']} instead of {n['gates_circuit']} gates"],
                                      ["Find how many layers the noise allows"]], size=MIN_PT, gap=0.14)
     slides.append(s)
 
     # 9 ---------------------------------------------------------------- closing
-    s = Slide(10, "TEAM ZOLLERQU", ["Thank you for", "your attention"], title_size=52, hero=True, notes=(
+    s = Slide(11, "TEAM ZOLLERQU", ["Thank you for", "your attention"], title_size=52, hero=True, notes=(
         "Thank you for your attention. This effort is supported by Qollab and IonQ."))
     y = s.text(MX, 3.95, 6.9, ["Oussama Turki  ·  Tushar Pandey"], size=22, bold=True)
     closing = ["Portfolio Selection with QAOA"] + [f"{label}: {url}" for label, url in LINKS.items() if url]
@@ -937,7 +1005,7 @@ def main():
     buy = exact_optimum()
     style()
     figures = {"hero": fig_hero(tickers, corr), "graph": fig_graph(tickers, corr, buy), "score": fig_formula_score(), "ising": fig_formula_ising(),
-               "circuit": fig_circuit(n), "gates": fig_gates(n), "main": fig_main(n), "depth": fig_depth29(n)}
+               "circuit": fig_circuit(n), "gates": fig_gates(n), "main": fig_main(n), "depth": fig_depth29(n), "iceberg": fig_iceberg(n)}
     slides, extra = build_slides(n, figures, tickers, buy, corr)
     for slide in slides:                                # run the layout checks of the frame and the title too
         frame(slide)

@@ -371,6 +371,62 @@
   "exp_repetitions": {
    "value": 200,
    "source": "results/stocks_exp29_summary.json: classical.repetitions"
+  },
+  "ice_start_ok": {
+   "value": 1.0,
+   "source": "results/iceberg_verification.json: faults by_location, (detected + harmless) / all"
+  },
+  "ice_start_faults": {
+   "value": 576,
+   "source": "results/iceberg_verification.json: faults by_location, count"
+  },
+  "ice_checks_ok": {
+   "value": 1.0,
+   "source": "results/iceberg_verification.json: faults by_location, (detected + harmless) / all"
+  },
+  "ice_checks_faults": {
+   "value": 1278,
+   "source": "results/iceberg_verification.json: faults by_location, count"
+  },
+  "ice_gates_ok": {
+   "value": 0.8009876543209876,
+   "source": "results/iceberg_verification.json: faults by_location, (detected + harmless) / all"
+  },
+  "ice_gates_faults": {
+   "value": 4050,
+   "source": "results/iceberg_verification.json: faults by_location, count"
+  },
+  "ice_faults_total": {
+   "value": 5904,
+   "source": "results/iceberg_verification.json: faults[].faults"
+  },
+  "ice_readout_ok": {
+   "value": 1.0,
+   "source": "results/iceberg_verification.json: equivalence[].max_pass_after_one_readout_flip (0 = every single readout flip caught)"
+  },
+  "ice_max_tvd": {
+   "value": 6.747070177535892e-16,
+   "source": "results/iceberg_verification.json: equivalence[].tvd_vs_plain"
+  },
+  "ice_qubits": {
+   "value": 17,
+   "source": "results/iceberg_verification.json: equivalence['B LR-QAOA p=3', 1 check].qubits"
+  },
+  "ice_gates_p3": {
+   "value": 313,
+   "source": "results/iceberg_verification.json: equivalence['B LR-QAOA p=3', 1 check].two_qubit_gates"
+  },
+  "plain_gates_p3": {
+   "value": 198,
+   "source": "198 two-qubit gates of a plain 3-layer circuit (same as the IonQ circuit)"
+  },
+  "ice_jobs": {
+   "value": 6,
+   "source": "results/qollab_iceberg_sweeps_20261011.json: runs[].rows (Iceberg jobs)"
+  },
+  "ice_all_kept": {
+   "value": true,
+   "source": "results/qollab_iceberg_sweeps_20261011.json: kept_share == 1"
   }
  }
 }
