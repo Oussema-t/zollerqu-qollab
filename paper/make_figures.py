@@ -401,9 +401,47 @@ def large(path):
             f"{gb['mean_best_quality']:.4f} (greedy, {100 * gb['hit_rate']:.0f}\\%) and {sb['mean_best_quality']:.4f} (annealing, {100 * sb['hit_rate']:.0f}\\%). "
             f"The circuit's most likely portfolio in mode A {'is the exact optimum' if ca['most_probable_state'] == opt_a else f'differs from the exact optimum in {differs} assets'} (Fig.~\\ref{{fig:cut29}}); "
             f"the thinned surrogate's own optimum {'coincides with' if a['exact_thinned_surrogate']['same_state_as_dense_optimum'] else 'differs from'} the dense optimum. "
-            f"At this size the classical heuristics win on reaching the exact optimum within the budget; the untuned circuit still samples far above random, which is what the hardware run will test.")
+            f"At this size the classical heuristics win on reaching the exact optimum within the budget, while the untuned circuit still samples far above random.")
     (OUT.parent / "n29_text.tex").write_text(text + "\n")
     return data
+
+
+def large_comparison(data):
+    """29 qubits: every method under the same 1,000-evaluation budget, best-of-budget quality and exact-optimum hit rate."""
+    fig, axes = plt.subplots(2, 2, figsize=(7.4, 4.6), gridspec_kw={"width_ratios": [1.25, 1]})
+    for col, m in enumerate(MODES):
+        b = data["modes"][m]
+        c = b["classical_same_budget"]
+        rows = [("uniform random sampling", c["random sampling"]["mean_best_quality"], c["random sampling"]["hit_rate"], GREY),
+                ("greedy descent, restarted", c["greedy descent (restarted)"]["mean_best_quality"], c["greedy descent (restarted)"]["hit_rate"], BROWN),
+                ("simulated annealing, 1000 steps", c["simulated annealing (one run)"]["mean_best_quality"], c["simulated annealing (one run)"]["hit_rate"], BROWN)]
+        for key in sorted(b["circuits"], key=lambda k: (k.split("_")[0] != "thinned", int(k.split("p")[1]))):
+            r = b["circuits"][key]
+            rows.append((f"LR-QAOA p={r['p']}, {r['circuit_model']}", r["sampled"]["mean_best_quality"], r["p_optimum_in_shots"],
+                         BLUE if r["circuit_model"] == "thinned" else ORANGE))
+        names = [r[0] for r in rows]
+        y = np.arange(len(rows))
+        for row, (index, label, fmt) in enumerate(((1, "quality of the best portfolio found in 1\u2009000 evaluations", "{:.4f}"),
+                                                   (2, "probability of reaching the exact optimum (hit@1000)", "{:.3f}"))):
+            ax = axes[row][col]
+            values = [r[index] for r in rows]
+            ax.barh(y, values, color=[r[3] for r in rows], height=0.7)
+            for yy, v in zip(y, values):
+                ax.annotate(fmt.format(v), (v, yy), xytext=(3, 0), textcoords="offset points", va="center", fontsize=5.5)
+            ax.set_yticks(y, names if col == 0 else [""] * len(y), fontsize=6)
+            ax.invert_yaxis()
+            if row == 0:
+                low = min(values) - 0.004
+                ax.set_xlim(low, 1.0 + (1.0 - low) * 0.22)
+                ax.set_title(MODE_NAME[m], loc="left")
+            else:
+                ax.set_xlim(0, max(max(values) * 1.35, 0.02))
+            ax.set_xlabel(label, fontsize=7)
+            ax.grid(True, axis="x", color="#e5e4df", linewidth=0.5)
+            ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(OUT / f"budget29.{ext}", dpi=220, bbox_inches="tight")
 
 
 if __name__ == "__main__":
@@ -417,6 +455,6 @@ if __name__ == "__main__":
     varqite_curves(results)
     n29 = OUT.parent.parent / "results" / "stocks_qaoa_n29.json"
     if n29.is_file():
-        large(n29)
-        print("29-qubit figure and table written")
+        large_comparison(large(n29))
+        print("29-qubit figures and table written")
     print("ladder, budget figure and table written; most likely state is the optimum:", cut(json.loads(t4.PARAMETERS_PATH.read_text())))
