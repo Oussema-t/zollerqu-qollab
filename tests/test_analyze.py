@@ -149,13 +149,22 @@ def test_ideal_simulation_is_clean_with_right_statistics():
         assert r["n_discarded"] == 0 and r["n_corrected"] == 0, r
         assert r["deviation_corrected"] < 0.06, r
         assert r["p1_clean"] == r["p1_corrected"] == r["p1_all"]
+        assert r["kept_fraction"] == pytest.approx(1 - r["discard_fraction"])
     d = by_name(res)
-    assert d[(3, "enc_Z")]["ideal_p1"] == pytest.approx(IDEAL_P1_ROTATED)
-    for name in ("enc_X", "enc_Y", "bare_X", "bare_Y"):
-        assert d[(4, name)]["p1_corrected"] == pytest.approx(0.25, abs=0.06)
-        assert d[(4, name)]["kept_fraction"] == pytest.approx(0.5, abs=0.06)
-    assert len(d[(3, "enc_X")]["blocks"]) == 3 and d[(3, "enc_X")]["blocks"][2]["basis"] == "X"
-    assert d[(4, "enc_Y")]["blocks"][1]["checks"] == []
+    assert d[(3, "enc_X")]["ideal_p1"] == d[(4, "enc_Y")]["ideal_p1"] == pytest.approx(IDEAL_P1_ROTATED)
+    assert len(d[(4, "enc_X")]["blocks"]) == 3 and d[(4, "enc_X")]["blocks"][2]["basis"] == "X"
+    assert d[(4, "enc_Y")]["blocks"][2]["checks"] == [] and d[(3, "enc_Y")]["blocks"][0]["checks"] == []
+
+
+def test_noiseless_ideals():
+    """The T state T|+> reads 1 with probability sin^2(pi/8) in X and in Y, on one patch (lesson 3) and after
+    teleportation with the Pauli frame applied in software (lesson 4)."""
+    res = run({"shots": 4000, "inject": None}, 4000, lessons=(3, 4))
+    assert len(res) == 8
+    for r in res:
+        assert r["p1_corrected"] == pytest.approx(IDEAL_P1_ROTATED, abs=0.03), r
+        if r["lesson"] == 4 and r["kind"] == "enc":
+            assert r["n_discarded"] == 0, r
 
 
 def test_lesson_four_without_t_reads_one_half_in_y():

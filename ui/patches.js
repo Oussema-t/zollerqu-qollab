@@ -1,13 +1,13 @@
 // Draws one SVG patch per logical qubit for the current lesson, lit by check fire rates and decoder corrections.
 const NS = 'http://www.w3.org/2000/svg';
-const BLOCK_NAMES = { 1: ['A'], 2: ['A', 'B'], 3: ['A', 'B', 'C'], 4: ['A', 'B'] };
+const BLOCK_NAMES = { 1: ['A'], 2: ['A', 'B'], 3: ['A'], 4: ['A', 'B', 'C'] };
 const ROLE = {
   1: { A: 'the logical qubit' },
   2: { A: 'control, |+>', B: 'target, |0>' },
-  3: { A: 'input ψ', B: 'half of Bell pair', C: 'output' },
-  4: { A: 'data ψ', B: 'magic state T|+>' },
+  3: { A: 'T state T|+>' },
+  4: { A: 'input T|+>', B: 'half of Bell pair', C: 'output' },
 };
-const LINKS = { 2: [['A', 'B']], 3: [['B', 'C'], ['A', 'B']], 4: [['B', 'A']] };
+const LINKS = { 2: [['A', 'B']], 4: [['B', 'C'], ['A', 'B']] };
 // Data qubit i sits at (col, row) = (i % 3, floor(i / 3)), spacing S, q0 top-left.
 // Grid spans 0..120 inside the group; caps reach R beyond each edge; name and role sit below the bottom cap.
 const S = 60, R = 30;

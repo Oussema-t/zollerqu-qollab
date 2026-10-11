@@ -19,9 +19,6 @@ export function renderCards(root, rows) {
   root.appendChild(card(fmt(mean(encs.map((r) => r.correct_fraction))), 'corrected by the code', 'share of shots where the decoder located and undid a single error'));
   root.appendChild(card(fmt(mean(encs.map((r) => r.deviation_corrected))), 'logical error after correction', 'absolute gap between measured and ideal P(1) over clean and corrected shots, averaged over the readouts shown'));
   root.appendChild(card(fmt(mean(bares.map((r) => r.deviation_all))), 'same experiment on bare physical qubits', 'absolute gap between measured and ideal P(1) with no encoding, averaged over the readouts shown'));
-  if (rows[0] && rows[0].lesson === 4) {
-    root.appendChild(card(fmt(mean(encs.map((r) => r.kept_fraction))), 'kept after post-selecting A = 0 (ideal 50%)'));
-  }
 }
 
 function bars(title, items) {

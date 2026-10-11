@@ -6,8 +6,8 @@ def test_method_per_circuit():
     circuits, meta = build_all({"shots": 10, "inject": None})
     got = {(m["lesson"], m["name"]): method_for(qc) for qc, m in zip(circuits, meta)}
     assert got[(1, "enc_Z")] == got[(2, "enc_XX")] == got[(1, "bare_X")] == "stabilizer"
-    assert got[(4, "enc_X")] == got[(4, "bare_Y")] == got[(3, "bare_Z")] == "statevector"
-    assert got[(3, "enc_Z")] == got[(3, "enc_X")] == "matrix_product_state"
+    assert got[(3, "enc_X")] == got[(4, "bare_Y")] == got[(3, "bare_Y")] == "statevector"
+    assert got[(4, "enc_X")] == got[(4, "enc_Y")] == "matrix_product_state"
 
 
 def test_simulate_keeps_circuit_order_and_shots():

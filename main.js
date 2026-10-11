@@ -35,7 +35,7 @@ function showBackendBanner() {
   setBanner((state.isIonq
     ? `Backend: ${state.backendName}. IonQ backends accept one job per run, so all circuits go in one submission.`
     : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`)
-    + (state.maxQubits < 27 ? ' Lesson 3 needs 27 qubits, so on this backend it is shown from the recorded take; pick a Forte simulator to run it live.' : ''),
+    + (state.maxQubits < 27 ? ' Lesson 4 needs 27 qubits, so on this backend it is shown from the recorded take; pick a Forte simulator to run it live.' : ''),
   state.isIonq ? 'warn' : '');
 }
 

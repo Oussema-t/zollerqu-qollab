@@ -16,19 +16,21 @@ export const LESSONS = {
 <p class="note">18 qubits. Each patch is corrected on its own before the parity is taken.</p>`,
   },
   3: {
-    title: "Teleporting a logical qubit",
+    title: "A T state on a patch",
     html: `
-<p>Patch A holds a state, <em>ry(pi/4)|0&gt;</em>. Patches B and C share a logical Bell pair. A Bell measurement on A and B is a transversal CNOT followed by reading A in X and B in Z. Patch C now holds the state, up to a Pauli correction that depends on the two readouts.</p>
-<p>No feed-forward is needed: we read C and apply the correction <strong>in software</strong>, flipping the recorded bit when the readouts say so. Hardware experiments do exactly this and call it the Pauli frame.</p>
-<p>Check: in both bases the chance of reading 1 should be 14.6 percent, the same as the input state.</p>
-<p class="note">Three patches, 27 qubits. That fits only the 29-qubit Forte simulators; on other backends this lesson is shown from the recorded take. Each patch is corrected before the frame is applied.</p>`,
+<p>Every gate so far was Clifford. The <strong>T gate</strong> is not: it is not transversal in this code, or in any code of this kind, yet a computer needs it. The way out is a resource state, <strong>T|+&gt;</strong>, made once and used later. With it, a T gate can be teleported onto any data.</p>
+<p>Physically it is made on one qubit: H then T on q0 of the patch, then the same 16-gate encoder as in lesson 1 spreads that one qubit over all nine. The result is the logical state T|+<sub>L</sub>&gt;.</p>
+<p>Check: read the patch in X and in Y. Each should give 1 in <strong>14.6 percent</strong> of shots. A plain |+&gt; without the T would give 0 percent in X and 50 percent in Y, so both numbers together show the T phase is there.</p>
+<p class="note">9 qubits. The X readout is checked and corrected; the Y readout has no checks. T on one bare qubit before encoding is unprotected: real machines distil many noisy T states into one clean one, and spend most of their effort doing so.</p>
+<p class="note">The Y readout has no checks, so a Y error on any of its nine qubits goes uncorrected; expect the coded Y result to sit above the bare one on a noisy run. The X readout is checked and corrected.</p>`,
   },
   4: {
-    title: "The T gate is a teleportation too",
+    title: "Teleporting the T state",
     html: `
-<p>Every gate so far was Clifford. The <strong>T gate</strong> is not transversal in this code, or in any code of this kind. The way out is to prepare a <em>magic state</em> T|+&gt; in its own patch, then teleport the gate onto the data.</p>
-<p>Patch B holds the magic state, patch A holds the same input as lesson 3, <em>ry(pi/4)|0&gt;</em>. A transversal CNOT from B to A and a Z readout of A leave T|psi&gt; on B half the time. The other half needs an S correction that requires feed-forward, which this project avoids so it runs on every backend. Instead we <strong>keep only the shots where A read 0</strong>. The kept fraction should be about one half.</p>
-<p>Check: reading B in X and in Y should both give 1 about 25 percent of the time. Without the T gate, X would give 14.6 percent and Y 50 percent. We do not use |+&gt; as the input on purpose: T|+&gt; is the magic state itself, so nothing would visibly change.</p>
-<p class="note">18 qubits. Fault-tolerant computers spend most of their effort making clean magic states. This lesson is why.</p>`,
+<p>Patch A holds the T state from lesson 3, <em>T|+&gt;</em>. Patches B and C share a logical Bell pair. A Bell measurement on A and B is a transversal CNOT followed by reading A in X and B in Z. Patch C now holds the T state, up to a Pauli correction that depends on the two readouts.</p>
+<p>No feed-forward is needed: we read C and apply the correction <strong>in software</strong>, flipping the recorded bit when the readouts say so. Hardware experiments do exactly this and call it the Pauli frame. When C is read in X, flip it if A read 1; when C is read in Y, flip it if A or B read 1, but not both.</p>
+<p>Check: in both X and Y the chance of reading 1 should be 14.6 percent, the same as the T state before it travelled.</p>
+<p class="note">Three patches, 27 qubits. That fits only the 29-qubit Forte simulators; on other backends this lesson is shown from the recorded take. Each patch is corrected before the frame is applied.</p>
+<p class="note">C's Y readout has no checks, so a Y error on any of its nine qubits goes uncorrected; expect the coded Y result to sit above the bare one on a noisy run. The X readout is checked and corrected.</p>`,
   },
 };

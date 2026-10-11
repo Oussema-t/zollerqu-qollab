@@ -3,9 +3,7 @@ import math
 
 from qec import code913 as c
 
-THETA = math.pi / 4
 IDEAL_P1_ROTATED = math.sin(math.pi / 8) ** 2   # 0.146..., same for every rotated readout we use
-IDEAL_P1_T = 0.25                               # T applied to ry(pi/4)|0>: <X> = <Y> = 1/2
 
 
 def _meta(lesson, name, kind, label, nblocks, bases, value_blocks, ideal_p1, keep_if_zero=()):
@@ -73,15 +71,37 @@ def _lesson2():
     return out
 
 
-# ---------- lesson 3: logical teleportation ----------
+# ---------- lesson 3: a T state on one patch ----------
 
 def _lesson3():
     out = []
-    for basis in ("Z", "X"):
+    for basis in ("X", "Y"):
+        qc = c.new_circuit(1)
+        c.mark(qc, "prepare A")
+        qc.h(c.data(0, 0))
+        qc.t(c.data(0, 0))
+        c.encode(qc, 0)                 # A = |T_L> = T|+_L>
+        c.finish(qc, 1, [basis])
+        out.append((qc, _meta(3, f"enc_{basis}", "enc", basis, 1, [basis], [0], IDEAL_P1_ROTATED)))
+    for basis in ("X", "Y"):
+        qc = c.new_bare(1)
+        qc.h(0)
+        qc.t(0)
+        c.finish_bare(qc, [basis])
+        out.append((qc, _meta(3, f"bare_{basis}", "bare", basis, 1, [basis], [0], IDEAL_P1_ROTATED)))
+    return out
+
+
+# ---------- lesson 4: teleporting the T state ----------
+
+def _lesson4():
+    out = []
+    for basis in ("X", "Y"):
         qc = c.new_circuit(3)
         c.mark(qc, "prepare A")
-        qc.ry(THETA, c.data(0, 0))
-        c.encode(qc, 0)                 # A = psi
+        qc.h(c.data(0, 0))
+        qc.t(c.data(0, 0))
+        c.encode(qc, 0)                 # A = |T_L>
         c.mark(qc, "prepare B")
         qc.h(c.data(1, 0))
         c.encode(qc, 1)                 # B = |+_L>
@@ -89,44 +109,18 @@ def _lesson3():
         c.transversal_cx(qc, 1, 2)      # logical Bell pair B,C
         c.transversal_cx(qc, 0, 1)      # Bell measurement part 1
         c.finish(qc, 3, ["X", "Z", basis])
-        frame = 1 if basis == "Z" else 0   # X correction from Z_B flips Z readout; Z correction from X_A flips X readout
-        out.append((qc, _meta(3, f"enc_{basis}", "enc", basis, 3, ["X", "Z", basis], [2, frame], IDEAL_P1_ROTATED)))
-    for basis in ("Z", "X"):
+        frame = [2, 0] if basis == "X" else [2, 0, 1]   # Z correction (from A) flips X and Y; X correction (from B) flips Y
+        out.append((qc, _meta(4, f"enc_{basis}", "enc", basis, 3, ["X", "Z", basis], frame, IDEAL_P1_ROTATED)))
+    for basis in ("X", "Y"):
         qc = c.new_bare(3)
-        qc.ry(THETA, 0)
+        qc.h(0)
+        qc.t(0)
         qc.h(1)
         qc.cx(1, 2)
         qc.cx(0, 1)
         c.finish_bare(qc, ["X", "Z", basis])
-        frame = 1 if basis == "Z" else 0
-        out.append((qc, _meta(3, f"bare_{basis}", "bare", basis, 3, ["X", "Z", basis], [2, frame], IDEAL_P1_ROTATED)))
-    return out
-
-
-# ---------- lesson 4: teleported T gate ----------
-
-def _lesson4():
-    out = []
-    for basis in ("X", "Y"):
-        qc = c.new_circuit(2)
-        c.mark(qc, "prepare A")
-        qc.ry(THETA, c.data(0, 0))
-        c.encode(qc, 0)                 # A = psi = ry(pi/4)|0>
-        c.mark(qc, "prepare B (magic state)")
-        qc.h(c.data(1, 0))
-        qc.t(c.data(1, 0))
-        c.encode(qc, 1)                 # B = |T_L>
-        c.transversal_cx(qc, 1, 0)      # B controls A
-        c.finish(qc, 2, ["Z", basis])
-        out.append((qc, _meta(4, f"enc_{basis}", "enc", basis, 2, ["Z", basis], [1], IDEAL_P1_T, keep_if_zero=[0])))
-    for basis in ("X", "Y"):
-        qc = c.new_bare(2)
-        qc.ry(THETA, 0)
-        qc.h(1)
-        qc.t(1)
-        qc.cx(1, 0)
-        c.finish_bare(qc, ["Z", basis])
-        out.append((qc, _meta(4, f"bare_{basis}", "bare", basis, 2, ["Z", basis], [1], IDEAL_P1_T, keep_if_zero=[0])))
+        frame = [2, 0] if basis == "X" else [2, 0, 1]
+        out.append((qc, _meta(4, f"bare_{basis}", "bare", basis, 3, ["X", "Z", basis], frame, IDEAL_P1_ROTATED)))
     return out
 
 

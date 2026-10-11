@@ -38,7 +38,7 @@ def test_draw_returns_matplotlib_figure():
 
 def test_circuits_subset_returns_requested_circuits_in_order():
     bridge.build(json.dumps({"shots": 50, "inject": None}))
-    sub = bridge.circuits_subset("[0, 8]")
+    sub = bridge.circuits_subset("[0, 12]")
     assert [qc.num_qubits for qc in sub] == [9, 27]
 
 

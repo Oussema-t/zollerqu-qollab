@@ -1,9 +1,9 @@
 """Local Aer runs for tools/record_take.py, dev/serve.py and the tests. Not used by the Qollab runtime.
 
 Each circuit runs on the fastest exact Aer method for it: stabilizer for Clifford-only circuits,
-statevector up to 20 qubits, matrix product state above (the 27-qubit lesson 3 circuits).
+statevector up to 20 qubits, matrix product state above (the 27-qubit lesson 4 circuits).
 Aer's extended_stabilizer is not used: its Metropolis sampler returns strings outside the code
-space for these circuits (lesson 3 ideal P(1) came out 0.46 instead of 0.146).
+space for these circuits (lesson 4 ideal P(1) came out 0.46 instead of 0.146).
 """
 CLIFFORD = {"h", "s", "sdg", "x", "y", "z", "cx", "measure", "barrier"}
 MAX_STATEVECTOR_QUBITS = 20

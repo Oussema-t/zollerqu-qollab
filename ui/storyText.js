@@ -23,7 +23,7 @@ const plaqName = (basis, k) => `${basis}(${PLAQUETTES[basis][k].join(',')})`;
 const andList = (xs) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
 
 // Shared result cards: [big, label, tone]; tone 'grade' colours by distance from ideal.
-function resultCards(ctx, withKept) {
+function resultCards(ctx) {
   const { enc, bare } = ctx;
   const ideal = enc.ideal_p1;
   const cards = [
@@ -32,7 +32,6 @@ function resultCards(ctx, withKept) {
     [`${pts(enc.p1_corrected, ideal)} pts off ideal`, `coded, after correction · ${pct(enc.p1_corrected)} vs ideal ${pct(ideal)}`, 'grade', enc.p1_corrected],
     [`${bare ? pts(bare.p1_all, ideal) : 'n/a'} pts off ideal`, `bare qubits · ${bare ? pct(bare.p1_all) : 'n/a'}`, 'grade', bare ? bare.p1_all : null],
   ];
-  if (withKept) cards.push([pct(enc.kept_fraction), 'kept, A read 0 (ideal 50%)', 'muted']);
   return cards;
 }
 const numbersLine = (ctx) => `Checks corrected ${pct(ctx.enc.correct_fraction)} of shots and discarded ${pct(ctx.enc.discard_fraction)}; `
@@ -186,7 +185,7 @@ const L1 = {
     : ['Nine physical qubits hold one logical qubit; eight checks watch it.',
       'A single flipped qubit is located by its checks and fixed on the recorded bits.',
       numbersLine(ctx)]),
-  cards: (rows, ctx) => resultCards(ctx, false),
+  cards: (rows, ctx) => resultCards(ctx),
 };
 
 // ---------- lesson 2 ----------
@@ -246,141 +245,143 @@ const L2 = {
     'Transversal: an error can copy to the same qubit of the other patch, but never spreads inside one.',
     numbersLine(ctx),
   ],
-  cards: (rows, ctx) => resultCards(ctx, false),
+  cards: (rows, ctx) => resultCards(ctx),
 };
 
 // ---------- lesson 3 ----------
-const BELL_BC = `(|00⟩ + |11⟩)${sb('BC')}`;
-const AFTER_AB = `( α${ket(0, 'A')} ${BELL_BC} + β${ket(1, 'A')} (|10⟩ + |01⟩)${sb('BC')} ) / √2`;
-const cf = (x) => mk(`(${x})${sb('C')}`);
+const T_KET = `(${KL('0')} + ω${KL('1')}) / √2`;
 const L3 = {
-  title: 'Teleporting a logical qubit',
+  title: 'A T state on a patch',
   intro: {
-    title: 'Teleporting a logical qubit',
-    subtitle: 'Across 27 physical qubits on a distance 3 surface code, corrected in post-processing',
-    line: `Three patches: ${A} carries ψ, ${B} and ${C} are blank slates`,
+    title: 'A T state on a patch',
+    subtitle: 'The one ingredient no transversal gate can make, prepared on one qubit and spread over nine',
+    line: `Patch ${A} is prepared in T${KL('+')}`,
   },
-  wires: [{ name: 'A', hue: 'qa', ket: 'ψ' }, { name: 'B', hue: 'qb', ket: '|+_L⟩' }, { name: 'C', hue: 'qc', ket: '|0_L⟩' }],
-  stateHeader: '|ψ⟩ = α|0⟩ + β|1⟩ with α ≈ 0.92, β ≈ 0.38. Every ket here is a logical state, i.e. a whole patch.',
+  wires: [{ name: 'A', hue: 'qa', ket: 'T|+_L⟩' }],
+  stateHeader: `ω = e<sup>iπ/4</sup>. Every ket here is a logical state of patch ${A}: nine physical qubits.`,
   steps: [
     {
       title: 'Prepare', short: 'Prepare', phases: ['prepare', 'encode'],
-      caption: `Three logical qubits. Each is a patch of nine physical qubits in a 3 by 3 grid. ${A} holds the state ψ, ${B} starts in ${KL('+')} and ${C} in ${KL('0')}. Encoding spreads each state over all nine qubits of its patch.`,
-      state: `${ket('ψ', 'A')} ${ket('+', 'B')} ${ket(0, 'C')}`, stateNote: 'Three independent patches.',
+      caption: 'H puts q0 in |+⟩, T adds the π/4 phase; the sixteen encoder gates spread that one qubit over the patch.',
+      state: mk(`T${KL('+')} = ${T_KET}`),
+      stateNote: 'The T gate acted on one physical qubit before encoding. That step is not protected by the code.',
+    },
+    {
+      title: 'Checks', short: 'Checks', phases: ['readout rotation', 'measure'],
+      caption: 'The patch is checked from its own measurement. Read in X, the four X plaquettes are parities of the measured bits: a single flipped pattern points at one qubit, which is corrected in post-processing, and a pattern no single error makes is discarded. Read in Y, no check is readable.',
+      state: T_KET, stateNote: checksLine,
+    },
+    {
+      title: 'Readout', short: 'Readout', phases: [], virtual: 'logical readout',
+      caption: `${A} is read in X and in Y: each should give 1 in 14.6 percent of shots.`,
+      state: `⟨X<sub>L</sub>⟩ = ⟨Y<sub>L</sub>⟩ = cos(π/4), so ${mk('P(1) = sin²(π/8) ≈ 14.6%')} in both bases`,
+      stateNote: `A plain ${KL('+')} would give 0% in X and 50% in Y. Both numbers together show the T phase.`,
+    },
+    {
+      title: 'Result', short: 'Result', phases: [],
+      caption: (ctx) => {
+        const y = ctx.rows.find((r) => r.kind === 'enc' && r.name === 'enc_Y');
+        return `Read in X, ${A} gave 1 in ${pct(ctx.enc.p1_corrected)} of shots after correction`
+          + (y ? `, read in Y in ${pct(y.p1_corrected)}` : '') + ` (ideal 14.6% each). The bare qubit: ${ctx.bare ? pct(ctx.bare.p1_all) : 'n/a'}.`;
+      },
+      state: (ctx) => `P(${A} reads 1 in X) after correction: ${mk(pct(ctx.enc.p1_corrected))} (ideal ${pct(ctx.enc.ideal_p1)})`,
+      stateNote: (ctx) => `Bare qubit, same experiment: ${ctx.bare ? pct(ctx.bare.p1_all) : 'n/a'}.`,
+    },
+  ],
+  labels: () => [['T|+_L⟩'], ['T|+_L⟩'], ['measured'], ['measured']],
+  symbols: (ctx) => [
+    [{ t: 'box', w: 0, label: 'H, T, encode' }],
+    [{ t: 'checks', w: 0 }],
+    [{ t: 'meter', w: 0, basis: ctx.enc.bases[0] }],
+    [],
+  ],
+  phaseText: {
+    'prepare A': `H then T on q0 of patch ${A}: H gives |+⟩, T adds the phase e<sup>iπ/4</sup> to |1⟩.`,
+  },
+  phaseMore: {
+    'prepare A': ['why here', 'T is not transversal in this code. Applying it to one qubit before encoding is cheap but unprotected; real machines distil many noisy T states into a clean one.'],
+  },
+  closing: (rows, ctx) => [
+    `Patch ${A} holds the T state T${KL('+')}, the resource that lets a T gate be teleported onto data later.`,
+    'It was made on a single qubit and spread over nine by the encoder; in X and in Y it reads 1 in 14.6% of shots ideally.',
+    numbersLine(ctx),
+  ],
+  cards: (rows, ctx) => resultCards(ctx),
+};
+
+// ---------- lesson 4 ----------
+const BELL_BC = `(|00⟩ + |11⟩)${sb('BC')}`;
+const AFTER_AB = `( α${ket(0, 'A')} ${BELL_BC} + β${ket(1, 'A')} (|10⟩ + |01⟩)${sb('BC')} ) / √2`;
+const cf = (x) => mk(`(${x})${sb('C')}`);
+const L4 = {
+  title: 'Teleporting the T state',
+  intro: {
+    title: 'Teleporting the T state',
+    subtitle: 'Across 27 physical qubits on a distance 3 surface code, corrected in post-processing',
+    line: `Three patches: ${A} carries the T state, ${B} and ${C} are blank slates`,
+  },
+  wires: [{ name: 'A', hue: 'qa', ket: 'T|+_L⟩' }, { name: 'B', hue: 'qb', ket: '|+_L⟩' }, { name: 'C', hue: 'qc', ket: '|0_L⟩' }],
+  stateHeader: '|T⟩ = T|+⟩ = α|0⟩ + β|1⟩ with α = 1/√2, β = e<sup>iπ/4</sup>/√2. Every ket here is a logical state, i.e. a whole patch.',
+  steps: [
+    {
+      title: 'Prepare', short: 'Prepare', phases: ['prepare', 'encode'],
+      caption: `Three logical qubits. Each is a patch of nine physical qubits in a 3 by 3 grid. ${A} holds the T state T|+⟩ from lesson 3, ${B} starts in ${KL('+')} and ${C} in ${KL('0')}. Encoding spreads each state over all nine qubits of its patch.`,
+      state: `${ket('T', 'A')} ${ket('+', 'B')} ${ket(0, 'C')}`, stateNote: 'Three independent patches.',
     },
     {
       title: 'Bell pair', short: 'Bell pair', phases: ['transversal CNOT B→C'],
       caption: `A logical CNOT from ${B} to ${C} turns ${B} and ${C} into a logical Bell pair. One logical CNOT is just nine physical CNOTs, qubit to matching qubit, and nothing else. A gate like that is called transversal, and it is the easiest kind of logical gate there is.`,
-      state: `${ket('ψ', 'A')} ⊗ ${mk(`${BELL_BC} / √2`)}`, stateNote: `${B} and ${C} are now one entangled pair; neither has a state of its own.`,
+      state: `${ket('T', 'A')} ⊗ ${mk(`${BELL_BC} / √2`)}`, stateNote: `${B} and ${C} are now one entangled pair; neither has a state of its own.`,
     },
     {
       title: 'Bell measurement', short: 'Bell meas.', phases: ['transversal CNOT A→B'],
-      caption: `A second logical CNOT, from ${A} to ${B}. Together with reading ${A} in X and ${B} in Z (next), this is a Bell measurement of ${A} and ${B}. That is all teleportation needs.`,
-      state: mk(AFTER_AB), stateNote: `${A}'s amplitudes α, β are now tied to the ${pl('BC')} pair. Nothing has been measured yet.`,
+      caption: `A second logical CNOT, from ${A} to ${B}. Together with reading ${A} in X and ${B} in Z (next), this is a Bell measurement of ${A} and ${B}. That is all the T state needs to travel.`,
+      state: mk(AFTER_AB), stateNote: `The T state's amplitudes α, β are now tied to the ${pl('BC')} pair. Nothing has been measured yet.`,
     },
     {
       title: 'Checks', short: 'Checks', phases: ['readout rotation', 'measure'],
-      caption: 'Each patch is checked from its own measurement: the four plaquette parities of the basis it is read in. A single flipped pattern points at one qubit, which is corrected in post-processing; a pattern no single error makes is discarded.',
+      caption: 'Each patch is checked from its own measurement: the four plaquette parities of the basis it is read in. A single flipped pattern points at one qubit, which is corrected in post-processing; a pattern no single error makes is discarded. A patch read in Y has no readable checks.',
       more: ['distance 3', 'With nine qubits per patch the code has distance 3: one error per patch can be located and fixed, not just detected. Two errors cannot.'],
       state: AFTER_AB, stateNote: checksLine,
     },
     {
       title: 'Readout', short: 'Readout', phases: [], virtual: 'logical readout',
-      caption: `Readout. ${A} is read in X, ${B} and ${C} in Z. The two outcomes from ${A} and ${B} tell us which Pauli correction ${C} needs. We apply it to the recorded bits afterwards, so the hardware never has to act on a measurement in real time.`,
+      caption: `Readout. ${A} is read in X, ${B} in Z, ${C} in X or in Y. The outcomes a (from ${A}) and b (from ${B}) tell us which Pauli correction ${C} needs. We apply it to the recorded bits afterwards: read in X, flip ${C} if a = 1; read in Y, flip it if a ⊕ b = 1.`,
       pre: `After H on ${A} (reading ${A} in X) and grouping by the outcomes a (from ${A}) and b (from ${B}):`,
       state: `½ [ |00⟩${sb('AB')} ${cf('α|0⟩ + β|1⟩')} + |01⟩${sb('AB')} ${cf('α|1⟩ + β|0⟩')}<br>`
         + `&nbsp;&nbsp;&nbsp;+ |10⟩${sb('AB')} ${cf('α|0⟩ − β|1⟩')} + |11⟩${sb('AB')} ${cf('α|1⟩ − β|0⟩')} ]`,
-      table: { head: ['ab', `${C} holds`], rows: [['00', 'ψ'], ['01', 'X ψ'], ['10', 'Z ψ'], ['11', 'XZ ψ']] },
-      stateNote: `Whatever a and b come out, ${C} holds ψ up to a Pauli we know. In this experiment the correction is a bit flip of ${C}'s recorded result: when ${C} is read in Z, flip it if b = 1; when read in X, flip it if a = 1.`,
+      table: { head: ['ab', `${C} holds`], rows: [['00', '|T⟩'], ['01', 'X|T⟩'], ['10', 'Z|T⟩'], ['11', 'XZ|T⟩']] },
+      stateNote: `Whatever a and b come out, ${C} holds |T⟩ up to a Pauli we know. Z flips an X or a Y readout, X flips a Y readout: so read in X, flip ${C}'s recorded bit if a = 1; read in Y, flip it if a ⊕ b = 1.`,
     },
     {
       title: 'Result', short: 'Result', phases: [],
-      caption: `ψ has arrived in ${C}. The numbers come from the actual run: how often ${C} read 1 compared with the ideal, how many shots the checks corrected or threw away, and how the same circuit did on bare physical qubits with no code at all.`,
-      state: mk(ket('ψ', 'C')),
-      stateNote: (ctx) => `After the frame correction, ${C} is ψ. Ideal P(${C} reads 1) = β² = ${pct(ctx.enc.ideal_p1)}. Measured: ${pct(ctx.enc.p1_corrected)} after correction.`,
+      caption: `The T state has arrived in ${C}. The numbers come from the actual run: how often ${C} read 1 compared with the ideal, how many shots the checks corrected or threw away, and how the same circuit did on bare physical qubits with no code at all.`,
+      state: mk(ket('T', 'C')),
+      stateNote: (ctx) => `After the frame correction, ${C} is |T⟩. Ideal P(${C} reads 1) = sin²(π/8) = ${pct(ctx.enc.ideal_p1)} in X and in Y. Measured: ${pct(ctx.enc.p1_corrected)} after correction.`,
     },
   ],
   labels: () => [
-    ['ψ', '|+_L⟩', '|0_L⟩'], ['ψ', 'Bell pair with C', 'Bell pair with B'], ['ψ', 'Bell pair with C', 'Bell pair with B'],
-    ['ψ', 'Bell pair with C', 'Bell pair with B'], ['measured', 'measured', 'ψ, up to a known Pauli'], ['measured', 'measured', 'ψ'],
+    ['T|+_L⟩', '|+_L⟩', '|0_L⟩'], ['T|+_L⟩', 'Bell pair with C', 'Bell pair with B'], ['T|+_L⟩', 'Bell pair with C', 'Bell pair with B'],
+    ['T|+_L⟩', 'Bell pair with C', 'Bell pair with B'], ['measured', 'measured', 'T|+_L⟩, up to a known Pauli'], ['measured', 'measured', 'T|+_L⟩'],
   ],
   symbols: [
     [{ t: 'box', w: 0, label: 'encode' }, { t: 'box', w: 1, label: 'encode' }, { t: 'box', w: 2, label: 'encode' }],
     [{ t: 'cnot', c: 1, g: 2, label: 'CNOT B→C' }],
     [{ t: 'cnot', c: 0, g: 1, label: 'CNOT A→B' }],
-    [{ t: 'checks', w: 0 }, { t: 'checks', w: 1 }, { t: 'checks', w: 2 }],
-    [{ t: 'meter', w: 0, basis: 'X' }, { t: 'meter', w: 1, basis: 'Z' }, { t: 'meter', w: 2, basis: 'Z' }],
+    [{ t: 'checks', w: 0 }, { t: 'checks', w: 1 }, { t: 'checks', w: 2, sub: 'X; none in Y' }],
+    [{ t: 'meter', w: 0, basis: 'X' }, { t: 'meter', w: 1, basis: 'Z' }, { t: 'meter', w: 2, basis: 'X/Y' }],
     [{ t: 'post', on: 2, from: [0, 1], label: 'Pauli frame', sub: 'in post-processing' }],
   ],
+  phaseText: {
+    'prepare A': `H then T on q0 of patch ${A} make the T state to encode.`,
+    'prepare B': `H on q0 of ${B} gives |+⟩ to encode.`,
+  },
   closing: (rows, ctx) => [
-    `A logical state moved from patch ${A} to patch ${C} by teleportation.`,
+    `The T state moved from patch ${A} to patch ${C} by teleportation; the correction was applied to the recorded bits, never to the hardware.`,
     'Every logical gate was built from a handful of physical gates: nine CNOTs per logical CNOT.',
     numbersLine(ctx),
   ],
-  cards: (rows, ctx) => resultCards(ctx, false),
-};
-
-// ---------- lesson 4 ----------
-const L4_AFTER = `( ${ket(0, 'B')} (α|0⟩ + β|1⟩)${sb('A')} + ω${ket(1, 'B')} (α|1⟩ + β|0⟩)${sb('A')} ) / √2`;
-const L4 = {
-  title: 'The T gate is a teleportation too',
-  intro: {
-    title: 'The T gate, teleported',
-    subtitle: 'A magic state on a fresh patch carries the T gate onto the data',
-    line: `Two patches: ${A} carries ψ, ${B} holds the magic state T|+⟩`,
-  },
-  wires: [{ name: 'A', hue: 'qa', ket: 'ψ' }, { name: 'B', hue: 'qb', ket: 'T|+_L⟩' }],
-  stateHeader: '|ψ⟩ = α|0⟩ + β|1⟩ with α ≈ 0.92, β ≈ 0.38, and ω = e<sup>iπ/4</sup>. Every ket here is a logical state, i.e. a whole patch.',
-  steps: [
-    {
-      title: 'Prepare', short: 'Prepare', phases: ['prepare', 'encode'],
-      caption: `${A} carries ψ. ${B} is prepared as the magic state T|+⟩ before encoding: H then T on one qubit, then the encoder. The T gate is applied here, on a fresh patch, not on the data.`,
-      state: `${ket('ψ', 'A')} ⊗ ${mk(`(|0⟩ + ω|1⟩)${sb('B')} / √2`)}`, stateNote: `${B} is the magic state T|+⟩, made before any data is touched.`,
-    },
-    {
-      title: 'Logical CNOT B→A', short: 'CNOT', phases: ['transversal'],
-      caption: `A transversal CNOT with the magic patch ${B} as control and the data patch ${A} as target: nine CNOTs from ${B}'s qubits to ${A}'s.`,
-      state: mk(L4_AFTER), stateNote: `${A} and ${B} are now entangled. Nothing has been measured yet.`,
-    },
-    {
-      title: 'Checks', short: 'Checks', phases: ['readout rotation', 'measure'],
-      caption: 'Both patches are checked from their own measurement, and a single error in either patch is located and corrected as before.',
-      state: L4_AFTER, stateNote: checksLine,
-    },
-    {
-      title: 'Readout and post-selection', short: 'Readout', phases: [], virtual: 'logical readout',
-      caption: `${A} is read in Z. When ${A} reads 0, ${B} holds Tψ. When ${A} reads 1, ${B} would need an S gate, which needs feed-forward, so here we keep only the ${A} = 0 shots. Half the shots survive.`,
-      pre: `Grouping by ${A}'s outcome:`,
-      state: `( ${ket(0, 'A')} ${mk(`(α|0⟩ + ωβ|1⟩)${sb('B')}`)} + ${ket(1, 'A')} (β|0⟩ + ωα|1⟩)${sb('B')} ) / √2`,
-      stateNote: `The highlighted factor is Tψ, kept when ${A} reads 0. The ${A} = 1 branch is discarded.`,
-    },
-    {
-      title: 'Result', short: 'Result', phases: [],
-      caption: (ctx) => `${B} read in X gives 1 in 25% of kept shots ideally, and the same in Y; without the T gate X would give 14.6% and Y 50%. Measured: ${pct(ctx.enc.p1_corrected)}. Kept: ${pct(ctx.enc.kept_fraction)} (ideal 50%).`,
-      state: mk(`T${ket('ψ', 'B')}`),
-      stateNote: (ctx) => `Ideal P(${B} reads 1 in X) = 25%. Measured after correction: ${pct(ctx.enc.p1_corrected)}.`,
-    },
-  ],
-  labels: () => [['ψ', 'T|+_L⟩'], ['entangled with B', 'entangled with A'], ['entangled with B', 'entangled with A'], ['measured', 'Tψ if A reads 0'], ['measured', 'Tψ']],
-  symbols: [
-    [{ t: 'box', w: 0, label: 'encode' }, { t: 'box', w: 1, label: 'encode' }],
-    [{ t: 'cnot', c: 1, g: 0, label: 'CNOT B→A' }],
-    [{ t: 'checks', w: 0 }, { t: 'checks', w: 1 }],
-    [{ t: 'meter', w: 0, basis: 'Z' }, { t: 'meter', w: 1, basis: 'X' }],
-    [{ t: 'post', on: 1, from: [0], label: 'keep A = 0', sub: 'post-selection' }],
-  ],
-  phaseText: {
-    'prepare B (magic state)': `H then T on q0 of ${B}: the magic state T|+⟩, made on one qubit before the encoder spreads it.`,
-  },
-  phaseMore: {
-    'prepare B (magic state)': ['why here', 'T is not transversal in this code. Applying it to one qubit before encoding is cheap but unprotected; real machines distil many noisy magic states into a clean one.'],
-  },
-  closing: (rows, ctx) => [
-    'The T gate never touched the data: it was made on a fresh patch and teleported in.',
-    `A transversal CNOT and a Z readout of ${A} did the teleporting; we kept the ${A} = 0 half (${pct(ctx.enc.kept_fraction)} of shots).`,
-    numbersLine(ctx),
-  ],
-  cards: (rows, ctx) => resultCards(ctx, true),
+  cards: (rows, ctx) => resultCards(ctx),
 };
 
 // Prepare-phase captions that depend on the lesson.
@@ -393,7 +394,5 @@ L1.phaseText = {
   },
 };
 L2.phaseText = { 'prepare A': `H on q0 of ${A} gives |+⟩ to encode.` };
-L3.phaseText = { 'prepare A': `A single Ry gate puts ψ on q0 of patch ${A}.`, 'prepare B': `H on q0 of ${B} gives |+⟩ to encode.` };
-L4.phaseText['prepare A'] = `A single Ry gate puts ψ on q0 of patch ${A}.`;
 
 export const SCRIPTS = { 1: L1, 2: L2, 3: L3, 4: L4 };

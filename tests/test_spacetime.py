@@ -33,7 +33,7 @@ def test_layers_are_disjoint_per_qubit_and_phases_tile_time():
 
 def test_qubit_positions_and_blocks():
     assert PITCH == 4.4
-    L = pick(enc_layouts(), 3, "enc_Z")
+    L = pick(enc_layouts(), 4, "enc_X")
     assert L["pitch"] == 4.4
     assert len(L["qubits"]) == 27 and len(L["blocks"]) == 3
     assert {q["kind"] for q in L["qubits"]} == {"data"}
@@ -45,8 +45,8 @@ def test_qubit_positions_and_blocks():
     assert (L["qubits"][24]["x"], L["qubits"][24]["y"]) == pytest.approx((8.8, 2))
 
 
-def test_phase_names_for_lesson_three():
-    L = pick(enc_layouts(), 3, "enc_X")
+def test_phase_names_for_lesson_four():
+    L = pick(enc_layouts(), 4, "enc_X")
     assert [p["name"] for p in L["phases"]] == [
         "prepare A", "encode A", "prepare B", "encode B", "encode C",
         "transversal CNOT B→C", "transversal CNOT A→B",
@@ -54,7 +54,7 @@ def test_phase_names_for_lesson_three():
 
 
 def test_transversal_cnot_is_nine_parallel_bars():
-    L = pick(enc_layouts(), 3, "enc_Z")
+    L = pick(enc_layouts(), 4, "enc_Y")
     tv = [p for p in L["phases"] if p["name"].startswith("transversal")]
     assert [p["name"] for p in tv] == ["transversal CNOT B→C", "transversal CNOT A→B"]
     for p in tv:

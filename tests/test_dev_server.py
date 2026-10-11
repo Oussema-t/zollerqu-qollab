@@ -43,7 +43,7 @@ def test_build_run_analyze_round_trip(base):
     _, meta = post(base, "build", json.dumps({"shots": 100, "inject": None}))
     meta = json.loads(meta)
     assert len(meta) == 16
-    _, counts = post(base, "run_subset", json.dumps(list(range(16))), 4)   # few shots: the 27-qubit lesson 3 circuits run on MPS
+    _, counts = post(base, "run_subset", json.dumps(list(range(16))), 4)   # few shots: the 27-qubit lesson 4 circuits run on MPS
     counts = json.loads(counts)
     assert len(counts) == 16 and all(sum(c.values()) == 4 for c in counts)
     assert [len(next(iter(c))) for c in counts] == [m["nqubits"] for m in meta]

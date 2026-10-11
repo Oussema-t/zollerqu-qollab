@@ -80,6 +80,8 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   const symbols = val(script.symbols);
   const labels = val(script.labels);
   const intro = val(script.intro);
+  // Lesson 4 is told at the physical level only; the ideal logical circuit sits below it as a static drawing.
+  const PHYS_ONLY = lesson === 4;
 
   // ---------- shell ----------
   root.classList.add('story');
@@ -88,6 +90,7 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   <header class="story-head"><h1>Lesson ${lesson}: ${script.title}</h1>
     <button type="button" class="story-back">Back to lessons</button></header>
   <svg class="stage" viewBox="0 0 ${W} 400" role="figure"></svg>
+  ${PHYS_ONLY ? '<figure class="ideal"><figcaption>Logical circuit (ideal)</figcaption><svg role="img"></svg></figure>' : ''}
   <div class="narr">
     <p class="qlegend">Legend: wire = one logical qubit through time · gold line = now</p>
     <p class="stepline"></p>
@@ -183,7 +186,7 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   };
   // opacity(s) of each ribbon; width grows with the playhead from x0 up to x1.
   if (lesson === 2) addRibbon(0, 1, COL[1], meterX, (s) => (s >= 4 ? 0.05 : s >= 1 ? 0.14 : 0));
-  if (lesson === 3) {
+  if (lesson === 4) {
     addRibbon(1, 2, COL[1], meterX, (s) => (s >= 5 ? 0.05 : 0.14));
     addRibbon(0, 1, COL[2], meterX, (s) => (s >= 5 ? 0.05 : s >= 4 ? 0.14 : 0));
     ribbons[1].full = true;
@@ -241,7 +244,7 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
         const basis = (layout.bases || enc.bases)[s.w];
         el('rect', { x: x - 42, y: y - 24, width: 84, height: 48, rx: 10, fill: 'var(--card)', stroke: 'var(--z)', 'stroke-width': 1.5 }, g);
         text(g, x, y - 3, 'checks', { 'font-size': 14, 'font-weight': 600 });
-        text(g, x, y + 15, basis === 'Y' ? 'none in Y' : `${basis} plaquettes`, { 'font-size': 11, fill: basis === 'X' ? 'var(--x)' : basis === 'Z' ? 'var(--z)' : 'var(--muted)' });
+        text(g, x, y + 15, s.sub || (basis === 'Y' ? 'none in Y' : `${basis} plaquettes`), { 'font-size': 11, fill: basis === 'X' ? 'var(--x)' : basis === 'Z' ? 'var(--z)' : 'var(--muted)' });
       } else if (s.t === 'meter') {
         el('rect', { x: x - 20, y: y - 16, width: 40, height: 32, rx: 4, fill: 'var(--card)', stroke: 'var(--fg)', 'stroke-width': 1.5 }, g);
         el('path', { d: `M${x - 12},${y + 8} A13,13 0 0 1 ${x + 12},${y + 8}`, fill: 'none', stroke: 'var(--fg)', 'stroke-width': 1.5 }, g);
@@ -270,7 +273,7 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   const symLit = (k, u) => u >= k / N - 1e-9;
   const stateLabels = WIRE_Y.map((y, i) => text(logical, 160, y - 26, '', { 'text-anchor': 'start', 'font-size': 13, fill: HUE[i], ...HALO }));
 
-  // ---------- tokens (lessons 3 and 4) ----------
+  // ---------- tokens (lesson 4) ----------
   // A token rides ahead of the playhead and changes form at fixed steps. It never slides while hidden or across
   // the picture: it jumps, then opacity or the pop does the showing.
   function makeToken(hue, label) {
@@ -308,9 +311,9 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
     return { place, setText, el: tin };
   }
   const tokens = [];
-  if (lesson === 3) {
-    const tk = makeToken(HUE[0], 'ψ ⊗ Bell');
-    tk.setText('ψ');
+  if (lesson === 4) {
+    const tk = makeToken(HUE[0], 'T ⊗ Bell');
+    tk.setText('T');
     const MID = (WIRE_Y[0] + WIRE_Y[1]) / 2;
     tokens.push((s, f, ph) => {
       if (s < 2 || (s === 2 && f < 0.3)) tk.place('a', Math.min(ph + 26, COL[2]), WIRE_Y[0]);
@@ -320,17 +323,16 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
       else tk.place('c', tokX, WIRE_Y[2], { jump: true, pop: true });
     });
   }
-  if (lesson === 4) {
-    const ta = makeToken(HUE[0]), tb = makeToken(HUE[1]);
-    ta.setText('ψ');
-    const stop = COL[1] - 34;
-    tokens.push((s, f, ph) => {
-      if (s >= 3) ta.place('gone', stop, WIRE_Y[0]);
-      else ta.place('a', Math.min(ph + 26, stop), WIRE_Y[0]);
-      if (s >= 4) { tb.setText('Tψ'); tb.place('res', tokX, WIRE_Y[1], { jump: true, pop: true }); }
-      else if (s === 3) tb.place('gone', stop, WIRE_Y[1]);
-      else { tb.setText('T|+⟩'); tb.place('b', Math.min(ph + 26, stop), WIRE_Y[1]); }
-    });
+
+  // Static copy of the logical level, every symbol shown, without tokens or ribbons (built before the playhead and cards).
+  if (PHYS_ONLY) {
+    const fig = $('.ideal svg');
+    const y0 = WIRE_Y[0] - 40;
+    setAttrs(fig, { viewBox: `0 ${y0} ${W} ${lastY + 50 - y0}`,
+      'aria-label': 'Logical circuit (ideal): encode A, B and C; CNOT B to C; CNOT A to B; read A in X and B in Z; Pauli frame on C from both readouts; read C in X or Y.' });
+    const copy = logical.cloneNode(true);
+    copy.querySelectorAll('.tok-wrap, .rib').forEach((n) => n.remove());
+    fig.append(copy);
   }
 
   const logPlayhead = el('line', { y1: PH_Y[0], y2: PH_Y[1], stroke: 'var(--focus)', 'stroke-width': 2, 'stroke-opacity': 0.6, 'pointer-events': 'none' }, logical);
@@ -554,7 +556,7 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   }
 
   function setLevel(lv) {
-    level = lv === 'physical' ? 'physical' : 'logical';
+    level = lv === 'physical' || PHYS_ONLY ? 'physical' : 'logical';
     logical.setAttribute('display', level === 'logical' ? 'inline' : 'none');
     physical.setAttribute('display', level === 'physical' ? 'inline' : 'none');
     $('.lv-logical').setAttribute('aria-pressed', level === 'logical');
@@ -669,7 +671,8 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   };
   window.__story = api;
   // The story opens on the title card and waits for Play.
-  setLevel('logical');
+  $('.seg').hidden = PHYS_ONLY;
+  setLevel(PHYS_ONLY ? 'physical' : 'logical');
   playBtn.focus({ preventScroll: true });
   return api;
 }

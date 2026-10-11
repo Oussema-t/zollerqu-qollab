@@ -58,6 +58,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .story h1 { font-size: 1.15rem; font-weight: 600; margin: 0; }
 .story .stage { display: block; width: 100%; max-width: 1200px; height: auto; max-height: calc(100vh - 300px); margin: 0 auto;
   background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+/* Lesson 4: the ideal logical circuit as a static drawing below the physical picture. */
+.story .ideal { margin: 0 auto; width: 100%; max-width: 1200px; }
+.story .ideal figcaption { color: var(--muted); font-size: 0.85rem; margin: 0 0 2px; }
+.story .ideal svg { display: block; width: 100%; max-width: 820px; height: auto; margin: 0 auto;
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
 /* Caption is the primary text: step line (small, muted) then the caption itself. */
 .story .narr { max-width: 1200px; }
 .story .stepline { margin: 2px 0 0; color: var(--muted); font-size: 0.85rem; }
@@ -140,6 +145,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   .story .sdot:hover .sd-lbl, .story .sdot:focus-visible .sd-lbl { background: var(--bg); }
 }
 .story .controls .seg { display: inline-flex; }
+.story .controls .seg[hidden] { display: none; }
 .story .controls .seg button:first-child { border-radius: 8px 0 0 8px; }
 .story .controls .seg button:last-child { border-radius: 0 8px 8px 0; border-left: 0; }
 .story .controls button[aria-pressed=true] { background: var(--card); border-color: var(--fg); font-weight: 600; }
