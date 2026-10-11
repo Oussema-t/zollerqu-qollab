@@ -10,28 +10,7 @@ const $ = (id) => document.getElementById(id);
 // or left empty when the take is not available); takeSettings: the settings of that take.
 const state = { settings: null, meta: null, results: null, source: '', sources: {}, takeSettings: null, lesson: 1, backendName: '', maxQubits: 24, isIonq: false, submitLocked: false, busy: false, lastRun: null, story: null };
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
-const toPlain = (x) => {
-  if (!(x && typeof x.toJs === 'function')) return x;
-  const v = x.toJs();
-  return v instanceof Map ? Object.fromEntries(v) : v;
-};
 const errText = (e) => (e && e.message ? e.message : String(e));
-
-// Works for the browser setTimeout(cb, ms), an injected setTimeout(cb, ms) returning a promise, and setTimeout(ms) returning a promise.
-async function sleep(ms) {
-  const start = Date.now();
-  await new Promise((resolve) => {
-    let r;
-    try { r = setTimeout(resolve, ms); } catch { resolve(); return; }
-    if (r && typeof r.then === 'function') r.then(resolve, resolve);
-  });
-  if (Date.now() - start < ms / 2) {
-    try { const p = setTimeout(ms); if (p && typeof p.then === 'function') await p; } catch { /* ignore */ }
-  }
-  while (Date.now() - start < ms - 50) {
-    await new Promise((r) => requestAnimationFrame(r));
-  }
-}
 
 function setBusy(on) {
   state.busy = on;
@@ -104,46 +83,11 @@ async function submit() {
     if (excluded.length) {
       try { take = JSON.parse(await bridge.load_recorded.callPromising()); } catch (e) { console.log('Recorded take not available:', errText(e)); }
     }
-    const circuits = excluded.length
-      ? await bridge.circuits_subset.callPromising(JSON.stringify(included))
-      : await bridge.circuits.callPromising();
-    setStatus(`Submitting one job with ${included.length} of ${meta.length} circuits, ${settings.shots} shots each, to ${state.backendName}...`);
+    setStatus(`Running one job with ${included.length} of ${meta.length} circuits, ${settings.shots} shots each, on ${state.backendName}. Noise-model simulators run one shot at a time, so this can take minutes.`);
     submitted = true;
-    const job = await backend.run(circuits, { shots: settings.shots });
-    // Proxies to the same Python enum member are not === in JS, so compare by name.
-    // Up to 5 failed status calls in a row are tolerated so a network blip cannot lose the one IonQ job.
-    let statusFailures = 0;
-    const statusName = async () => {
-      let s;
-      try { s = await job.status(); } catch (e) {
-        statusFailures += 1;
-        if (statusFailures > 5) throw e;
-        return 'retrying';
-      }
-      statusFailures = 0;
-      try { return String(s.name ?? s); } catch { return String(s); }
-    };
-    const terminal = (st) => ['done', 'completed', 'error', 'failed', 'cancel'].some((k) => st.toLowerCase().includes(k));
-    let status = await statusName();
-    let ticks = 0;
-    const t0 = Date.now();
-    let shownAt = t0;
-    while (!terminal(status)) {
-      if (ticks >= 3600) throw new Error('Timed out waiting for the job');
-      await sleep(1000);
-      status = await statusName();
-      ticks += 1;
-      if (Date.now() - shownAt >= 5000) {   // at most one status update every 5 seconds
-        shownAt = Date.now();
-        setStatus(`Job ${status}... ${Math.round((shownAt - t0) / 1000)}s. Noise-model simulators run one shot at a time, so this scales with shots.`);
-      }
-    }
-    if (!['done', 'completed'].some((k) => status.toLowerCase().includes(k))) throw new Error('Job ended with status ' + status);
-    const result = await job.result();
+    const sub = JSON.parse(await bridge.run_subset.callPromising(backend, JSON.stringify(included), settings.shots));
     const counts = meta.map(() => ({}));
-    for (let k = 0; k < included.length; k++) {
-      counts[included[k]] = toPlain(await result.get_counts(k));   // k indexes the circuits passed to run
-    }
+    for (let k = 0; k < included.length; k++) counts[included[k]] = sub[k];
     const sources = {};
     meta.forEach((m) => { sources[m.lesson] = 'live'; });
     // A too-big lesson is filled from the take only when every one of its circuits has a matching entry; else all stay empty.
@@ -320,3 +264,7 @@ function wire() {
 }
 
 wire();
+// Keep this run alive. Qollab routes remote backend requests (IonQ simulators and hardware) only while main.js is
+// still running; once it returns, the run is "Done" and remote backends are unreachable. Press Stop in the Qollab
+// toolbar to end the session.
+await new Promise(() => {});

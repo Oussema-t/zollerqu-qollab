@@ -27,6 +27,13 @@ def circuits_subset(indices_json):
     return [_LAST["circuits"][i] for i in json.loads(indices_json)]
 
 
+def run_subset(backend, indices_json, shots):
+    """Run the built circuits at these indices on backend as one job; JSON list of counts dicts in index order."""
+    circuits = circuits_subset(indices_json)
+    result = backend.run(circuits, shots=int(shots)).result()
+    return json.dumps([result.get_counts(i) for i in range(len(circuits))])
+
+
 def analyze(meta_json, counts_json):
     return json.dumps(analyze_all(json.loads(meta_json), json.loads(counts_json)))
 

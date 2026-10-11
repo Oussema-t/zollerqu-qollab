@@ -1,5 +1,7 @@
 import json
 
+from qiskit.providers.basic_provider import BasicSimulator
+
 from qec import bridge
 from qec.lessons import build_all
 
@@ -38,3 +40,13 @@ def test_circuits_subset_returns_requested_circuits_in_order():
     bridge.build(json.dumps({"shots": 50, "inject": None}))
     sub = bridge.circuits_subset("[0, 8]")
     assert [qc.num_qubits for qc in sub] == [9, 27]
+
+
+def test_run_subset_counts_in_order():
+    meta = json.loads(bridge.build(json.dumps({"shots": 50, "inject": None})))
+    indices = [i for i, m in enumerate(meta) if m["lesson"] == 1]
+    assert indices
+    counts = json.loads(bridge.run_subset(BasicSimulator(), json.dumps(indices), 20))
+    assert len(counts) == len(indices)
+    assert all(sum(c.values()) == 20 for c in counts)
+    assert [len(next(iter(c))) for c in counts] == [meta[i]["nqubits"] for i in indices]

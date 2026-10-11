@@ -1,5 +1,13 @@
 # Logical teleportation on a tiny surface code
 
+**What it is.** Three logical qubits, each a distance-3 rotated surface code patch, on IonQ's simulators: four lessons from one job, and a story page that animates each lesson at the logical and the physical level.
+
+**Why it matters, and for whom.** Logical qubits are how quantum computers will outlive their own noise, and the first logical-gate experiments on trapped ions used exactly these small codes. This page is for learners and teachers: inject an error and watch the checks point at it, make a logical Bell pair, teleport a logical state between patches, and teleport in a T gate, each next to the same experiment on bare qubits.
+
+**How the quantum part works.** A 16-gate encoder prepares each patch; every patch is measured once at the end and the four checks of that basis are parities of the measured bits; a lookup table corrects the one qubit a single error would produce, and Pauli corrections are tracked in software (details under "The code").
+
+**How to run it.** Run on Qollab, pick Built-in simulator (24q) for lessons 1, 2 and 4 (lesson 3 then comes from the recorded take) or an IonQ Forte simulator (29q) for all four, press Submit. Demo video: `docs/demo.mp4` in the repo (public link added at submission).
+
 Three logical qubits, each a 3x3 patch of the rotated surface code (distance 3), running on IonQ's simulators. Four lessons from one job, and a story page that plays each lesson as an animation at two levels: the logical circuit, and the physical gates on every qubit of every patch.
 
 1. **One patch, one error.** Inject an X, Y or Z on any of the nine qubits. The checks point at it and the code corrects it in software; the bare qubit next to it has no idea.

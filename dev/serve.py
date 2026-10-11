@@ -2,7 +2,7 @@
 
 GET  /                 index.html wrapped in a full document, import map points qec.bridge at dev/bridge_shim.js
 GET  /<path>           static files from the project root
-POST /api/<fn>         {"args": [...]} -> qec.bridge.<fn>(*args); draw returns SVG; run executes the built circuits on Aer
+POST /api/<fn>         {"args": [...]} -> qec.bridge.<fn>(*args); draw returns SVG; run_subset runs on HarnessBackend (Aer)
 """
 import io
 import json
@@ -37,18 +37,26 @@ PAGE = """<!doctype html>
 </body></html>"""
 
 
-def run(shots):
-    return simulate(bridge.circuits(), int(shots), noise_model=NOISE)
+class _HarnessResult:
+    def __init__(self, counts): self._counts = counts
+    def get_counts(self, i=0): return self._counts[i]
+
+
+class _HarnessJob:
+    def __init__(self, counts): self._counts = counts
+    def result(self): return _HarnessResult(self._counts)
+
+
+class HarnessBackend:
+    """Stands in for the Python backend object Qollab injects; bridge.run_subset calls run(...).result().get_counts(i)."""
+    name = "local dev harness"
+    def run(self, circuits, shots): return _HarnessJob(simulate(list(circuits), int(shots), noise_model=NOISE))
 
 
 def api(fn, args):
     """Return (content_type, bytes)."""
-    if fn == "run":
-        return "application/json", json.dumps(run(*args)).encode()
-    if fn == "circuits":
-        return "application/json", json.dumps(len(bridge.circuits())).encode()
-    if fn == "circuits_subset":   # run() still executes every built circuit; the harness fits all of them
-        return "application/json", json.dumps(len(bridge.circuits_subset(*args))).encode()
+    if fn == "run_subset":
+        return "application/json", bridge.run_subset(HarnessBackend(), *args).encode()
     if fn == "draw":
         buf = io.BytesIO()
         bridge.draw(*args).savefig(buf, format="svg", bbox_inches="tight")
