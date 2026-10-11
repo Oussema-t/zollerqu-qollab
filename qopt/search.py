@@ -26,8 +26,8 @@ BASIS = ["rz", "sx", "x", "cx"]
 
 
 def to_basis(circuits):
-    """Unroll to standard gates only (Qollab's BasicSimulator rejects ccry). Takes and returns a list."""
-    return transpile(circuits, basis_gates=BASIS, optimization_level=0)
+    """Unroll to standard gates (Qollab's BasicSimulator rejects ccry), with light optimisation to cut the gate count."""
+    return transpile(circuits, basis_gates=BASIS, optimization_level=1)
 
 
 def index_from_key(key):

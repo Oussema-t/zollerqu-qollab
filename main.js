@@ -5,9 +5,8 @@ import { renderClassical, renderCards, renderCounters } from './ui/cards.js';
 
 const $ = (id) => document.getElementById(id);
 const PARAMS = ['k', 'lam', 'tau', 'c', 'wh_weight', 'staff_cost', 'm'];
-const DEFAULTS = { k: 4, lam: 10, tau: 10, c: 15000, wh_weight: 0.1, staff_cost: 3, m: 8 };
-const SWEEP_SHOTS = 1000, DH_SHOTS = 1;   // the loop takes one measurement per round
-const IONQ_DH = 'Durr-Hoyer loop shown from the recorded take: IonQ backends accept one job per run';
+const DEFAULTS = { k: 2, lam: 10, tau: 10, c: 15000, wh_weight: 0.1, staff_cost: 3, m: 6 };   // 16 qubits: fast live runs
+const SWEEP_SHOTS = 1000;
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
 // view: what the map, table and cards show; it always belongs to the params the classical table was computed for.
 // last: the latest live run, kept for export.
@@ -27,15 +26,14 @@ function setBanner(text, cls = '') { const b = $('banner'); b.textContent = text
 function setStatus(text) { $('status').textContent = text; }
 function showBackendBanner() {
   setBanner(state.isLocal
-    ? `Backend: ${state.backendName}. Local simulator: the sweep job and the minimum-finding loop (one job and one measurement per round) both run live.`
-    : `Backend: ${state.backendName}. IonQ backends accept one job per run, so only the theory-match sweep runs live; the minimum-finding loop is shown from the recorded take.`,
+    ? `Backend: ${state.backendName}. Run quantum search runs one circuit live: the last search of the loop, which finds the cheapest placement. Load recorded take shows the full loop and sweep.`
+    : `Backend: ${state.backendName}. IonQ backends accept one single-circuit job per run: Run quantum search runs the last search of the loop, which finds the cheapest placement. Load recorded take shows the full loop and sweep.`,
   state.isLocal ? '' : 'warn');
 }
 
 function setBusy(on) {
   state.busy = on;
   $('controls').disabled = on;
-  $('seed').disabled = on;
   $('run').disabled = on || state.locked;
   $('load-recorded').disabled = on;
   $('export').disabled = on;
@@ -83,7 +81,7 @@ function dhSummary(dh, exact) {
 // The m select names the C(m,k) placements; the selected option carries the bridge's count.
 function labelM(k, nFeasible) {
   for (const o of $('m').options) {
-    const slow = o.value === '8' ? '' : ', slow';
+    const slow = o.value === '6' ? ', fast' : ', slow';
     o.textContent = `${o.value} candidate locations (C(${o.value},${k})${o.selected ? ` = ${nFeasible}` : ''} placements${slow})`;
   }
 }
@@ -147,13 +145,13 @@ async function showSweep(pj, planJson, countsJson) {
 
 // Draw one state of the Durr-Hoyer loop: trajectory, counters, and (when known) the current best placement.
 // own: {N, m, k, exact} of a recorded take at other parameters; it then goes to the counters panel only, not the map, table or cards.
-function showDh(start, rounds, { result = null, sites = null, note = '', startCalls = 0, own = null } = {}) {
+function showDh(start, rounds, { result = null, sites = null, note = '', own = null } = {}) {
   const v = state.view;
   const ref = own || v;
   const last = rounds[rounds.length - 1];
   const best = result ? result.best_cost : last ? (last.improved ? last.best_sample_cost : last.T) : start;
   renderTrajectory($('traj'), start, rounds, ref.exact);
-  renderCounters($('dh-counters'), { round: rounds.length, calls: result ? result.oracle_calls : last ? last.oracle_calls_cum : startCalls,
+  renderCounters($('dh-counters'), { round: rounds.length, calls: result ? result.oracle_calls : last ? last.oracle_calls_cum : 0,
     N: ref.N, m: ref.m, k: ref.k, best, exact: ref.exact, done: !!result, note });
   if (own) return;
   if (sites) showPlacement(sites, `Showing the minimum-finding best placement, sites ${sites.join(', ')}.`);
@@ -180,31 +178,6 @@ async function showDhFromTake(take, note) {
   return own ? own.exact : state.view.exact;
 }
 
-async function liveDh(pj, seed) {
-  const start = JSON.parse(await bridge.dh_start.callPromising(pj, seed));
-  const rounds = [];
-  showDh(start.T, rounds, { sites: start.best_sites, startCalls: 'oracle_calls' in start ? start.oracle_calls : 1 });
-  setStatus(`Minimum finding: random start, threshold ${fc(start.T)}.`);
-  for (let i = 0; i < 200; i++) {
-    const countsJson = await bridge.dh_run_round.callPromising(backend, DH_SHOTS);
-    const fb = JSON.parse(await bridge.dh_feed.callPromising(countsJson));
-    rounds.push(fb.round);
-    const r = fb.round;
-    if (fb.done) {
-      const sites = JSON.parse(await bridge.placement_sites.callPromising(fb.result.best_index));
-      const { rounds: _all, ...result } = fb.result;   // the take format keeps rounds beside the result
-      showDh(start.T, rounds, { result, sites });
-      return { seed, rounds, result };
-    }
-    // The round record carries the new threshold but not its placement; the map keeps the last known one.
-    const sites = 'best_index' in r ? JSON.parse(await bridge.placement_sites.callPromising(r.best_index)) : null;
-    showDh(start.T, rounds, { sites });
-    setStatus(`Round ${rounds.length}: j = ${r.j}, best sample ${r.best_sample_cost == null ? '-' : fc(r.best_sample_cost)}`
-      + `${r.improved ? ' (new threshold)' : ''}, ${r.oracle_calls_cum} placements scored so far.`);
-  }
-  throw new Error('Minimum finding did not stop within 200 rounds');
-}
-
 async function runQuantum() {
   const p = readParams();
   const pj = JSON.stringify(p);
@@ -220,28 +193,25 @@ async function runQuantum() {
       drawCards();
       clearQuantum();
     }
-    setStatus('Building the theory-match sweep...');
-    const planJson = await bridge.sweep.callPromising(pj);
-    const plan = JSON.parse(planJson);
-    const n = plan.reduce((a, s) => a + s.js.length, 0);
-    setStatus(`Running the sweep job (${n} circuits, ${SWEEP_SHOTS} shots each) on ${state.backendName}; this can take minutes...`);
+    setStatus('Building the last search of the minimum-finding loop...');
+    const planJson = await bridge.sweep.callPromising(pj, true);
+    const j = JSON.parse(planJson)[0].js[0];
+    setStatus(`Running one circuit (${j} Grover iterations, ${SWEEP_SHOTS} shots) on ${state.backendName}: the threshold marks only the cheapest placement...`);
     submitted = true;
-    const countsJson = await bridge.run_sweep.callPromising(backend, pj, SWEEP_SHOTS);
+    const countsJson = await bridge.run_sweep.callPromising(backend, pj, SWEEP_SHOTS, true);
     state.last = { backend: state.backendName, pj, planJson, countsJson, dh: null };
     $('export').hidden = false;   // exportable even if a later step fails
     await showSweep(pj, planJson, countsJson);
-    if (state.isLocal) {
-      const seed = Math.max(0, parseInt($('seed').value, 10) || 0);
-      state.last.dh = await liveDh(pj, seed);
-      setStatus(`Done: ${dhSummary(state.last.dh, state.view.exact)}.`);
-    } else {
-      state.locked = true;
-      const take = await loadTake();
-      drawCards();
-      const note = IONQ_DH + '.';
-      await showDhFromTake(take, note);
-      setStatus(`Sweep done on ${state.backendName}. ${note} ${IONQ_AGAIN}`);
-    }
+    state.locked = !state.isLocal;
+    const r = JSON.parse(await bridge.live_result.callPromising(pj, countsJson));
+    showPlacement(r.sites, `Measured most often on ${state.backendName}: sites ${r.sites.join(', ')}.`);
+    state.view.quantum = { sites: r.sites, cost: r.cost, oracle_calls: j };
+    drawTable();
+    drawCards();
+    const pct = (x) => `${(100 * x).toFixed(1)}%`;
+    setStatus(`Done on ${state.backendName}: measured sites ${r.sites.join(', ')}, cost ${fc(r.cost)}, `
+      + `${r.exact ? 'the exact minimum' : `exact minimum ${fc(state.view.exact)}`}, in ${pct(r.share)} of shots (theory ${pct(r.theory)}).`
+      + `${state.isLocal ? '' : ' ' + IONQ_AGAIN}`);
   } catch (e) {
     setBanner('Run failed: ' + errText(e), 'err');
     if (state.last) console.log('Counts of the sweep, so the job is not lost:', state.last.countsJson);

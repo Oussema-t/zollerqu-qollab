@@ -18,6 +18,7 @@ export const cost_table_json = fn('cost_table_json');
 export const classical = fn('classical');
 export const sweep = fn('sweep');
 export const sweep_analyze_json = fn('sweep_analyze_json');
+export const live_result = fn('live_result');
 // The backend argument is not JSON-serialisable; the server runs on its own harness backend, so it is dropped here.
 export const run_sweep = (_backend, ...a) => call('run_sweep', a);
 run_sweep.callPromising = run_sweep;

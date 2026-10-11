@@ -11,19 +11,18 @@
     <fieldset id="controls">
       <legend class="sr-only">Cost model parameters</legend>
       <div class="row">
-        <label>Stores to open, k <span><input id="k" type="range" min="2" max="5" step="1" value="4"> <output for="k" id="k-out">4</output></span></label>
+        <label>Stores to open, k <span><input id="k" type="range" min="2" max="5" step="1" value="2"> <output for="k" id="k-out">2</output></span></label>
         <label>Crowding penalty per close pair, lam <span><input id="lam" type="range" min="0" max="40" step="1" value="10"> <output for="lam" id="lam-out">10</output></span></label>
         <label>Crowding distance, tau (minutes) <span><input id="tau" type="range" min="4" max="14" step="1" value="10"> <output for="tau" id="tau-out">10</output></span></label>
         <label>People per staff team, capacity <span><input id="c" type="range" min="5000" max="30000" step="1000" value="15000"> <output for="c" id="c-out">15000</output></span></label>
         <label>Warehouse weight <span><input id="wh_weight" type="range" min="0" max="1" step="0.05" value="0.1"> <output for="wh_weight" id="wh_weight-out">0.1</output></span></label>
         <label>Staff cost per team <span><input id="staff_cost" type="range" min="1" max="5" step="0.5" value="3"> <output for="staff_cost" id="staff_cost-out">3</output></span></label>
         <label>Candidate locations, m
-          <select id="m"><option value="8" selected>8 candidate locations (C(8,4) = 70 placements)</option><option value="10">10 candidate locations (C(10,4) placements, slow)</option><option value="12">12 candidate locations (C(12,4) placements, slow)</option></select>
+          <select id="m"><option value="6" selected>6 candidate locations (fast)</option><option value="8">8 candidate locations (slow)</option><option value="10">10 candidate locations (slow)</option><option value="12">12 candidate locations (slow)</option></select>
         </label>
       </div>
     </fieldset>
     <div class="row">
-      <label>Seed for the minimum-finding run <input id="seed" type="number" min="0" max="999999" step="1" value="7"></label>
       <button id="run" class="primary">Run quantum search</button>
       <button id="load-recorded">Load recorded take</button>
       <button id="export" hidden>Export this run</button>

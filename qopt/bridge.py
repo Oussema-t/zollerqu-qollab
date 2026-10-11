@@ -7,7 +7,7 @@ k=4, c=15000, staff_cost=3.0, tau=10.0, lam=10.0, wh_weight=0.1).
 load_data(json_text=None) parses json_text if given, else reads data/champaign.json, keeps the data in _STATE and returns the data text;
 load_recorded(text=None) returns text unchanged (after JSON validation) if given, else the text of data/recorded_local.json; export_take(...) returns (and, inside Qollab,
 downloads) a JSON take {source, backend, date, params, plan, sweep_counts, dh}.
-run_sweep(backend, params_json, shots) and dh_run_round(backend, shots) run the circuits on the backend
+run_sweep(backend, params_json, shots, live) and dh_run_round(backend, shots) run the circuits on the backend
 object the page passes in and return the counts as JSON, so the page never handles a circuit.
 
 Costs are the quadratic model of qopt.cost (multiples of 1/8). The circuits are built from its per-site and
@@ -87,21 +87,48 @@ def classical(params_json):
     })
 
 
-def sweep(params_json):
+def _plan(cost, live):
+    """Full sweep; live: one circuit, the loop's last search. Its threshold marks only the optimum (M = 1) and j
+    maximises the chance of measuring it, so the run ends on the exact answer in one single-circuit job (as IonQ requires)."""
+    if not live:
+        return search.sweep_plan(cost)
+    s = search.sweep_plan(cost, M_targets=(1,), max_circuits=1)[0]
+    theta = math.asin(math.sqrt(s["M"] / s["N"]))
+    x = math.pi / (4 * theta) - 0.5
+    # the better of the two integers around x; on a tie the smaller, which is the shorter circuit
+    j = max({max(0, math.floor(x)), max(0, math.ceil(x))}, key=lambda j: (round(search.success_theory(s["M"], s["N"], j), 9), -j))
+    return [{**s, "js": [j]}]
+
+
+def sweep(params_json, live=False):
     _, _, _, cost = _setup(params_json)
-    return json.dumps(search.sweep_plan(cost))
+    return json.dumps(_plan(cost, live))
 
 
-def sweep_circuits_py(params_json):
+def sweep_circuits_py(params_json, live=False):
     """The plan's thresholds come from the classical side (they fix M for the theory curve); the circuits from the model."""
     _, _, mdl, cost = _setup(params_json)
-    return search.to_basis(search.sweep_circuits(mdl, search.sweep_plan(cost)))
+    return search.to_basis(search.sweep_circuits(mdl, _plan(cost, live)))
 
 
-def run_sweep(backend, params_json, shots):
-    """Run the sweep circuits as one job on backend; counts per circuit in plan order."""
-    circuits = sweep_circuits_py(params_json)
-    result = backend.run(circuits, shots=int(shots)).result()
+def live_result(params_json, counts_json):
+    """The live circuit's answer: the placement measured most often, its cost, whether it is the exact optimum,
+    its share of the shots and the theory's chance sin^2((2j+1) theta) of measuring a marked placement."""
+    _, _, _, cost = _setup(params_json)
+    s = _plan(cost, True)[0]
+    counts = json.loads(counts_json)[0]
+    key = max(counts, key=counts.get)
+    idx = search.index_from_key(key)
+    j = s["js"][0]
+    return json.dumps({"sites": _sites(idx), "cost": _clean(float(cost[idx])), "exact": bool(cost[idx] <= s["T"]),
+                       "share": counts[key] / sum(counts.values()), "j": j,
+                       "theory": search.success_theory(s["M"], s["N"], j)})
+
+
+def run_sweep(backend, params_json, shots, live=False):
+    """Run the sweep circuits as one job on backend (a single circuit bare, as IonQ requires); counts per circuit in plan order."""
+    circuits = sweep_circuits_py(params_json, live)
+    result = backend.run(circuits[0] if len(circuits) == 1 else circuits, shots=int(shots)).result()
     return json.dumps([result.get_counts(i) for i in range(len(circuits))])
 
 

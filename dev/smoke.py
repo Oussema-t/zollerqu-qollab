@@ -49,7 +49,7 @@ def main():
         print("classical:", page.locator("#classical tbody").inner_text().replace("\n", " / "))
         check_table(page, 3, 70)
         m_label = page.locator("#m option:checked").inner_text()
-        assert m_label == "8 candidate locations (C(8,4) = 70 placements)", f"m select label: {m_label}"
+        assert m_label == "6 candidate locations (fast)", f"m select label: {m_label}"
         print("m select:", m_label)
         page.screenshot(path=str(OUT / "01-classical.png"), full_page=True)
 
@@ -70,7 +70,7 @@ def main():
 
         page.click("#run")
         page.wait_for_selector("#dh-counters[data-done='false']", timeout=10_000)
-        # up to 120 rounds, each a short one-measurement job
+        # the live sweep, then the loop from the recorded take
         page.wait_for_selector("#dh-counters[data-done='true']", timeout=480_000)
         assert page.locator("#scaling-fig").is_visible(), "scaling plot gone after the live run"
         print("live cards:", cards(page))

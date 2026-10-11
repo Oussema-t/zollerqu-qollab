@@ -77,6 +77,41 @@ def test_sweep_round_trip():
     assert all(s["max_dev"] < 0.05 for s in out)
 
 
+def test_live_run_is_one_circuit_that_finds_the_optimum():
+    """The live run is the loop's last search: one circuit, threshold marking only the optimum (M = 1),
+    j chosen to maximise the chance of measuring it (j = 3 for M = 1 of 20). Measured most often: the exact optimum."""
+    plan = json.loads(bridge.sweep(json.dumps(PARAMS), True))
+    assert [(s["M"], s["js"]) for s in plan] == [(1, [3])]
+    circuits = bridge.sweep_circuits_py(json.dumps(PARAMS), True)
+    assert len(circuits) == 1
+    counts = aer_run(circuits, 2000, seed=3)
+    out = json.loads(bridge.live_result(json.dumps(PARAMS), json.dumps(counts)))
+    exact = json.loads(bridge.cost_table_json(json.dumps(PARAMS)))
+    assert out["cost"] == exact["best_cost"] and out["exact"] is True
+    assert out["share"] > 0.9 and out["theory"] > 0.99 and out["j"] == 3
+
+
+def test_run_sweep_one_circuit_is_submitted_bare():
+    """IonQ rejects multi-circuit jobs, so a one-circuit sweep sends the circuit itself, not a list of one."""
+    from qiskit.providers.basic_provider import BasicSimulator
+
+    class Spy:
+        def run(self, circuits, shots):
+            self.sent = circuits
+            return BasicSimulator().run(circuits, shots=shots)
+    spy = Spy()
+    counts = json.loads(bridge.run_sweep(spy, json.dumps(PARAMS), 10, True))
+    assert isinstance(spy.sent, QuantumCircuit)
+    assert len(counts) == 1 and sum(counts[0].values()) == 10 and len(next(iter(counts[0]))) == 6
+
+
+def test_page_does_not_run_the_loop_live():
+    from pathlib import Path
+    js = (Path(__file__).resolve().parents[1] / "main.js").read_text(encoding="utf-8")
+    for needle in ("liveDh", "dh_run_round", "dh_start", "dh_feed", "DH_SHOTS"):
+        assert needle not in js
+
+
 def test_run_sweep_counts_per_circuit(monkeypatch):
     from functools import partial
 

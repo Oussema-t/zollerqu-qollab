@@ -31,7 +31,7 @@ PAGE = """<!doctype html>
 <script type="module" src="/main.js"></script>
 </body></html>"""
 
-TEXT_FNS = ("load_data", "cost_table_json", "classical", "sweep", "sweep_analyze_json", "dh_start", "dh_feed",
+TEXT_FNS = ("load_data", "cost_table_json", "classical", "sweep", "sweep_analyze_json", "live_result", "dh_start", "dh_feed",
             "placement_sites", "load_recorded", "export_take")
 
 
@@ -56,7 +56,7 @@ class HarnessBackend:
     name = "local dev harness (Aer statevector)"
 
     def run(self, circuits, shots):
-        return _HarnessJob(aer_run(list(circuits), int(shots), seed=None))
+        return _HarnessJob(aer_run(circuits if isinstance(circuits, list) else [circuits], int(shots), seed=None))
 
 
 def api(fn, args):
