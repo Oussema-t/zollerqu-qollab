@@ -74,7 +74,7 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 **Alt text** (`slides/figures/iceberg.png`): Bar chart: share of single faults that are caught or harmless, from injecting every single fault (5,904) in exact simulation. Start state and flag 100 %, syndrome checks 100 %, readout bit flips 100 %, QAOA gates 80 %; the rest are XX, YY and ZZ errors on a gate's own pair, which a distance-2 code cannot see.
 
-**Source line on the slide:** Faults: exact simulation of every single fault (1, 2 layers) · Qollab IonQ simulator: 12 jobs, 11 Oct 2026 / Detection, not correction: shots that fail a check are discarded
+**Source line on the slide:** Faults: exact simulation of every single fault (1, 2 layers) · Qollab IonQ simulator: 18 jobs, 11 Oct 2026 / Detection, not correction: shots that fail a check are discarded
 
 ## Slide 10: Try it on Qollab: one click runs it all
 
