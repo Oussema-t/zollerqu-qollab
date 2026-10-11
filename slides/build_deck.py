@@ -65,6 +65,7 @@ EXP29_FILE = "results/stocks_exp29_summary.json"
 ICE_VERIFY_FILE = "results/iceberg_verification.json"
 ICE_SWEEP_FILE = "results/qollab_iceberg_sweeps_20261011.json"
 ICE_STUDY_FILE = "results/iceberg_noise_study.json"
+ICE_RUN_FILE = "results/ionq_B_lr_p1_iceberg_20261011-132537.json"   # first Iceberg job that reached IonQ (Forte 1 noise model)
 LINKS = {"Qollab project": None, "Demo video": None}   # set a URL to show that line on the closing slide
 CIRCUIT = "B CVaR 0.1 p=3"
 MODE = "buy_or_skip"
@@ -223,6 +224,16 @@ def collect():
     sweep = load(ICE_SWEEP_FILE)["runs"]
     put("ice_jobs", sum(1 for run in sweep for r in run["rows"] if r["error_detection"] == "iceberg" and r["source"] == "IonQ backend"),
         f"{ICE_SWEEP_FILE}: runs[].rows (Iceberg jobs that reached IonQ)")
+    run = load(ICE_RUN_FILE)
+    put("ice_run_kept", run["iceberg"]["accepted"] / run["iceberg"]["shots"], f"{ICE_RUN_FILE}: iceberg.accepted / iceberg.shots")
+    put("ice_run_kept_n", run["iceberg"]["accepted"], f"{ICE_RUN_FILE}: iceberg.accepted")
+    put("ice_run_hits", round(run["summary"][0]["p_optimum"] * run["iceberg"]["accepted"]), f"{ICE_RUN_FILE}: summary[0].p_optimum x accepted")
+    put("ice_run_p_kept", run["summary"][0]["p_optimum"], f"{ICE_RUN_FILE}: summary[0].p_optimum (per kept shot)")
+    put("ice_run_gates", run["resources"]["two_qubit_gates"], f"{ICE_RUN_FILE}: resources.two_qubit_gates")
+    put("ice_run_gates_plain", run["resources_plain"]["two_qubit_gates"], f"{ICE_RUN_FILE}: resources_plain.two_qubit_gates")
+    forte_plain = sorted(r["p_optimum_kept"] for x in sweep if "Aria" not in x["run"] for r in x["rows"]
+                         if r["source"] == "IonQ backend" and r["layers"] == 1 and r["error_detection"] == "none")
+    put("plain_p1_ionq", forte_plain, f"{ICE_SWEEP_FILE}: plain layers-1 rows that reached IonQ with the Forte 1 noise model")
     # the local noise prediction (ICE_STUDY_FILE) is not shown: its first result was not understood in time to be trusted
     return n, src
 
@@ -907,20 +918,21 @@ def build_slides(n, figures, tickers, buy, corr):
     slides.append(s)
 
     # 9 ---------------------------------------------------------------- Iceberg error detection
-    s = Slide(9, "ERROR DETECTION", "Iceberg code: verified, but it costs gates", source=[
-        "Faults: exact simulation of every single fault (1, 2 layers), 11 Oct 2026",
-        "Detection, not correction: shots that fail a check are discarded"], notes=(
+    lo, hi = (per_thousand(min(n["plain_p1_ionq"])), per_thousand(max(n["plain_p1_ionq"])))
+    s = Slide(9, "ERROR DETECTION", "Iceberg catches errors, but doubles the gates", source=[
+        "Faults: exact simulation of every single fault (1, 2 layers) · Run: IonQ Forte 1 noise model, 1,000 shots",
+        "Detection, not correction: shots that fail a check are discarded (Qollab, 11 Oct 2026)"], notes=(
         f"We also protected the circuit with the Iceberg error-detection code: twelve logical qubits on {n['ice_qubits']}. "
-        "Every state-preparation, check and readout fault is caught, and four in five gate faults. "
-        "The price is more gates; how it does under the IonQ noise model is our next run."))
+        "In exact simulation it catches every preparation, check and readout fault. "
+        f"On the IonQ noise model it flagged three in four shots. The kept shots were not clearly better than plain QAOA, because the code doubles the gates."))
     s.image(figures["iceberg"], MX, 1.65, 7.3, 4.2, (
         f"Bar chart: share of single faults that are caught or harmless, from injecting every single fault ({n['ice_faults_total']:,}) in exact simulation. "
         f"Start state and flag {100 * n['ice_start_ok']:.0f} %, syndrome checks {100 * n['ice_checks_ok']:.0f} %, readout bit flips {100 * n['ice_readout_ok']:.0f} %, "
         f"QAOA gates {100 * n['ice_gates_ok']:.0f} %; the rest are XX, YY and ZZ errors on a gate's own pair, which a distance-2 code cannot see."))
     y = s.stat(8.3, 1.7, 4.43, f"{n['ice_qubits']} qubits", ["12 logical on 14, + 1 flag", "+ 2 helpers per check"], size=44)
-    y = s.stat(8.3, y + 0.2, 4.43, f"+{100 * (n['ice_gates_p3'] / n['plain_gates_p3'] - 1):.0f} %", [f"two-qubit gates at 3 layers", f"({n['ice_gates_p3']} vs {n['plain_gates_p3']})"], size=44)
-    lines = [["Under the IonQ noise model:", "not run yet (Qollab runs", "one IonQ job at a time)"]] if n["ice_jobs"] == 0 else \
-        [[f"{n['ice_jobs']} Iceberg job(s) on IonQ,", "see the notebook, section 5.1"]]
+    y = s.stat(8.3, y + 0.2, 4.43, f"{100 * n['ice_run_kept']:.0f} % kept", ["IonQ Forte 1 noise model,", "1 layer: 3 in 4 shots flagged"], size=44)
+    lines = [[f"Best portfolio: {n['ice_run_hits']} of {n['ice_run_kept_n']} kept", f"shots; plain {lo}-{hi} per 1,000"],
+             [f"{n['ice_run_gates']} vs {n['ice_run_gates_plain']} two-qubit gates"]]
     if n.get("ice_pred_kept_p3") is not None:
         lines.append([f"With noise (local model): {100 * n['ice_pred_kept_p3']:.0f} %", "of shots kept at 3 layers"])
     s.bullets(8.3, y + 0.22, 4.43, lines, size=MIN_PT, gap=0.12, color=WHITE)
@@ -944,7 +956,7 @@ def build_slides(n, figures, tickers, buy, corr):
                                          [f"Noise cuts the hits from {per_thousand(n['p_noiseless'])} to {hits} per 1,000"],
                                          ["Classical heuristics match or beat it"]], size=MIN_PT, gap=0.14)
     y = s.text(6.75, y + 0.42, 5.98, ["Next steps"], size=22, bold=True)
-    s.bullets(6.75, y + 0.16, 5.98, [["Iceberg on the Forte 1 noise model"],
+    s.bullets(6.75, y + 0.16, 5.98, [["Iceberg at more layers and checks"],
                                      [f"Shorter circuits: {n['gates_all_12']} instead of {n['gates_circuit']} gates"],
                                      ["Find how many layers the noise allows"]], size=MIN_PT, gap=0.14)
     slides.append(s)

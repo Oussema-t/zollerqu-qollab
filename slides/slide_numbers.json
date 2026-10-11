@@ -423,6 +423,37 @@
   "ice_jobs": {
    "value": 0,
    "source": "results/qollab_iceberg_sweeps_20261011.json: runs[].rows (Iceberg jobs that reached IonQ)"
+  },
+  "ice_run_kept": {
+   "value": 0.246,
+   "source": "results/ionq_B_lr_p1_iceberg_20261011-132537.json: iceberg.accepted / iceberg.shots"
+  },
+  "ice_run_kept_n": {
+   "value": 246,
+   "source": "results/ionq_B_lr_p1_iceberg_20261011-132537.json: iceberg.accepted"
+  },
+  "ice_run_hits": {
+   "value": 2,
+   "source": "results/ionq_B_lr_p1_iceberg_20261011-132537.json: summary[0].p_optimum x accepted"
+  },
+  "ice_run_p_kept": {
+   "value": 0.0081,
+   "source": "results/ionq_B_lr_p1_iceberg_20261011-132537.json: summary[0].p_optimum (per kept shot)"
+  },
+  "ice_run_gates": {
+   "value": 133,
+   "source": "results/ionq_B_lr_p1_iceberg_20261011-132537.json: resources.two_qubit_gates"
+  },
+  "ice_run_gates_plain": {
+   "value": 66,
+   "source": "results/ionq_B_lr_p1_iceberg_20261011-132537.json: resources_plain.two_qubit_gates"
+  },
+  "plain_p1_ionq": {
+   "value": [
+    0.005,
+    0.011
+   ],
+   "source": "results/qollab_iceberg_sweeps_20261011.json: plain layers-1 rows that reached IonQ with the Forte 1 noise model"
   }
  }
 }

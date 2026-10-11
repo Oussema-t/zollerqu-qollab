@@ -1,0 +1,90 @@
+{
+ "source": "backend",
+ "shots": 1000,
+ "backend": "ionq_simulator",
+ "noise_model": "forte-1",
+ "noise_model_requested": "forte-1",
+ "circuit": "B LR-QAOA p=1",
+ "key": "B_lr",
+ "layers": 1,
+ "error_detection": "iceberg",
+ "resources": {
+  "qubits": 17,
+  "two_qubit_gates": 133,
+  "depth": 48,
+  "two_qubit_depth": 45
+ },
+ "resources_plain": {
+  "qubits": 12,
+  "two_qubit_gates": 66,
+  "depth": 24,
+  "two_qubit_depth": 21
+ },
+ "transpiled_two_qubit_gates": 133,
+ "iceberg": {
+  "shots": 1000,
+  "accepted": 246,
+  "failed_flag": 133,
+  "failed_checks": 684,
+  "failed_parity": 430,
+  "checks": 1,
+  "checks_after_layers": [
+   1
+  ]
+ },
+ "noiseless_p_optimum": 0.011417,
+ "counts": null,
+ "summary": [
+  {
+   "circuit": "B LR-QAOA p=1",
+   "scored_as": "buy_or_skip",
+   "shots": 246,
+   "p_optimum": 0.0081,
+   "p_within_5pct": 0.423,
+   "quality": 0.877,
+   "most_frequent": "111111001111",
+   "most_frequent_count": 5,
+   "most_frequent_is_optimum": false,
+   "p_optimum_per_shot_sent": 0.002
+  }
+ ],
+ "time": "2026-10-11 13:25:37",
+ "job_id": "01a12ca3-f091-7a16-9e37-c780f6d07596",
+ "kept_score_histogram_15_bins": {
+  "measured": [
+   122,
+   54,
+   25,
+   14,
+   7,
+   3,
+   9,
+   3,
+   3,
+   2,
+   2,
+   1,
+   0,
+   1,
+   0
+  ],
+  "ideal_noiseless": [
+   193,
+   33,
+   9,
+   5,
+   2,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "note": "Qollab run of qollab/main.py at commit 51e7b5c, Select QPU = IonQ Forte 1 (29q) noise model; transcribed from the console the user pasted. The RAW COUNTS line was cut off in the paste, so the per-shot counts are not saved; every number here is printed in that console."
+}

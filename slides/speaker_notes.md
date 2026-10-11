@@ -1,6 +1,6 @@
 # Speaker notes: Portfolio Selection with QAOA (ZollerQu, stocks project)
 
-Spoken script for all 11 slides: **385 words** (about 2:51-2:58 at 130-135 words per minute; target 330-380 words).
+Spoken script for all 11 slides: **392 words** (about 2:54-3:01 at 130-135 words per minute; target 330-380 words).
 
 Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advantage or speed-up claim, no wall-clock comparison.
 
@@ -68,13 +68,13 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 **Source line on the slide:** Server simulation of all 536,870,912 states, 11 Oct 2026; ramp tuned at 12 assets, no tuning at 29 / Classical: greedy descent and annealing, 200 runs, the same 1,000 evaluations
 
-## Slide 9: Iceberg code: verified, but it costs gates
+## Slide 9: Iceberg catches errors, but doubles the gates
 
-**Script (46 words):** We also protected the circuit with the Iceberg error-detection code: twelve logical qubits on 17. Every state-preparation, check and readout fault is caught, and four in five gate faults. The price is more gates; how it does under the IonQ noise model is our next run.
+**Script (53 words):** We also protected the circuit with the Iceberg error-detection code: twelve logical qubits on 17. In exact simulation it catches every preparation, check and readout fault. On the IonQ noise model it flagged three in four shots. The kept shots were not clearly better than plain QAOA, because the code doubles the gates.
 
 **Alt text** (`slides/figures/iceberg.png`): Bar chart: share of single faults that are caught or harmless, from injecting every single fault (5,904) in exact simulation. Start state and flag 100 %, syndrome checks 100 %, readout bit flips 100 %, QAOA gates 80 %; the rest are XX, YY and ZZ errors on a gate's own pair, which a distance-2 code cannot see.
 
-**Source line on the slide:** Faults: exact simulation of every single fault (1, 2 layers), 11 Oct 2026 / Detection, not correction: shots that fail a check are discarded
+**Source line on the slide:** Faults: exact simulation of every single fault (1, 2 layers) · Run: IonQ Forte 1 noise model, 1,000 shots / Detection, not correction: shots that fail a check are discarded (Qollab, 11 Oct 2026)
 
 ## Slide 10: Try it on Qollab: one click, one IonQ job
 
