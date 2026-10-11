@@ -14,28 +14,7 @@ const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, t
 // study: the scaling study of the loaded take; it stays on screen after live runs.
 const state = { data: null, backendName: '', isLocal: true, busy: false, locked: false, seq: 0,
   view: null, last: null, study: null };
-const toPlain = (x) => {
-  if (!(x && typeof x.toJs === 'function')) return x;
-  const v = x.toJs({ dict_converter: Object.fromEntries });
-  return v instanceof Map ? Object.fromEntries(v) : v;
-};
 const errText = (e) => (e && e.message ? e.message : String(e));
-
-// Works for the browser setTimeout(cb, ms), an injected setTimeout(cb, ms) returning a promise, and setTimeout(ms) returning a promise.
-async function sleep(ms) {
-  const start = Date.now();
-  await new Promise((resolve) => {
-    let r;
-    try { r = setTimeout(resolve, ms); } catch { resolve(); return; }
-    if (r && typeof r.then === 'function') r.then(resolve, resolve);
-  });
-  if (Date.now() - start < ms / 2) {
-    try { const p = setTimeout(ms); if (p && typeof p.then === 'function') await p; } catch { /* ignore */ }
-  }
-  while (Date.now() - start < ms - 50) {
-    await new Promise((r) => requestAnimationFrame(r));
-  }
-}
 
 function backendLabel() {
   try { return String(backend.name && typeof backend.name === 'function' ? backend.name() : backend.name); }
@@ -156,42 +135,6 @@ async function refreshClassical(p) {
   }
 }
 
-// One backend job; returns the counts of its first n circuits as plain objects.
-async function runJob(circuits, shots, n, label) {
-  const job = await backend.run(circuits, { shots });
-  // Proxies to the same Python enum member are not === in JS, so compare by name.
-  // Up to 5 failed status calls in a row are tolerated so a network blip cannot lose the one IonQ job.
-  let statusFailures = 0;
-  const statusName = async () => {
-    let s;
-    try { s = await job.status(); } catch (e) {
-      statusFailures += 1;
-      if (statusFailures > 5) throw e;
-      return 'retrying';
-    }
-    statusFailures = 0;
-    try { return String(s.name ?? s); } catch { return String(s); }
-  };
-  const terminal = (st) => ['done', 'completed', 'error', 'failed', 'cancel'].some((k) => st.toLowerCase().includes(k));
-  let status = await statusName();
-  const t0 = Date.now();
-  let shownAt = t0;
-  while (!terminal(status)) {
-    if (Date.now() - t0 > 3600 * 1000) throw new Error('Timed out waiting for the job');
-    await sleep(500);
-    status = await statusName();
-    if (label && Date.now() - shownAt >= 5000) {   // at most one status update every 5 seconds
-      shownAt = Date.now();
-      setStatus(`${label}: job ${status}... ${Math.round((shownAt - t0) / 1000)}s.`);
-    }
-  }
-  if (!['done', 'completed'].some((k) => status.toLowerCase().includes(k))) throw new Error('Job ended with status ' + status);
-  const result = await job.result();
-  const counts = [];
-  for (let i = 0; i < n; i++) counts.push(toPlain(await result.get_counts(i)));
-  return counts;
-}
-
 async function showSweep(pj, planJson, countsJson) {
   const series = JSON.parse(await bridge.sweep_analyze_json.callPromising(pj, planJson, countsJson));
   renderSweep($('sweep'), series, state.view.N);
@@ -240,9 +183,8 @@ async function liveDh(pj, seed) {
   showDh(start.T, rounds, { sites: start.best_sites, startCalls: 'oracle_calls' in start ? start.oracle_calls : 1 });
   setStatus(`Minimum finding: random start, threshold ${start.T.toFixed(2)}.`);
   for (let i = 0; i < 200; i++) {
-    const circ = await bridge.dh_next_circuit.callPromising();
-    const [counts] = await runJob([circ], DH_SHOTS, 1, `Minimum finding round ${i + 1}`);
-    const fb = JSON.parse(await bridge.dh_feed.callPromising(JSON.stringify(counts)));
+    const countsJson = await bridge.dh_run_round.callPromising(backend, DH_SHOTS);
+    const fb = JSON.parse(await bridge.dh_feed.callPromising(countsJson));
     rounds.push(fb.round);
     const r = fb.round;
     if (fb.done) {
@@ -279,11 +221,9 @@ async function runQuantum() {
     const planJson = await bridge.sweep.callPromising(pj);
     const plan = JSON.parse(planJson);
     const n = plan.reduce((a, s) => a + s.js.length, 0);
-    const circuits = await bridge.sweep_circuits_py.callPromising(pj);
-    setStatus(`Submitting one job with ${n} circuits, ${SWEEP_SHOTS} shots each, to ${state.backendName}...`);
+    setStatus(`Running the sweep job (${n} circuits, ${SWEEP_SHOTS} shots each) on ${state.backendName}; this can take minutes...`);
     submitted = true;
-    const counts = await runJob(circuits, SWEEP_SHOTS, n, 'Theory-match sweep');
-    const countsJson = JSON.stringify(counts);
+    const countsJson = await bridge.run_sweep.callPromising(backend, pj, SWEEP_SHOTS);
     state.last = { backend: state.backendName, pj, planJson, countsJson, dh: null };
     $('export').hidden = false;   // exportable even if a later step fails
     await showSweep(pj, planJson, countsJson);
@@ -374,3 +314,8 @@ async function init() {
 }
 
 init();
+
+// Keep this run alive. Qollab routes remote backend requests (IonQ simulators and hardware) only while main.js is
+// still running; once it returns, the run is "Done" and remote backends are unreachable. Press Stop in the Qollab
+// toolbar to end the session.
+await new Promise(() => {});

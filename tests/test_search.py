@@ -3,13 +3,14 @@ from math import comb
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
+from qiskit.providers.basic_provider import BasicSimulator
 from qiskit.quantum_info import Statevector
 
 from qopt.aer_run import aer_run
 from qopt.classical import brute_force
 from qopt.cost import feasible_mask
-from qopt.search import (dh_init, dicke_circuit, feasible_count, find_min, grover_circuit, index_from_key,
-                         marked_count, oracle, success_theory, sweep_analyze, sweep_circuits, sweep_plan)
+from qopt.search import (BASIS, dh_init, dicke_circuit, feasible_count, find_min, grover_circuit, index_from_key,
+                         marked_count, oracle, success_theory, sweep_analyze, sweep_circuits, sweep_plan, to_basis)
 
 
 def random_table(m, k, seed):
@@ -198,3 +199,22 @@ def test_dh_init_counts_the_random_start():
     state = dh_init(table, np.random.default_rng(3))
     assert state["oracle_calls"] == 1 and state["N"] == comb(6, 3)
     assert np.isfinite(table[state["best_index"]]) and state["T"] == table[state["best_index"]]
+
+
+def _small_sweep():
+    table = random_table(6, 3, seed=5)
+    return sweep_circuits(table, sweep_plan(table, M_targets=(1, 4), max_circuits=3))
+
+
+def test_to_basis_leaves_only_basic_gates():
+    circuits = _small_sweep()
+    out = to_basis(circuits)
+    assert len(out) == len(circuits)
+    for qc in out:
+        assert set(qc.count_ops()) <= set(BASIS) | {"measure"}
+
+
+def test_to_basis_runs_on_basic_simulator():
+    circuit = to_basis(_small_sweep())[-1]
+    counts = BasicSimulator().run(circuit, shots=100).result().get_counts()
+    assert sum(counts.values()) == 100

@@ -7,6 +7,8 @@ k=4, c=15000, staff_cost=3.0, tau=10.0, lam=10.0, wh_weight=0.1).
 load_data(json_text=None) parses json_text if given, else reads data/champaign.json, keeps the data in _STATE and returns the data text;
 load_recorded(text=None) returns text unchanged (after JSON validation) if given, else the text of data/recorded_local.json; export_take(...) returns (and, inside Qollab,
 downloads) a JSON take {source, backend, date, params, plan, sweep_counts, dh}.
+run_sweep(backend, params_json, shots) and dh_run_round(backend, shots) run the circuits on the backend
+object the page passes in and return the counts as JSON, so the page never handles a circuit.
 """
 import json
 import math
@@ -84,7 +86,14 @@ def sweep(params_json):
 
 def sweep_circuits_py(params_json):
     _, _, cost = _setup(params_json)
-    return search.sweep_circuits(cost, search.sweep_plan(cost))
+    return search.to_basis(search.sweep_circuits(cost, search.sweep_plan(cost)))
+
+
+def run_sweep(backend, params_json, shots):
+    """Run the sweep circuits as one job on backend; counts per circuit in plan order."""
+    circuits = sweep_circuits_py(params_json)
+    result = backend.run(circuits, shots=int(shots)).result()
+    return json.dumps([result.get_counts(i) for i in range(len(circuits))])
 
 
 def sweep_analyze_json(params_json, plan_json, counts_json):
@@ -103,7 +112,13 @@ def dh_start(params_json, seed):
 
 def dh_next_circuit():
     dh = _STATE["dh"]
-    return search.dh_next(dh["cost"], dh["state"], dh["rng"])
+    return search.to_basis([search.dh_next(dh["cost"], dh["state"], dh["rng"])])[0]
+
+
+def dh_run_round(backend, shots):
+    """Run the next loop circuit on backend; its counts as one dict, ready for dh_feed."""
+    result = backend.run([dh_next_circuit()], shots=int(shots)).result()
+    return json.dumps(result.get_counts(0))
 
 
 def dh_feed(counts_json):

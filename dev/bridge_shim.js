@@ -5,29 +5,28 @@ async function call(fn, args, as = 'text') {
   if (!r.ok) throw new Error(await r.text());
   return as === 'blob' ? r.blob() : as === 'json' ? r.json() : r.text();
 }
-const fn = (name, as) => ({ callPromising: (...args) => call(name, args, as) });
+// Each export is callable directly (bridge.x(...), the synchronous form on Qollab) and as bridge.x.callPromising(...);
+// both return a Promise here, which main.js awaits.
+const fn = (name, as) => {
+  const f = (...args) => call(name, args, as);
+  f.callPromising = f;
+  return f;
+};
 
 export const load_data = fn('load_data');
 export const cost_table_json = fn('cost_table_json');
 export const classical = fn('classical');
 export const sweep = fn('sweep');
-export const sweep_circuits_py = fn('sweep_circuits_py', 'json');   // number of circuits built
 export const sweep_analyze_json = fn('sweep_analyze_json');
+// The backend argument is not JSON-serialisable; the server runs on its own harness backend, so it is dropped here.
+export const run_sweep = (_backend, ...a) => call('run_sweep', a);
+run_sweep.callPromising = run_sweep;
+export const dh_run_round = (_backend, ...a) => call('dh_run_round', a);
+dh_run_round.callPromising = dh_run_round;
 export const dh_start = fn('dh_start');
-export const dh_next_circuit = fn('dh_next_circuit', 'json');       // 1
 export const dh_feed = fn('dh_feed');
 export const placement_sites = fn('placement_sites');
 export const load_recorded = fn('load_recorded');
 export const export_take = fn('export_take');
 
-globalThis.backend = {
-  name: 'local dev harness (Aer statevector)',
-  async run(_circuits, { shots }) {
-    let counts = null, error = null;
-    const done = call('run', [shots], 'json').then((c) => { counts = c; }, (e) => { error = e; });
-    return {
-      async status() { return { name: error ? 'ERROR' : counts ? 'DONE' : 'RUNNING' }; },
-      async result() { await done; if (error) throw error; return { get_counts: async (i) => counts[i] }; },
-    };
-  },
-};
+globalThis.backend = { name: 'local dev harness (Aer statevector)' };   // main.js reads its name and passes it to the bridge

@@ -2,8 +2,8 @@
 
 GET  /                 index.html wrapped in a full document, import map points qopt.bridge at dev/bridge_shim.js
 GET  /<path>           static files from the project root
-POST /api/<fn>         {"args": [...]} -> qopt.bridge.<fn>(*args); sweep_circuits_py and dh_next_circuit keep their
-                       circuits server side and return how many; run executes them on Aer and returns the counts
+POST /api/<fn>         {"args": [...]} -> qopt.bridge.<fn>(*args); run_sweep and dh_run_round get HarnessBackend()
+                       as their backend argument (Aer statevector) in place of the page's, which the shim drops
 """
 import json
 import mimetypes
@@ -18,7 +18,6 @@ from qopt import bridge
 from qopt.aer_run import aer_run
 
 bridge.load_data((ROOT / "data" / "champaign.json").read_text(encoding="utf-8"))
-CURRENT = []   # circuits built by the last sweep_circuits_py / dh_next_circuit call
 
 mimetypes.add_type("text/javascript", ".js")
 
@@ -36,15 +35,34 @@ TEXT_FNS = ("load_data", "cost_table_json", "classical", "sweep", "sweep_analyze
             "placement_sites", "load_recorded", "export_take")
 
 
+class _HarnessResult:
+    def __init__(self, counts):
+        self._counts = counts
+
+    def get_counts(self, i=0):
+        return self._counts[i]
+
+
+class _HarnessJob:
+    def __init__(self, counts):
+        self._counts = counts
+
+    def result(self):
+        return _HarnessResult(self._counts)
+
+
+class HarnessBackend:
+    """Stands in for the backend object Qollab passes to the bridge: run(circuits, shots).result().get_counts(i)."""
+    name = "local dev harness (Aer statevector)"
+
+    def run(self, circuits, shots):
+        return _HarnessJob(aer_run(list(circuits), int(shots), seed=None))
+
+
 def api(fn, args):
     """Return (content_type, bytes)."""
-    if fn in ("sweep_circuits_py", "dh_next_circuit"):
-        built = getattr(bridge, fn)(*args)
-        CURRENT[:] = built if isinstance(built, list) else [built]
-        return "application/json", json.dumps(len(CURRENT)).encode()
-    if fn == "run":
-        shots = int(args[0])
-        return "application/json", json.dumps(aer_run(list(CURRENT), shots, seed=None)).encode()
+    if fn in ("run_sweep", "dh_run_round"):
+        return "application/json", getattr(bridge, fn)(HarnessBackend(), *args).encode()
     if fn in TEXT_FNS:
         return "application/json", getattr(bridge, fn)(*args).encode()
     raise KeyError(fn)

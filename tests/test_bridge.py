@@ -75,6 +75,22 @@ def test_sweep_round_trip():
     assert all(s["max_dev"] < 0.05 for s in out)
 
 
+def test_run_sweep_counts_per_circuit():
+    from qiskit.providers.basic_provider import BasicSimulator
+    counts = json.loads(bridge.run_sweep(BasicSimulator(), json.dumps(PARAMS), 50))
+    assert len(counts) == len(bridge.sweep_circuits_py(json.dumps(PARAMS)))
+    assert all(isinstance(c, dict) and sum(c.values()) == 50 for c in counts)
+
+
+def test_dh_run_round_counts():
+    from qiskit.providers.basic_provider import BasicSimulator
+    bridge.dh_start(json.dumps(PARAMS), 5)
+    c = json.loads(bridge.dh_run_round(BasicSimulator(), 1))
+    assert isinstance(c, dict) and sum(c.values()) == 1
+    out = json.loads(bridge.dh_feed(json.dumps(c)))
+    assert "round" in out
+
+
 def test_dh_loop():
     start = json.loads(bridge.dh_start(json.dumps(PARAMS), 5))
     assert set(start) >= {"N", "T", "best_index"}

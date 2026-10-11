@@ -10,8 +10,16 @@ Bitstring convention: site i = qubit i = bit i of the index. In a Qiskit counts 
 from math import acos, asin, ceil, pi, sin, sqrt
 
 import numpy as np
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, transpile
 from qiskit.circuit.library import DiagonalGate, RYGate
+
+
+BASIS = ["rz", "sx", "x", "cx"]
+
+
+def to_basis(circuits):
+    """Unroll to standard gates only (Qollab's BasicSimulator rejects ccry and diagonal). Takes and returns a list."""
+    return transpile(circuits, basis_gates=BASIS, optimization_level=0)
 
 
 def index_from_key(key):
