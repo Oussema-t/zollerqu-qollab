@@ -19,6 +19,7 @@ VIEWPORT = {"width": 1280, "height": 800}
 CAPTION_CSS = """
 #demo-cap { position: fixed; left: 0; right: 0; bottom: 0; padding: 14px 24px; background: rgba(10,12,16,.92);
   color: #fff; font: 20px/1.4 system-ui, sans-serif; z-index: 9999; border-top: 2px solid #4f9cff; }
+body::after { content: ""; display: block; height: 140px; }   /* lets the last paragraph scroll clear of the bar */
 """
 
 CAP_H = 110   # room kept free at the bottom of the viewport for the caption bar
@@ -110,25 +111,37 @@ def record(page, a):
     page.wait_for_function("() => !document.getElementById('run').disabled", timeout=60_000)
     page.add_style_tag(content=CAPTION_CSS)
 
-    # a. the problem
+    # a. the problem, then how to read the map and the table
     caption(page, "Where to put 4 stores in Champaign County, Illinois. 158 census block groups, real driving times. "
                   "The map shows the exact best placement; the table shows three classical methods.")
     center(page, "#map")
-    time.sleep(5)
+    time.sleep(10)
+    caption(page, "Circles are block groups sized by population; squares are the 12 candidate sites; triangles are the "
+                  "two warehouses. Colour shows which open store serves each block.")
+    time.sleep(6)
+    caption(page, "Exact scan scores all N = 210 feasible placements. Greedy and local search are the heuristics; "
+                  "local search from 20 starts finds 5 distinct local minima, so the landscape is not trivial.")
+    center(page, "#classical")
+    time.sleep(7)
 
-    # b. sliders
-    caption(page, "Every weight is a slider; the classical answers and the map update instantly.")
+    # b. sliders: each move is followed by the map, then the controls again for the way back
     center(page, "#controls")
-    time.sleep(1)
-    set_slider(page, "#lam", 40)
-    wait_refreshed(page)
-    time.sleep(1.5)
-    center(page, "#map")   # the controls and the map do not fit together: show the update on the map, then go back
-    time.sleep(2)
-    center(page, "#controls")
-    set_slider(page, "#lam", 10)
-    wait_refreshed(page)
-    time.sleep(1)
+    for sel, hi, lo, up_cap, down_cap in (
+            ("#lam", 40, 10, "Every weight is a slider. Raise the crowding penalty lam to 40: the classical answers and the map update.",
+             "Back to lam = 10: the best placement returns."),
+            ("#wh_weight", 1, 0.1, "Warehouse weight pulls the stores toward one depot.",
+             "Back to the default weight of 0.1.")):
+        caption(page, up_cap)
+        time.sleep(1)
+        set_slider(page, sel, hi)
+        wait_refreshed(page)
+        center(page, "#map")   # the controls and the map do not fit together: show the update on the map, then go back
+        time.sleep(5)
+        center(page, "#controls")
+        caption(page, down_cap)
+        set_slider(page, sel, lo)
+        wait_refreshed(page)
+        time.sleep(5)
 
     # c. live run: the theory-match sweep first
     caption(page, "Run quantum search: first a theory-match sweep, 25 Grover circuits at 1,000 shots. "
@@ -136,9 +149,12 @@ def record(page, a):
     page.click("#run")
     page.wait_for_selector("#sweep path.theory", timeout=300_000)
     center(page, "#sweep")
-    time.sleep(5)
+    time.sleep(7)
+    caption(page, "Three thresholds mark M = 1, 4 and 16 placements. Lines are sin^2((2j+1) theta); dots are 1,000 shots "
+                  "each. The largest gap is shown on the card.")
+    time.sleep(10)
 
-    # d. Durr-Hoyer rounds
+    # d. Durr-Hoyer rounds (the loop has been running since the sweep ended)
     caption(page, "Now Durr-Hoyer minimum finding: one measurement per round, the threshold tightens, "
                   "the map follows the current best placement.")
     together = show_both(page, "#map", "#dh-counters")
@@ -158,26 +174,42 @@ def record(page, a):
             last_swap = time.time()
         time.sleep(0.5)
 
-    # e. result cards
+    # e. walk through the results slowly
+    caption(page, "One counting rule on both sides: placements scored. The loop counts its random start, every Grover "
+                  "iteration, and one measured sample per round.")
+    center(page, "#dh-counters")
+    time.sleep(8)
+    caption(page, "The threshold tightens round by round until nothing lies below it; the dashed line is the exact minimum.")
+    center(page, "#traj")
+    time.sleep(9)
     caption(page, cards_line(page))
     center(page, "#cards")
-    time.sleep(6)
+    time.sleep(10)
 
-    # f. the recorded take
+    # f. the recorded take, then the scaling figure
     page.click("#load-recorded")
     page.wait_for_selector("#sweep path.theory", timeout=60_000)
     page.wait_for_selector("#dh-counters[data-done='true']", timeout=60_000)
     page.wait_for_selector("#scaling-fig", state="visible", timeout=60_000)
     page.wait_for_function("() => !document.getElementById('run').disabled", timeout=60_000)
-    caption(page, "The shipped take at 12 sites (N = 495): exact minimum found after scoring 170 placements against 495. "
-                  "Below: calls grow like sqrt N over 65 runs.")
+    caption(page, "The shipped take at 12 sites (N = 495): exact minimum found after scoring 170 placements against 495.")
+    center(page, "#cards")
+    time.sleep(8)
+    caption(page, "Mean placements scored over 65 runs at N = 15, 70, 210 and 495 grow like 7.3 sqrt N while the exact "
+                  "scan grows like N. Every run reached the exact minimum.")
     center(page, "#scaling-fig")
-    time.sleep(7)
+    time.sleep(12)
 
-    # g. credits
+    # g. what the demo does not claim
+    caption(page, "Stated openly: the oracle is a lookup table compiled from the cost table, so no speedup is claimed at "
+                  "this size. The claim is that the circuits behave exactly as the theory predicts.")
+    center(page, ".foot")
+    time.sleep(11)
+
+    # h. credits
     caption(page, "Team ZollerQu. Code and report: branch placement of github.com/Oussema-t/zollerqu-qollab. "
                   "This effort is supported by Qollab & IonQ.")
-    time.sleep(5)
+    time.sleep(7)
 
 
 def main():
