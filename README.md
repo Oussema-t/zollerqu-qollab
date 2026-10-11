@@ -6,7 +6,7 @@
 
 **How the quantum part works.** A 16-gate encoder prepares each patch; every patch is measured once at the end and the four checks of that basis are parities of the measured bits; a lookup table corrects the one qubit a single error would produce, and Pauli corrections are tracked in software (details under "The code").
 
-**How to run it.** Run on Qollab, pick Built-in simulator (24q) for lessons 1, 2 and 3 (lesson 4 then comes from the recorded take) or an IonQ Forte simulator (29q) for all four, press Submit. Demo video: `docs/demo.mp4` in the repo (public link added at submission).
+**How to run it.** Run on Qollab, pick Built-in simulator (24q) for lessons 1, 2 and 3 (lesson 4 then comes from the recorded take) or the IonQ Forte simulator (29q) for the teleportation circuit, press Submit.
 
 Three logical qubits, each a 3x3 patch of the rotated surface code (distance 3), running on IonQ's simulators. Four lessons from one job, and a story page that plays each lesson as an animation at two levels: the logical circuit, and the physical gates on every qubit of every patch.
 
@@ -25,7 +25,7 @@ Press **Run on Qollab**, pick a backend, then:
 
 Qubit budget: lessons 1, 2 and 3 use 9, 18 and 9 qubits and run on every backend. Lesson 4 uses 27 qubits, which fits only the 29-qubit Forte simulators. On other backends the page submits the circuits that fit and shows lesson 4 from the recorded take, and says so in the status line.
 
-IonQ backends allow one job per run, so all circuits travel together. On local simulators you can resubmit freely.
+IonQ backends take one circuit per job and one job per run, so on IonQ the page runs only the teleportation circuit (lesson 4, X readout) live and shows everything else from the recorded take. On local simulators you can resubmit freely.
 
 ## What the numbers mean
 

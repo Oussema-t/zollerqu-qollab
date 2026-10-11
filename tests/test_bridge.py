@@ -42,6 +42,19 @@ def test_circuits_subset_returns_requested_circuits_in_order():
     assert [qc.num_qubits for qc in sub] == [9, 27]
 
 
+def test_run_subset_one_circuit_is_submitted_bare():
+    """IonQ takes only single-circuit jobs, so one index sends the circuit itself, not a list of one."""
+    class Spy:
+        def run(self, circuits, shots):
+            self.sent = circuits
+            return BasicSimulator().run(circuits, shots=shots)
+    meta = json.loads(bridge.build(json.dumps({"shots": 50, "inject": None})))
+    spy = Spy()
+    counts = json.loads(bridge.run_subset(spy, json.dumps([0]), 10))
+    assert not isinstance(spy.sent, list)
+    assert len(counts) == 1 and sum(counts[0].values()) == 10 and len(next(iter(counts[0]))) == meta[0]["nqubits"]
+
+
 def test_run_subset_counts_in_order():
     meta = json.loads(bridge.build(json.dumps({"shots": 50, "inject": None})))
     indices = [i for i, m in enumerate(meta) if m["lesson"] == 1]

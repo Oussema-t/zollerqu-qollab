@@ -6,10 +6,11 @@ import { openStory } from './ui/story.js';
 
 const $ = (id) => document.getElementById(id);
 // settings, meta, results and sources always change together (in explore); lastRun is the latest live job, kept for export.
-// sources: lesson -> 'live' | 'recorded' | 'missing' (a lesson too big for this backend is filled from the recorded take,
+// sources: lesson -> 'live' | 'live+recorded' | 'recorded' | 'missing' (a lesson too big for this backend is filled from the recorded take,
 // or left empty when the take is not available); takeSettings: the settings of that take.
 const state = { settings: null, meta: null, results: null, source: '', sources: {}, takeSettings: null, lesson: 1, backendName: '', maxQubits: 24, isIonq: false, submitLocked: false, busy: false, lastRun: null, story: null };
 const IONQ_AGAIN = 'IonQ backends allow one job per run: press Stop, then Run, to submit again.';
+const IONQ_LIVE = 'On IonQ only the teleportation circuit (lesson 4, X readout) runs live: one circuit per job, one job per run';
 const errText = (e) => (e && e.message ? e.message : String(e));
 
 function setBusy(on) {
@@ -32,10 +33,12 @@ function backendLabel() {
 function setBanner(text, cls = '') { const b = $('banner'); b.textContent = text; b.className = 'banner ' + cls; }
 function setStatus(text) { $('status').textContent = text; }
 function showBackendBanner() {
-  setBanner((state.isIonq
-    ? `Backend: ${state.backendName}. IonQ backends accept one job per run, so all circuits go in one submission.`
-    : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`)
-    + (state.maxQubits < 27 ? ' Lesson 4 needs 27 qubits, so on this backend it is shown from the recorded take; pick a Forte simulator to run it live.' : ''),
+  setBanner(state.isIonq
+    ? (state.maxQubits < 27
+      ? `Backend: ${state.backendName}. On IonQ only the 27-qubit teleportation circuit runs live, and it does not fit here: pick the Forte simulator, or press Load recorded take.`
+      : `Backend: ${state.backendName}. ${IONQ_LIVE}. Everything else comes from the recorded take.`)
+    : `Backend: ${state.backendName}. Local simulator, you can resubmit as often as you like.`
+      + (state.maxQubits < 27 ? ' Lesson 4 needs 27 qubits, so on this backend it is shown from the recorded take; pick a Forte simulator to run it live.' : ''),
   state.isIonq ? 'warn' : '');
 }
 
@@ -43,13 +46,17 @@ function showBackendBanner() {
 function lessonStatus() {
   let s = `Showing ${state.source}. Shots per circuit: ${state.settings.shots}.`;
   const src = state.sources[state.lesson];
-  if (src === 'recorded' || src === 'missing') {
+  const takeNote = () => { const t = state.takeSettings, inj = t.inject; return `${t.shots} shots, ${inj ? `${inj.pauli} injected on q${inj.qubit}` : 'no injection'}`; };
+  if (state.isIonq && (src === 'recorded' || src === 'missing')) {
+    s += ` ${IONQ_LIVE}; lesson ${state.lesson} ` + (src === 'missing' ? 'is empty: the recorded take could not be loaded.' : `shows the recorded take (${takeNote()}).`);
+  } else if (state.isIonq && state.lesson === 4) {
+    s += ` ${IONQ_LIVE}; ` + (src === 'live+recorded' ? `the other lesson 4 rows come from the recorded take (${takeNote()}).` : 'the other lesson 4 rows are empty: the recorded take could not be loaded.');
+  } else if (src === 'recorded' || src === 'missing') {
     const need = Math.max(...state.meta.filter((m) => m.lesson === state.lesson).map((m) => m.nqubits));
     s += ` Lesson ${state.lesson} needs ${need} qubits; this backend offers ${state.maxQubits}`;
     if (src === 'missing') s += ', and the recorded take could not be loaded.';
     else {
-      const t = state.takeSettings, inj = t.inject;
-      s += `. Showing the recorded take for this lesson (${t.shots} shots, ${inj ? `${inj.pauli} injected on q${inj.qubit}` : 'no injection'}).`;
+      s += `. Showing the recorded take for this lesson (${takeNote()}).`;
     }
   }
   if (state.submitLocked) s += ' ' + IONQ_AGAIN;
@@ -78,11 +85,13 @@ async function submit() {
     // live and recorded rows; its counts come from the recorded take.
     const tooBig = new Set(meta.filter((m) => m.nqubits > state.maxQubits).map((m) => m.lesson));
     const included = [], excluded = [];
-    meta.forEach((m, i) => (tooBig.has(m.lesson) ? excluded : included).push(i));
+    const live = (m) => (state.isIonq ? m.lesson === 4 && m.name === 'enc_X' && m.nqubits <= state.maxQubits : !tooBig.has(m.lesson));
+    meta.forEach((m, i) => (live(m) ? included : excluded).push(i));
     let take = null;
     if (excluded.length) {
       try { take = JSON.parse(await bridge.load_recorded.callPromising()); } catch (e) { console.log('Recorded take not available:', errText(e)); }
     }
+    if (!included.length) throw new Error('The 27-qubit teleportation circuit does not fit this backend: pick the Forte simulator, or press Load recorded take.');
     setStatus(`Running one job with ${included.length} of ${meta.length} circuits, ${settings.shots} shots each, on ${state.backendName}. Noise-model simulators run one shot at a time, so this can take minutes.`);
     submitted = true;
     const sub = JSON.parse(await bridge.run_subset.callPromising(backend, JSON.stringify(included), settings.shots));
@@ -90,14 +99,16 @@ async function submit() {
     for (let k = 0; k < included.length; k++) counts[included[k]] = sub[k];
     const sources = {};
     meta.forEach((m) => { sources[m.lesson] = 'live'; });
-    // A too-big lesson is filled from the take only when every one of its circuits has a matching entry; else all stay empty.
+    // The circuits not run live are filled from the take only when all of a lesson's ones have a matching entry; else they stay empty.
+    // A lesson with no live circuit is marked recorded (or missing); lesson 4 on IonQ stays live, its other rows recorded.
     const matches = (i) => { const t = take && take.meta && take.meta[i]; return !!t && t.name === meta[i].name && t.lesson === meta[i].lesson; };
-    for (const lesson of tooBig) {
+    for (const lesson of new Set(excluded.map((i) => meta[i].lesson))) {
       const mine = excluded.filter((i) => meta[i].lesson === lesson);
       const ok = mine.every(matches);
       if (ok) for (const i of mine) counts[i] = take.counts[i];
       else console.log(`No recorded counts for every circuit of lesson ${lesson}; its circuits are left empty.`);
-      sources[lesson] = ok ? 'recorded' : 'missing';
+      if (!included.some((i) => meta[i].lesson === lesson)) sources[lesson] = ok ? 'recorded' : 'missing';
+      else if (ok) sources[lesson] = 'live+recorded';
     }
     run = { settings, metaJson, countsJson: JSON.stringify(counts) };
     state.lastRun = run;

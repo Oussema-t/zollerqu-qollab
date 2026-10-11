@@ -28,9 +28,11 @@ def circuits_subset(indices_json):
 
 
 def run_subset(backend, indices_json, shots):
-    """Run the built circuits at these indices on backend as one job; JSON list of counts dicts in index order."""
+    """Run the built circuits at these indices on backend as one job; JSON list of counts dicts in index order.
+
+    A single circuit goes in bare, not as a list of one: IonQ accepts only single-circuit jobs."""
     circuits = circuits_subset(indices_json)
-    result = backend.run(circuits, shots=int(shots)).result()
+    result = backend.run(circuits[0] if len(circuits) == 1 else circuits, shots=int(shots)).result()
     return json.dumps([result.get_counts(i) for i in range(len(circuits))])
 
 
