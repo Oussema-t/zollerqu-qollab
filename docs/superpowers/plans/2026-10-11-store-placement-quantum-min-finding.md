@@ -165,3 +165,11 @@ Tushar's rule: when a quantity is compared, everything on both sides is the same
 ## Amendment 4 (Oct 11 early)
 
 Tushar: ship the recorded take at m = 12 (N = 495). Recorded: sweep max deviation 2.8 pp; seed-7 loop 170 placements scored (1 + 128 + 41), exact minimum. Live default on the page stays m = 10. Branch `placement` in Oussama's repo is the publication target; no separate repo.
+
+## Amendment 5 (Oct 11, before the Qollab upload)
+
+Qollab runtime docs (https://qollab.xyz/learn/docs/runtime-environment, read Oct 11): "JavaScript cannot read project files: fetch("data.csv") does not reach them", and a project file is loaded only when "the path appears as a plain string in your Python code, relative to the project root". main.js fetches data/champaign.json (main.js:367) and data/recorded_local.json (main.js:114) with fetch, which works on the dev harness (static files) and not on Qollab.
+
+Change: both data files are read in Python. `qopt/bridge.py` gets `DATA = "data/champaign.json"` next to `RECORDED`; `load_data(json_text=None)` reads DATA when no text is given (same path fallback as `load_recorded`), stores it and returns the full data text; `load_recorded()` is unchanged. main.js calls `bridge.load_data.callPromising()` and `bridge.load_recorded.callPromising()` with no arguments and parses what comes back; no fetch of project files remains (a test reads main.js and asserts it). The harness needs no change: the shim posts an empty args list and `dev/serve.py` already returns TEXT_FNS results as text.
+
+Also added for the submission: `tools/make_bundle.py` (zip of index.html, main.js, main.css, ui/, qopt/, data/ into dist/, 100-file and 2 MB-per-file checks from the same docs) and `dev/record_demo.py` (Playwright recording of a live m = 10 run on the harness, then the m = 12 take; mp4 via ffmpeg, same helpers as the Unlocked recorder). Fallback video until the Qollab recording exists.

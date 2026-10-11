@@ -4,6 +4,7 @@ params_json: {"m": 10, "k": 4, "c": ..., "staff_cost": ..., "tau": ..., "lam": .
 every key is optional (m defaults to 10, the rest to qopt.cost.DEFAULTS:
 k=4, c=15000, staff_cost=3.0, tau=10.0, lam=10.0, wh_weight=0.1).
 
+load_data(json_text=None) parses json_text if given, else reads data/champaign.json, keeps the data in _STATE and returns the data text;
 load_recorded(text=None) returns text unchanged (after JSON validation) if given, else the text of data/recorded_local.json; export_take(...) returns (and, inside Qollab,
 downloads) a JSON take {source, backend, date, params, plan, sweep_counts, dh}.
 """
@@ -19,6 +20,7 @@ from qopt.cost import DEFAULTS, cost_table
 
 _STATE = {}
 DEFAULT_M = 10
+DATA = "data/champaign.json"
 RECORDED = "data/recorded_local.json"
 LOCAL_SEARCH_RESTARTS = 20
 
@@ -39,10 +41,15 @@ def _setup(params_json):
     return m, cost_params, cost_table(_STATE["data"], cost_params, m)
 
 
-def load_data(json_text):
-    data = json.loads(json_text)
-    _STATE["data"] = data
-    return json.dumps({"blocks": len(data["blocks"]), "sites": len(data["sites"])})
+def load_data(json_text=None):
+    if json_text is None:
+        path = Path(DATA)
+        if not path.exists():
+            path = Path(__file__).resolve().parents[1] / DATA
+        with open(path, encoding="utf-8") as f:
+            json_text = f.read()
+    _STATE["data"] = json.loads(json_text)
+    return json_text
 
 
 def cost_table_json(params_json):

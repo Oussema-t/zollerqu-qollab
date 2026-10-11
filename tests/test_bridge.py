@@ -18,7 +18,22 @@ def setup_module():
 
 def test_load_data_returns_json():
     out = json.loads(bridge.load_data(json.dumps(random_data(30, 12, seed=11))))
-    assert out == {"blocks": 30, "sites": 12}
+    assert isinstance(out["blocks"], list) and isinstance(out["sites"], list)
+    assert len(out["blocks"]) == 30 and len(out["sites"]) == 12
+
+
+def test_load_data_reads_the_shipped_file_when_no_text_is_given():
+    out = json.loads(bridge.load_data())
+    assert len(out["blocks"]) == 158 and len(out["sites"]) == 12
+    assert bridge._STATE["data"] == out
+    bridge.load_data(json.dumps(random_data(30, 12, seed=11)))
+
+
+def test_page_does_not_fetch_project_files():
+    from pathlib import Path
+    js = (Path(__file__).resolve().parents[1] / "main.js").read_text(encoding="utf-8")
+    for needle in ("fetch('data/", 'fetch("data/', "fetch(`data/"):
+        assert needle not in js
 
 
 def test_cost_table_json():

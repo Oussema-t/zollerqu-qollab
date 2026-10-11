@@ -109,11 +109,9 @@ function labelM(k, nFeasible) {
 
 const sameParams = (a, b) => PARAMS.every((key) => Number(a[key]) === Number(b[key]));
 
-// The recorded take: fetched like champaign.json, validated by the bridge. Shows its scaling study when it has one.
+// The recorded take: read by the bridge from data/recorded_local.json; validated there. Shows its scaling study when it has one.
 async function loadTake() {
-  const r = await fetch('data/recorded_local.json');
-  if (!r.ok) throw new Error(`data/recorded_local.json: HTTP ${r.status}`);
-  const take = JSON.parse(await bridge.load_recorded.callPromising(await r.text()));
+  const take = JSON.parse(await bridge.load_recorded.callPromising());
   if (take.study && take.study.length) {
     state.study = take.study;
     const c = renderScaling($('scaling'), take.study);
@@ -364,9 +362,8 @@ async function init() {
   setBusy(true);
   setStatus('Loading Champaign County data...');
   try {
-    const text = await (await fetch('data/champaign.json')).text();
+    const text = await bridge.load_data.callPromising();
     state.data = JSON.parse(text);
-    await bridge.load_data.callPromising(text);
     await refreshClassical(readParams());
   } catch (e) {
     setBanner('Could not load the data: ' + errText(e), 'err');
