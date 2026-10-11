@@ -81,10 +81,15 @@ import json
 import os
 import sys
 import time
+import warnings
 
 import numpy as np
 from qiskit import QuantumCircuit, transpile
 from qiskit.quantum_info import Statevector
+
+# Qollab draws the figures after main() returns, and its in-browser matplotlib then warns about float figure sizes
+# (harmless). This filter stays active for the whole run, so those two warning lines no longer appear.
+warnings.filterwarnings("ignore", message=r"The (width|height) parameter as float")
 
 N_REGIONS = __N__
 WITHIN = 0.05            # "near-optimal" = cost <= (1 + WITHIN) x optimum
