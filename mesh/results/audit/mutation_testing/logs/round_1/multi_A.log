@@ -1,0 +1,32 @@
+[load small: 127.4 s]
+##### mut_a_mixer_block_sign
+    multi.py:51 in <module>
+    cell line 904 in <module>: assert np.allclose(apply_uniform_x_mixer(random_state, 0.37, n_test), apply_qubit_gates(random_state, mixer_gates(0.37, np.full(n_test, np.pi / 2)), per_qubit=True), atol=1e-12)
+  [STATUS] CRASH AssertionError:   [50.9 s]
+##### mut_b_rx_plus
+    multi.py:51 in <module>
+    cell line 938 in <module>: assert error < 1e-9, f"Qiskit and numpy disagree for {scenario}: {error}"
+  [STATUS] CRASH AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.019633659797004866  [40.9 s]
+##### mut_c1_bits_to_state_rev
+    multi.py:51 in <module>
+    cell line 1035 in <module>: assert abs(record["best_cost"] - state_cost(task04_ising_cases[key[:4]], record["best_state"])) < T4_TOL, "classical cost mismatch"
+  [STATUS] CRASH AssertionError: classical cost mismatch  [40.9 s]
+##### mut_c2_pieces_rev
+  [STATUS] OK  [75.8 s]
+##### mut_c3_warm_x_rev
+    multi.py:51 in <module>
+    cell line 950 in <module>: assert int(np.argmax(recovered)) == target, "mixer B recovery returns the wrong bitstring"
+  [STATUS] CRASH AssertionError: mixer B recovery returns the wrong bitstring  [52.9 s]
+##### mut_c4_spectral_only_rev
+  [STATUS] OK  [43.2 s]
+##### mut_c5_warm_state_kron_rev
+    multi.py:51 in <module>
+    cell line 945 in <module>: assert warm_errors[flavour] < 1e-9, f"warm-start circuit disagrees ({flavour}, {scenario})"
+  [STATUS] CRASH AssertionError: warm-start circuit disagrees (rounded spectral, mixer A, 2 equal devices)  [31.0 s]
+##### mut_c6_nonenum_outcome_rev
+  [STATUS] OK  [42.8 s]
+##### mut_d2_lr_gamma_ramps_down
+  [STATUS] OK  [45.5 s]
+##### mut_d_lr_beta_ramps_up
+  [STATUS] OK  [42.7 s]
+ALL_DONE

@@ -1,0 +1,33 @@
+CPU + GPU scenario, n = 12, mean over the 9 cases, LR-QAOA with the calibrated (0.96, 0.55):
+   uniform                      0.00035
+   uniform_ratio                0.78423
+   bernoulli0.8_near            0.00415
+   bernoulli0.8_ratio           0.95805
+   full_near_p1                 0.00621
+   full_ratio_p1                0.95463
+   full_opt_p1                  0.00266
+   fields_only_near_p1          0.00295
+   fields_only_ratio_p1         0.96558
+   fields_only_opt_p1           0.00160
+   J_only_near_p1               0.00082
+   J_only_ratio_p1              0.77724
+   J_only_opt_p1                0.00058
+   fields_only_product_err_p1   0.00000
+   fields_only_P1_min_p1        0.80045
+   fields_only_P1_max_p1        0.93738
+   full_near_p2                 0.00783
+   full_ratio_p2                0.96999
+   full_opt_p2                  0.00474
+   fields_only_near_p2          0.00300
+   fields_only_ratio_p2         0.96562
+   fields_only_opt_p2           0.00140
+   J_only_near_p2               0.00010
+   J_only_ratio_p2              0.80427
+   J_only_opt_p2                0.00008
+   fields_only_product_err_p2   0.00000
+   fields_only_P1_min_p2        0.82459
+   fields_only_P1_max_p2        0.94730
+case 8 vs case 9 fingerprints equal: {'2 equal devices': True, 'CPU + GPU (GPU 4x)': True}
+distinct fingerprints per scenario: {'2 equal devices': 8, 'CPU + GPU (GPU 4x)': 8}
+calibration fingerprints: 8 | overlap with scored instances: 0
+exit 0

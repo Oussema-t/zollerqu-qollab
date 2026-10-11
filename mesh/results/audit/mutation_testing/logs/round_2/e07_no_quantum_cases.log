@@ -1,0 +1,19 @@
+[load small: 433.8 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 1038 in <module>: example_scenario, example = next(iter(t4_examples.items()))
+  -> CRASH StopIteration: 
+[STATUS] CRASH StopIteration:   [58.1 s]
+  TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+  TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+  TEST CVaR estimator: passed
+  TEST count-key decoder (rightmost bit = region 0): passed
+  TEST Qiskit circuit = numpy simulator (standard and three warm-start circuits): passed, max probability error 
+  TEST sign convention: LR-QAOA mean cost below the uniform mean: 0/0 instance-layer pairs; mixer-sign flip makes it worse than uniform on the example instances
+  TEST p = 0 control is uniform; exact and sampled values consistent: passed
+  TEST exact optimum and degeneracy equal Task 03 (same lambda): 9 instances compared; the others use a different lambda and were re-enumerated
+  TEST symmetry reduction keeps the optimum and is used only at alpha = 0.5: passed (0 reduced groups)
+  TEST same evaluation budget for every optimiser: budget 40; evaluations used (min-max): 
+  TEST classical baselines use the same Ising objective: passed (90 records)
+  failures: []
+    qaoa groups: 0 | cases with QAOA: [] | reused 0 computed 18

@@ -1,0 +1,159 @@
+{
+ "seed": 7,
+ "job_reference_hours": 300.0,
+ "job_memory_gb": 200.0,
+ "overnight_hours": 12.0,
+ "devices": [
+  {
+   "id": "C1",
+   "class_name": "CPU older",
+   "kind": "CPU",
+   "speed": 1.45,
+   "memory_gb": 208.0,
+   "active_w": 308.0,
+   "idle_w": 121.0
+  },
+  {
+   "id": "C2",
+   "class_name": "CPU older",
+   "kind": "CPU",
+   "speed": 1.11,
+   "memory_gb": 135.0,
+   "active_w": 280.0,
+   "idle_w": 101.0
+  },
+  {
+   "id": "C3",
+   "class_name": "CPU older",
+   "kind": "CPU",
+   "speed": 1.0,
+   "memory_gb": 240.0,
+   "active_w": 300.0,
+   "idle_w": 123.0
+  },
+  {
+   "id": "C4",
+   "class_name": "CPU newer",
+   "kind": "CPU",
+   "speed": 1.97,
+   "memory_gb": 460.0,
+   "active_w": 423.0,
+   "idle_w": 115.0
+  },
+  {
+   "id": "G1",
+   "class_name": "GPU mid",
+   "kind": "GPU",
+   "speed": 4.76,
+   "memory_gb": 18.0,
+   "active_w": 350.0,
+   "idle_w": 39.0
+  },
+  {
+   "id": "G2",
+   "class_name": "GPU mid",
+   "kind": "GPU",
+   "speed": 5.51,
+   "memory_gb": 21.0,
+   "active_w": 305.0,
+   "idle_w": 40.0
+  },
+  {
+   "id": "G3",
+   "class_name": "GPU high",
+   "kind": "GPU",
+   "speed": 12.76,
+   "memory_gb": 68.0,
+   "active_w": 587.0,
+   "idle_w": 60.0
+  },
+  {
+   "id": "G4",
+   "class_name": "GPU high",
+   "kind": "GPU",
+   "speed": 9.29,
+   "memory_gb": 80.0,
+   "active_w": 654.0,
+   "idle_w": 54.0
+  }
+ ],
+ "max_share": [
+  1.0,
+  0.675,
+  1.0,
+  1.0,
+  0.09,
+  0.105,
+  0.34,
+  0.4
+ ],
+ "feasible_choices": 236,
+ "plans": {
+  "fastest": {
+   "time_h": 9.412955465587045,
+   "energy_kwh": 27.29660263138164,
+   "devices": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+   ],
+   "shares": [
+    0.04549595141700404,
+    0.034827935222672066,
+    0.03137651821862348,
+    0.061811740890688256,
+    0.09,
+    0.105,
+    0.34,
+    0.2914878542510121
+   ]
+  },
+  "overnight": {
+   "time_h": 11.772151898734178,
+   "energy_kwh": 23.749086103938403,
+   "devices": [
+    "C1",
+    "C2",
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+   ],
+   "shares": [
+    0.056898734177215186,
+    0.04355696202531646,
+    0.09,
+    0.105,
+    0.34,
+    0.3645443037974683
+   ]
+  },
+  "lowest energy": {
+   "time_h": 13.448275862068956,
+   "energy_kwh": 21.979599645249248,
+   "devices": [
+    "C1",
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+   ],
+   "shares": [
+    0.06499999999999995,
+    0.09,
+    0.105,
+    0.34,
+    0.4
+   ]
+  }
+ },
+ "no_planning": {
+  "time_h": 37.5,
+  "energy_kwh": 56.0958367805257
+ }
+}

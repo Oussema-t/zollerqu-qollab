@@ -1,0 +1,15 @@
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+notebook run ok in 80 s
+2 ok | RUN SETTINGS: mode 'small'
+4 ok | TASK 01 RESULT: all checks passed
+7 ok | TASK 01b RESULT: all checks passed for 4 cases (seed 7, each rebuilt identically)
+9 ok | TASK 01c RESULT: all checks passed; 9 cases now have work, border cost and priority arrays
+11 ok | TASK 01d RESULT: 22 frozen mesh files in data/frozen_meshes (22 created now, 6 loaded); largest 27 kB
+13 ok | TASK 02 RESULT: all checks passed for 9 coarsenings (mode 'small': 9 cases x region counts [12] x seeds [7])
+15 ok | TASK 02b RESULT: 72 frozen region assignments in data/frozen_regions.npz (60 kB; 72 created now, 0 replaced on this machine)
+17 ok | TASK 03 RESULT: 18 Ising instances built (mode 'small'); 18 solved exactly by enumeration, 0 skipped (n > 22)
+19 ok | TASK 03b RESULT: synthetic HPC pool with 8 devices (seed 7); 236 of 255 device choices fit the job in memory
+21 ok | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 882 QAOA groups, 2016 QAOA runs, 187303 objective evaluations, 90 classic
+23 ok | TASK 04b RESULT: varQITE trained on 18 instances x up to 5 ansatz variants = 90 runs (mode 'small'); measured wall-clock 3 s (step-size calibration 0 
+25 ok | TASK 04c RESULT: 2 figure(s) of the region graph before and after the cut: results/graph_cut_2_main_n12_seed7.png, results/graph_cut_9_priority_n12_se
+27 ok | TASK 05 RESULT: 12 circuits for ONE IonQ job written to qollab/mesh_batch.json (40 kB); case 2 main, 12 qubits, 1000 shots each

@@ -1,0 +1,19 @@
+{
+ "instances_compared": 12,
+ "max_abs_difference": {
+  "e_min": 0.0,
+  "classical uniform random sampling": 0.0,
+  "classical random with target share": 0.0,
+  "classical simulated annealing": 0.0,
+  "classical local search (restarts)": 0.0,
+  "classical spectral bisection": 0.0,
+  "quantum p_opt": 0.0,
+  "quantum p_near": 0.0,
+  "quantum mean_cost": 0.0,
+  "quantum p_balanced": 0.0,
+  "quantum sampled_best_cost": 0.0,
+  "quantum best_state": 0.0
+ },
+ "identical": true,
+ "note": "first run: results/hpc_n29/first_run (metrics only); rerun: results/hpc_n29 (metrics + raw arrays), same seeds and code path"
+}

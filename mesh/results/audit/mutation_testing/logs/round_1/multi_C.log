@@ -1,0 +1,22 @@
+[load small: 128.2 s]
+##### mut_l_hit_near_shots
+  [STATUS] OK  [67.6 s]
+##### mut_m_near_factor_ignored
+  [STATUS] OK  [47.8 s]
+##### mut_n_local_search_argmax
+  [STATUS] OK  [64.5 s]
+##### mut_o_noise_uniform_swap
+  [STATUS] OK  [79.0 s]
+##### mut_p_balanced_mask_eps
+  [STATUS] OK  [43.5 s]
+##### mut_q_runtime_model_min
+  [STATUS] OK  [40.4 s]
+##### mut_r_reduced_scale
+  [STATUS] OK  [45.3 s]
+##### mut_s_spsa_ascent
+  [STATUS] OK  [45.8 s]
+##### mut_t_energy_scaled_no_const
+    multi.py:51 in <module>
+    cell line 938 in <module>: assert error < 1e-9, f"Qiskit and numpy disagree for {scenario}: {error}"
+  [STATUS] CRASH AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.000361680808846766  [31.2 s]
+ALL_DONE

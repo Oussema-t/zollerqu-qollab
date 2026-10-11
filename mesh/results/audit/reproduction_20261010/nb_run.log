@@ -1,0 +1,32 @@
+cell 2: ok in 0.0 s
+cell4:211: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 4: ok in 4.3 s
+cell7:291: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 7: ok in 16.7 s
+cell9:126: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 9: ok in 8.4 s
+cell 11: ok in 0.0 s
+cell13:228: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 13: ok in 2.7 s
+cell 15: ok in 0.1 s
+cell17:442: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell17:522: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell17:548: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 17: ok in 16.0 s
+cell19:194: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 19: ok in 0.8 s
+cell21:1252: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell21:1278: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell21:1309: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell21:1351: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell21:1388: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell21:1437: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 21: ok in 197.3 s
+cell23:530: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell23:557: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 23: ok in 751.9 s
+cell25:99: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 25: ok in 1.6 s
+cell 27: ok in 0.1 s
+cell29:71: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell 29: ok in 0.2 s

@@ -1,0 +1,9 @@
+[load small: 431.5 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 921 in <module>: assert np.isclose(cvar_of_samples(cvar_sample, 1.0), cvar_sample.mean()) and np.isclose(cvar_of_samples(cvar_sample, 0.1), np.sort(cvar_sample)[:100].mean())
+  -> CRASH AssertionError: 
+[STATUS] CRASH AssertionError:   [118.3 s]
+  TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+  TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+  failures: []

@@ -1,0 +1,28 @@
+[   65.7 s] notebook cells loaded (frozen regions: {'loaded': 4, 'created': 0}); LR deltas 2 equal devices: (0.26, 0.2); CPU + GPU (GPU 4x): (0.9600000000000001, 0.5499999999999999)
+/root/mesh/scripts/run_29_qubits.py:321: DeprecationWarning: This process (pid=4295) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+[   65.7 s] started 2_main_seed8_equal.json
+[   65.8 s] started 2_main_seed8_cpu_gpu.json
+[   65.8 s] started 9_priority_seed8_equal.json
+[   65.8 s] started 9_priority_seed8_cpu_gpu.json
+[   69.5 s] 9 priority seed 8 2 equal devices: optimum 0.061602 (2 state(s)), 2 states within 5 %
+[   70.0 s] 2 main seed 8 CPU + GPU (GPU 4x): optimum 0.064564 (1 state(s)), 1 states within 5 %
+[   70.1 s] 9 priority seed 8 CPU + GPU (GPU 4x): optimum 0.045760 (1 state(s)), 1 states within 5 %
+[   70.1 s] 2 main seed 8 2 equal devices: optimum 0.142205 (2 state(s)), 4 states within 5 %
+[  284.7 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 1.914e-06, P(optimum) 1.914e-06, 208 s
+[  286.3 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 8.490e-06, P(optimum) 8.490e-06, 209 s
+[  286.3 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 6.112e-06, P(optimum) 6.112e-06, 209 s
+[  290.3 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 5.201e-06, P(optimum) 2.649e-06, 213 s
+[  372.7 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 3.336e-07, P(optimum) 3.336e-07, 82 s
+[  375.4 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 1.644e-07, P(optimum) 1.644e-07, 83 s
+[  376.3 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 4.257e-06, P(optimum) 4.257e-06, 85 s
+[  379.4 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 2.101e-07, P(optimum) 1.058e-07, 84 s
+[  459.6 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 2.318e-07, P(optimum) 2.318e-07, 82 s
+[  459.8 s] finished 9_priority_seed8_cpu_gpu.json (exit status 0)
+[  462.7 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 8.046e-08, P(optimum) 8.046e-08, 81 s
+[  463.0 s] finished 9_priority_seed8_equal.json (exit status 0)
+[  463.1 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.884e-06, P(optimum) 1.884e-06, 82 s
+[  463.4 s] finished 2_main_seed8_cpu_gpu.json (exit status 0)
+[  466.3 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.032e-07, P(optimum) 5.145e-08, 81 s
+[  466.5 s] finished 2_main_seed8_equal.json (exit status 0)
+[  466.5 s] all instances done

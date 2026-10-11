@@ -1,0 +1,3 @@
+cell7:291: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell9:126: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+wrote /private/tmp/claude-501/-Users-t/7c811c50-f516-4e09-a51a-78bd3f6d1c7e/scratchpad/repcopy/report/fig_meshes.pdf (952 kB) with 9 cases; 17130 triangles in total

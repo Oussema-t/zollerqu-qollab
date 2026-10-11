@@ -21,9 +21,10 @@ The report is [`report/main.pdf`](report/main.pdf) (6 pages). Figure 1 shows all
 
 | Path | What it is |
 |---|---|
-| `mesh_idea_ZollerQu.ipynb` | The notebook, run top to bottom with outputs (Tasks 01–04b, small mode: 12 qubits, seed 7) |
-| `results/` | Plots, CSV and JSON summaries of the notebook run, and resumable checkpoints |
-| `results/hpc_n29/` | 29-qubit results (one JSON per instance: exact optimum, classical baselines, QAOA metrics and samples) and the server logs |
+| `mesh_idea_ZollerQu.ipynb` | The notebook, run top to bottom with outputs (Tasks 01–06; small mode: 12 qubits, seed 7; Tasks 04d and 06 show the saved HPC results) |
+| `results/` | Every result as a file: plots, CSV/JSON summaries, resumable checkpoints. **[`results/README.md`](results/README.md) lists what each file shows and which cell or script shows it again** |
+| `results/hpc_n29/` | 29-qubit results: one JSON (metrics) and one `.raw.npz` per instance (the instance, all shots, every classical repeat, cost distributions, region marginals, most likely splits), `summary_q29.csv`, `rerun_check.json` (a second run reproduced every metric exactly), server logs |
+| `results/audit/` | Evidence behind the honesty claims: mutation testing (`mutation_testing/SUMMARY.md`: 30 of 30 injected bugs caught), fairness and physics reviews, validation logs, an independent reproduction |
 | `results/hpc_validation/` | The 29-qubit simulator checked against the notebook's exact simulator at 12, 16 and 20 qubits |
 | `results_large_hpc/` | Large mode (12, 16, 20, 24 qubits; seeds 7, 8, 9) run on a Hetzner `ccx33` node with `scripts/hpc_driver.py` |
 | `data/` | Frozen meshes (`frozen_meshes/*.npz`) and region assignments (`frozen_regions.npz`), so every machine uses bit-identical inputs |
@@ -32,6 +33,8 @@ The report is [`report/main.pdf`](report/main.pdf) (6 pages). Figure 1 shows all
 | `scripts/run_ionq_batch.py` | Runs the same IonQ batch through the IonQ cloud (Forte 1 noise model) with an API key in `IONQ_API_KEY` |
 | `scripts/run_29_qubits.py` | 29-qubit benchmark: complex64 statevector, exact energies of all 2^29 splits, classical baselines; `test` mode compares with the notebook's simulator |
 | `scripts/choose_29_qubit_settings.py` | Picks the 29-qubit QAOA settings from the n = 20 results only and writes `scripts/q29_choice.json` |
+| `scripts/hpc/` | `launch_29_qubits.sh` (create a Hetzner server, upload, start) and `watch_and_delete.sh` (pull the results, then delete the server); no secrets inside |
+| `docs/literature/` | Literature checks: structured reports with DOIs, sign conventions and quotes, plus numerical convention checks |
 | `scripts/hpc_driver.py` | Runs the notebook's Task 04 / 04b cells on a server in parallel shards, merges them and finishes |
 | `docs/` | The task prompt and handoff used to build the notebook |
 
@@ -47,13 +50,14 @@ The report is [`report/main.pdf`](report/main.pdf) (6 pages). Figure 1 shows all
 | 04 | Local noiseless QAOA benchmark: LR-QAOA, COBYLA / Nelder–Mead / Powell / L-BFGS-B / SPSA, CVaR, warm starts, symmetry reduction; classical baselines; noise estimate; modelled runtime and electricity |
 | 04b | varQITE (Morris, Kaushik, Roetteler & Lotshaw, arXiv:2404.16135): paper ansatz and three variants, trained on exact expectations |
 | 04c | The region graph before and after the cut: original graph, QAOA's split, varQITE's split, exact optimum |
+| 04d | The saved large-mode HPC results (12–24 qubits), display only |
 | 05 | Export of the single IonQ batch for Qollab (p = 0 control, LR-QAOA, QAOA + COBYLA, final varQITE circuits) |
 | 06 | 29 qubits on HPC: shows the saved results of `scripts/run_29_qubits.py` (best settings from n = 20 against the classical methods, exact optimum) |
 
 ## How to run
 
 ```bash
-python3 -m venv venv && venv/bin/pip install numpy==2.5.3 scipy==1.18.1 matplotlib==3.11.2 qiskit==2.5.2 nbformat nbclient ipykernel
+python3.12 -m venv venv && venv/bin/pip install numpy==2.5.3 scipy==1.18.1 matplotlib==3.11.2 qiskit==2.5.2 pandas nbformat nbclient ipykernel
 venv/bin/jupyter nbconvert --to notebook --execute mesh_idea_ZollerQu.ipynb   # or open it in Jupyter / VS Code
 ```
 
@@ -66,7 +70,7 @@ python scripts/run_29_qubits.py 16 7 1 test           # check against the notebo
 python report/make_q29_report.py && cd report && tectonic main.tex
 ```
 
-The checkpoints in `results/` let Task 04 and 04b resume. They are reused only when the settings, the problem data and the code are unchanged.
+The checkpoints in `results/` let Task 04 and 04b resume. They are reused only when the settings, the problem data and the code are unchanged. The code check compares Python bytecode, so the checkpoints are reused when the notebook runs in Jupyter, VS Code or nbconvert with Python 3.12. A script that `exec()`s whole cells, or another Python version, recomputes everything (about 17 minutes in small mode); the recomputed results were identical.
 
 ## Run the IonQ job (one job, 12 circuits)
 
@@ -79,7 +83,7 @@ The checkpoints in `results/` let Task 04 and 04b resume. They are reused only w
 - varQITE was trained on a noiseless local simulator with exact expectations. Only the final trained circuits are meant for the IonQ batch, together with the p = 0 control and the QAOA circuits.
 - Runtimes, electricity and device speeds are modelled assumptions, not measurements.
 - Schedules, step sizes and annealing temperatures were tuned on separate calibration meshes, never on scored instances.
-- 30 deliberately injected bugs were all caught by the notebook's checks (mutation testing).
+- 30 deliberately injected bugs were all caught by the notebook's checks (mutation testing; per-mutant table in `results/audit/mutation_testing/SUMMARY.md`).
 - At 29 qubits the QAOA angles are transferred from 20 qubits, never re-optimised or tuned on the 29-qubit instances. Their training cost (at n = 20) is not included in the 1,000 evaluations of the 29-qubit table. The simulation is noiseless: the depolarising estimate for the p = 5 circuit (2,030 two-qubit gates) is F ≈ 4 × 10⁻⁵, so on hardware it would sample essentially uniformly. varQITE was not run at 29 qubits.
 - The large mode ran on Linux (x86-64) before the meshes were frozen: there, cases 1, 2, 4, 5 had slightly different meshes than on the Mac (floating-point details), so its case-2 instances are equivalent but not identical to the notebook's (see `results_large_hpc/fingerprints_*.json`). Since Tasks 01d / 02b, meshes and regions are data files written on the Mac, so every machine now uses identical inputs.
 

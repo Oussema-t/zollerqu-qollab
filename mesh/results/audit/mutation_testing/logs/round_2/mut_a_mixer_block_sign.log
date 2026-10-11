@@ -1,0 +1,7 @@
+[load small: 443.1 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 904 in <module>: assert np.allclose(apply_uniform_x_mixer(random_state, 0.37, n_test), apply_qubit_gates(random_state, mixer_gates(0.37, np.full(n_test, np.pi / 2)), per_qubit=True), atol=1e-12)
+  -> CRASH AssertionError: 
+[STATUS] CRASH AssertionError:   [116.6 s]
+  failures: []

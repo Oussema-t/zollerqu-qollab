@@ -1,0 +1,49 @@
+[task 04: 38 s, reused 18, computed 0]
+TASK 04b RESULT: varQITE trained on 18 instances x up to 5 ansatz variants = 90 runs (mode 'small'); measured wall-clock 837 s (step-size calibration 520 s)
+  method: arXiv:2404.16135 (IonQ + ORNL). Each step: E = <H>; d_k = -(<P_k H> - <P_k><H>); G[k, j] = d<P_k>/d theta_j by parameter shift; G dtheta = d by least squares (rcond 0.01); theta <- theta + lr dtheta. Exact expectations, noiseless.
+  stopping: at most 100 steps, at least 40, stop after 10 steps without an improvement of 0.0001 in the approximation ratio; the parameters with the lowest energy are kept
+  step size lr, chosen per variant and scenario on the Task 04 calibration meshes (grid 0.05, 0.1, 0.2, 0.3, 0.4):
+    equal   varQITE A (graph edges)                  lr = 0.4  (calibration mean r: 0.05: 0.948, 0.1: 0.961, 0.2: 0.966, 0.3: 0.962, 0.4: 0.968)
+    equal   varQITE A (all pairs)                    lr = 0.4  (calibration mean r: 0.1: 0.976, 0.2: 0.976, 0.4: 0.985)
+    equal   varQITE ZY (paper, all pairs)            lr = 0.4  (calibration mean r: 0.1: 0.995, 0.2: 0.999, 0.4: 0.999)
+    equal   varQITE A+ (graph edges, ry layer)       lr = 0.2  (calibration mean r: 0.05: 0.949, 0.1: 0.961, 0.2: 0.971, 0.3: 0.961, 0.4: 0.963)
+    equal   varQITE B (IonQ-native, graph edges)     lr = 0.05  (calibration mean r: 0.05: 0.928, 0.1: 0.915, 0.2: 0.912, 0.3: 0.914, 0.4: 0.920)
+    cpu_gpu varQITE A (graph edges)                  lr = 0.2  (calibration mean r: 0.05: 0.891, 0.1: 0.867, 0.2: 0.897, 0.3: 0.894, 0.4: 0.883)
+    cpu_gpu varQITE A (all pairs)                    lr = 0.4  (calibration mean r: 0.1: 0.939, 0.2: 0.930, 0.4: 0.953)
+    cpu_gpu varQITE ZY (paper, all pairs)            lr = 0.4  (calibration mean r: 0.1: 0.826, 0.2: 0.837, 0.4: 0.845)
+    cpu_gpu varQITE A+ (graph edges, ry layer)       lr = 0.3  (calibration mean r: 0.05: 0.960, 0.1: 0.974, 0.2: 0.977, 0.3: 0.982, 0.4: 0.981)
+    cpu_gpu varQITE B (IonQ-native, graph edges)     lr = 0.2  (calibration mean r: 0.05: 0.796, 0.1: 0.797, 0.2: 0.801, 0.3: 0.800, 0.4: 0.796)
+  tests:
+    Pauli expansion, numpy = Qiskit, parameter shift = finite differences, d = imaginary-time direction, small step lowers E: passed (2 instances, 5 ansatz variants)
+    ansatz B at all-zero parameters has zero gradient; ansatz A keeps 50/50 on qubits that are never a target: passed
+    training circuits = steps x (2m + 1); finite, consistent metrics: passed (90 runs)
+    deterministic training (rerun gives the same parameters): passed
+  comparison at n = 12 (mean over cases; per shot; noiseless; 'noise est.' = crude estimate with e = 0.005 per two-qubit gate):
+    scenario method                                   2q gates training circuits steps   P(opt) P(<=1.05)  mean r P(bal.) hit 1.05 noise est.
+    equal    uniform guessing (p = 0)                        0                 0     0   0.0005    0.0007  0.8733   0.256    0.482     0.0007
+    equal    random with target share (classical)            0                 0     0   0.0005    0.0007  0.8733   0.256    0.482     0.0007
+    equal    LR-QAOA p = 2                                 132                 0     0   0.0018    0.0027  0.9490   0.612    0.855     0.0018
+    equal    QAOA COBYLA p = 2                             132               200     0   0.0025    0.0036  0.9558   0.727    0.943     0.0022
+    equal    varQITE A (graph edges)                        22              2828    64   0.0000    0.0000  0.9564   0.768    0.000     0.0001
+    equal    varQITE A (all pairs)                          66              7212    54   0.2424    0.2424  0.9809   0.946    0.334     0.1743
+    equal    varQITE ZY (paper, all pairs)                  66              6473    49   0.5991    0.7753  0.9993   0.945    1.000     0.5571
+    equal    varQITE A+ (graph edges, ry layer)             22              5464    80   0.0000    0.0000  0.9597   0.813    0.000     0.0001
+    equal    varQITE B (IonQ-native, graph edges)           22              4595    67   0.0001    0.0001  0.9234   0.403    0.129     0.0002
+    cpu_gpu  uniform guessing (p = 0)                        0                 0     0   0.0002    0.0004  0.7842   0.047    0.292     0.0004
+    cpu_gpu  random with target share (classical)            0                 0     0   0.0019    0.0041  0.9581   0.329    0.739     0.0041
+    cpu_gpu  LR-QAOA p = 2                                 132                 0     0   0.0047    0.0078  0.9700   0.378    0.995     0.0042
+    cpu_gpu  QAOA COBYLA p = 2                             132               191     0   0.0068    0.0108  0.9739   0.461    0.999     0.0058
+    cpu_gpu  varQITE A (graph edges)                        22              2359    53   0.0000    0.0000  0.8915   0.175    0.004     0.0000
+    cpu_gpu  varQITE A (all pairs)                          66              7921    60   0.0000    0.0000  0.9546   0.401    0.000     0.0001
+    cpu_gpu  varQITE ZY (paper, all pairs)                  66             10876    82   0.0000    0.0000  0.8516   0.000    0.000     0.0001
+    cpu_gpu  varQITE A+ (graph edges, ry layer)             22              4542    67   0.0000    0.0000  0.9835   0.568    0.000     0.0000
+    cpu_gpu  varQITE B (IonQ-native, graph edges)           22              4778    70   0.0001    0.0001  0.8027   0.012    0.078     0.0001
+    exact optimum (brute force): P(opt) = 1, r = 1, by definition
+  equal: in 27 of 27 trained A / ZY circuits at least one qubit has a marginal of exactly 0.5 (a qubit that is only ever a control cannot leave 50/50); with an unequal share that caps the probability of a unique optimum at 0.5. Variant A+ (our extension) adds one ry per qubit to remove the cap.
+  cpu_gpu: in 27 of 27 trained A / ZY circuits at least one qubit has a marginal of exactly 0.5 (a qubit that is only ever a control cannot leave 50/50); with an unequal share that caps the probability of a unique optimum at 0.5. Variant A+ (our extension) adds one ry per qubit to remove the cap.
+  IonQ batch: 90 final trained circuits with measurement are stored in `varqite_ionq_circuits` for the single IonQ job (with the p = 0 control and the QAOA circuits). Training stays local and noiseless; only the final sampling is meant for the IonQ Forte 1 noise model.
+  fairness note: varQITE spends steps x (2m + 1) training circuits with EXACT expectations (on hardware each would need shots); the optimised QAOA variants used at most 200 evaluations, LR-QAOA none.
+  failures: 0
+  files: results/varqite_summary_small.json, results/varqite_checkpoint_small.json.gz; plots: results/varqite_energy_curves_small.png, results/varqite_comparison_small.png
+[task 04b full: 837 s]
+exit 0

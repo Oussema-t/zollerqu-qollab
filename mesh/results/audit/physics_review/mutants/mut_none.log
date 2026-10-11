@@ -1,0 +1,22 @@
+[none] CELL TESTS COMPLETED WITHOUT ASSERTION (152 s)
+[none] LR calibration 2 equal devices: energy (0.26, 0.2) score 0.9528; success (1.74, 1.45) score 0.0128; edge False
+[none] LR calibration CPU + GPU (GPU 4x): energy (0.9600000000000001, 0.5499999999999999) score 0.9680; success (1.24, 0.39999999999999997) score 0.0041; edge False
+[none] TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+[none] TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+[none] TEST CVaR estimator: passed
+[none] TEST count-key decoder (rightmost bit = region 0): passed
+[none] TEST Qiskit circuit = numpy simulator (standard and three warm-start circuits): passed, max probability error 5.4e-18, 1.1e-15
+[none] TEST sign convention: LR-QAOA mean cost below the uniform mean: 12/12 instance-layer pairs; mixer-sign flip makes it worse than uniform on the example instances
+[none] TEST p = 0 control is uniform; exact and sampled values consistent: passed
+[none] TEST exact optimum and degeneracy equal Task 03 (same lambda): 9 instances compared; the others use a different lambda and were re-enumerated
+[none] TEST symmetry reduction keeps the optimum and is used only at alpha = 0.5: passed (12 reduced groups)
+[none] TEST same evaluation budget for every optimiser: budget 40; evaluations used (min-max): COBYLA 19-40, Nelder-Mead 40-40, Powell 40-40, L-BFGS-B 24-40, SPSA 40-40
+[none] TEST classical baselines use the same Ising objective: passed (90 records)
+[none] TEST reproducible with fixed seeds (optimiser run, annealing run): passed
+[none] TEST no missing or non-finite results: passed (408 runs)
+[none] QISKIT 2 equal devices: err 5.4e-18 mean_cost 0.6611 uniform 1.3492 wrong-sign 2.9353
+[none] QISKIT CPU + GPU (GPU 4x): err 1.1e-15 mean_cost 0.4231 uniform 2.2708 wrong-sign 5.5070
+[none] example 2 equal devices p=1: <E>=0.8293 (uniform 1.3492), p_near=0.00391 (uniform 0.00098)
+[none] example 2 equal devices p=2: <E>=0.6611 (uniform 1.3492), p_near=0.00482 (uniform 0.00098)
+[none] example CPU + GPU (GPU 4x) p=1: <E>=0.6663 (uniform 2.2708), p_near=0.00170 (uniform 0.00049)
+[none] example CPU + GPU (GPU 4x) p=2: <E>=0.4231 (uniform 2.2708), p_near=0.00749 (uniform 0.00049)

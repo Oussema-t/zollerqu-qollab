@@ -1,0 +1,7 @@
+[load small: 220.9 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 60 in <module>: assert RUN["quantum_cases"], "RUN['quantum_cases'] is empty: Task 04 benchmarks QAOA, so it needs at least one quantum case"
+  -> CRASH AssertionError: RUN['quantum_cases'] is empty: Task 04 benchmarks QAOA, so it needs at least one quantum case
+[STATUS] CRASH AssertionError: RUN['quantum_cases'] is empty: Task 04 benchmarks QAOA, so it needs at least one quantum case  [2.1 s]
+    qaoa groups: 0 | cases with QAOA: [] | reused None computed None

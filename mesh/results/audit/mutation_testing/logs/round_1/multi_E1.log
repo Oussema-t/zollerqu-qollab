@@ -1,0 +1,145 @@
+[load small: 100.8 s]
+##### s01_structure
+  [STATUS] OK  [45.2 s]
+    [S1] qaoa key lens: Counter({7: 188}) types: ['str', 'int', 'int', 'str', 'str', 'str', 'int'] example: ('2 main', 12, 7, '2 equal devices', 'uniform control', 'none', 0)
+    [S2] fields missing from the per-run dict (count of runs): {'optimiser': 272, 'p': 272, 'shots': 272, 'variant': 272, 'n_qubits': 272} | group-level keys: ['variant', 'optimiser', 'p', 'n_qubits', 'runs', 'aggregate', 'uniform_p_opt', 'uniform_p_near', 'two_qubit_gates']
+    [S3] classical key lens: Counter({5: 90}) methods: ['local search (restarts)', 'random with target share', 'simulated annealing', 'spectral bisection', 'uniform random sampling'] records: 90 instances: 18
+    [S4] calibration 2 main seed 101 vs scored seed 7 (2 equal d): fingerprint equal = False; max|J diff| = 0.0947 (max|J| = 0.4117); corr(J) = 0.8653; e_min 0.28207 vs 0.25569
+    [S4] calibration 6 three sources seed 101 vs scored seed 7 (2 equal d): fingerprint equal = False; max|J diff| = 0.1553 (max|J| = 0.2691); corr(J) = 0.2198; e_min 0.23869 vs 0.25078
+    [S4] calibration 2 main seed 101 vs scored seed 7 (CPU + GPU): fingerprint equal = False; max|J diff| = 0.0433 (max|J| = 0.1466); corr(J) = 0.8179; e_min 0.12841 vs 0.14264
+    [S4] calibration 6 three sources seed 101 vs scored seed 7 (CPU + GPU): fingerprint equal = False; max|J diff| = 0.0680 (max|J| = 0.1071); corr(J) = 0.2847; e_min 0.14487 vs 0.11355
+    [S5] case 8 vs case 9 (2 equal d): fingerprint equal = True, mu = 0.0, priority_active = False
+    [S5] case 8 vs case 9 (CPU + GPU): fingerprint equal = True, mu = 0.0, priority_active = False
+    [S6] relaxation warm-start c for 2 main / 2 equal d: min 0.500000 max 0.500000 (alpha = 0.5) -> all equal to alpha: True
+    [S6] relaxation warm-start c for 2 main / CPU + GPU: min 0.800000 max 0.800000 (alpha = 0.8) -> all equal to alpha: True
+    [S6] relaxation warm-start c for 9 priority / 2 equal d: min 0.500000 max 0.500000 (alpha = 0.5) -> all equal to alpha: True
+    [S6] relaxation warm-start c for 9 priority / CPU + GPU: min 0.800000 max 0.800000 (alpha = 0.8) -> all equal to alpha: True
+    [S7] 2 main / 2 equal d relax start only: p_near - uniform_p_near = -1.084e-19; counted as below uniform: True
+    [S7] 2 main / CPU + GPU relax start only: p_near - uniform_p_near = 1.659e-03; counted as below uniform: False
+    [S7] 9 priority / 2 equal d relax start only: p_near - uniform_p_near = -5.421e-20; counted as below uniform: True
+    [S7] 9 priority / CPU + GPU relax start only: p_near - uniform_p_near = 2.429e-05; counted as below uniform: False
+    [S8] 2 equal d: modelled_outcome/state_cost enumerated vs non-enumerated branch on 300 random states: max abs diff 4.44e-15, differing fields {}
+    [S10] 2 equal d run_classical exact vs non-exact path, uniform random sampling: same best costs/state = True; hit_opt 0.2 vs 0.2 (best classical result (not exact)); ref 0.25569 vs 0.25569; per_shot in non-exact: False
+    [S10] 2 equal d run_classical exact vs non-exact path, random with target share: same best costs/state = True; hit_opt 0.2 vs 0.2 (best classical result (not exact)); ref 0.25569 vs 0.25569; per_shot in non-exact: False
+    [S10] 2 equal d run_classical exact vs non-exact path, simulated annealing: same best costs/state = True; hit_opt 0.4 vs 0.4 (best classical result (not exact)); ref 0.25569 vs 0.25569; per_shot in non-exact: False
+    [S10] 2 equal d run_classical exact vs non-exact path, local search (restarts): same best costs/state = True; hit_opt 0.4 vs 0.4 (best classical result (not exact)); ref 0.25569 vs 0.25569; per_shot in non-exact: False
+    [S10] 2 equal d run_classical exact vs non-exact path, spectral bisection: same best costs/state = True; hit_opt 0.0 vs 0.0 (best classical result (not exact)); ref 0.25569 vs 0.25569; per_shot in non-exact: False
+    [S8] CPU + GPU: modelled_outcome/state_cost enumerated vs non-enumerated branch on 300 random states: max abs diff 2.66e-15, differing fields {}
+    [S10] CPU + GPU run_classical exact vs non-exact path, uniform random sampling: same best costs/state = True; hit_opt 0.0 vs 0.0 (best classical result (not exact)); ref 0.14264 vs 0.14264; per_shot in non-exact: False
+    [S10] CPU + GPU run_classical exact vs non-exact path, random with target share: same best costs/state = True; hit_opt 0.6 vs 0.6 (best classical result (not exact)); ref 0.14264 vs 0.14264; per_shot in non-exact: False
+    [S10] CPU + GPU run_classical exact vs non-exact path, simulated annealing: same best costs/state = True; hit_opt 1.0 vs 1.0 (best classical result (not exact)); ref 0.14264 vs 0.14264; per_shot in non-exact: False
+    [S10] CPU + GPU run_classical exact vs non-exact path, local search (restarts): same best costs/state = True; hit_opt 1.0 vs 1.0 (best classical result (not exact)); ref 0.14264 vs 0.14264; per_shot in non-exact: False
+    [S10] CPU + GPU run_classical exact vs non-exact path, spectral bisection: same best costs/state = True; hit_opt 1.0 vs 1.0 (best classical result (not exact)); ref 0.14264 vs 0.14264; per_shot in non-exact: False
+    [S11] len(method) used as seed component: {'uniform random sampling': 23, 'random with target share': 24, 'simulated annealing': 19, 'local search (restarts)': 23}
+    [S11] first candidate of 'uniform random sampling' repeat 0: [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0] | first start of 'local search' repeat 0: [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0] | identical: True
+    [S15] t4_key_seed collisions in the large default grid: 0 of 216 | example with seed >= 10: key_seed(n=12, seed=17) = 137 == key_seed(n=13, seed=7) = 137
+    [S19] z-scores sampled_p_near vs exact p_near over 81 runs: mean +0.269, std 1.125, max |z| 2.87
+    [S20] independent recomputation of best_state cost / share / cut / pieces / hours for 272 runs: mismatches {}
+    [S20c] classical best_state cost/pieces recomputed for 90 records: mismatches {}
+    [S22] 2 equal d brute-force energies vs inst['energies']: max diff 5.33e-15; optimum 0.255695; #opt 2; #near 2
+    [S23] 2 equal d LR-QAOA p=1: independent Qiskit+brute force vs stored: p_opt 0.001141/0.001141, p_near 0.001141/0.001141, mean_cost 0.828043/0.828043, mean_ratio 0.941263/0.941263, p_balanced 0.458191/0.458191 -> max diff 2.89e-15
+    [S23] 2 equal d LR-QAOA p=2: independent Qiskit+brute force vs stored: p_opt 0.001169/0.001169, p_near 0.001169/0.001169, mean_cost 0.821405/0.821405, mean_ratio 0.941945/0.941945, p_balanced 0.453928/0.453928 -> max diff 7.33e-15
+    [S22] CPU + GPU brute-force energies vs inst['energies']: max diff 2.66e-15; optimum 0.142645; #opt 1; #near 2
+    [S23] CPU + GPU LR-QAOA p=1: independent Qiskit+brute force vs stored: p_opt 0.003094/0.003094, p_near 0.006038/0.006038, mean_cost 0.513683/0.513683, mean_ratio 0.963067/0.963067, p_balanced 0.292883/0.292883 -> max diff 9.99e-16
+    [S23] CPU + GPU LR-QAOA p=2: independent Qiskit+brute force vs stored: p_opt 0.004627/0.004627, p_near 0.009018/0.009018, mean_cost 0.402065/0.402065, mean_ratio 0.974177/0.974177, p_balanced 0.326458/0.326458 -> max diff 2.22e-15
+    [S24] n=3 simulator vs matrix exponentials: standard 4.16e-16, mixer A 1.67e-16, mixer B 2.22e-16
+    [S24] n=5 simulator vs matrix exponentials: standard 6.94e-16, mixer A 2.78e-16, mixer B 1.94e-16
+    [S24] n=14 (per-qubit mixer path) numpy vs Qiskit: 3.14e-18
+    [S24] n=14 warm mixer A numpy vs Qiskit: 3.99e-17
+    [S24] n=14 warm mixer B numpy vs Qiskit: 9.11e-18
+    [S24] symmetry-reduced circuit (11 qubits) Qiskit vs numpy: 8.89e-18
+    [S26] example equal p=2 COBYLA (LR-QAO, objective expectation): last history value 0.6716 vs reported final mean cost 0.6716
+    [S26] example equal p=2 COBYLA (random, objective expectation): last history value 0.6493 vs reported final mean cost 0.6493
+    [S26] example equal p=2 Nelder-Mead (LR-QAO, objective expectation): last history value 0.7183 vs reported final mean cost 0.7183
+    [S26] example equal p=2 Nelder-Mead (random, objective expectation): last history value 0.8172 vs reported final mean cost 0.8172
+    [S26] example equal p=2 Powell (LR-QAO, objective expectation): last history value 0.7021 vs reported final mean cost 0.7021
+    [S26] example equal p=2 Powell (random, objective expectation): last history value 1.4269 vs reported final mean cost 1.4269
+    [S26] example equal p=2 L-BFGS-B (LR-QAO, objective expectation): last history value 0.6820 vs reported final mean cost 0.6820
+    [S26] example equal p=2 L-BFGS-B (random, objective expectation): last history value 0.7061 vs reported final mean cost 0.7061
+    [S26] example equal p=2 SPSA (LR-QAO, objective shot mean): last history value 0.7160 vs reported final mean cost 0.7282
+    [S26] example equal p=2 SPSA (random, objective shot mean): last history value 0.8255 vs reported final mean cost 0.8368
+    [S13] re-running the cell in the same namespace: bit-identical p_opt for all runs = True | calibration identical = True
+##### e10a_ckpt_first
+  [STATUS] OK  [26.4 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 94 QAOA groups, 136 QAOA runs, 3117 objective evaluations, 90 classical records
+    |   measured wall-clock: 26 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 10 s
+    |   QAOA methods at n = 12 (mean over 1 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.40, local search 0.40 (+-0.44); LR-QAOA 0.69 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.85 -> ahead of it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 1.00, local search 1.00 (+-0.40); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     16 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 94 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +'] | reused 0 computed 18
+##### e10b_ckpt_second_more_cases
+  [STATUS] OK  [15.4 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 94 QAOA groups, 136 QAOA runs, 3117 objective evaluations, 90 classical records
+    |   measured wall-clock: 15 s in this run (0 instances computed, 18 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 8 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.41); LR-QAOA 0.69 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.85 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.40); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 94 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +'] | reused 18 computed 0
+##### e10c_ckpt_first_two
+  [STATUS] OK  [34.8 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 6230 objective evaluations, 90 classical records
+    |   measured wall-clock: 35 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 9 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.88 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 0.99 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e10d_ckpt_second_fewer
+  [STATUS] OK  [16.6 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 6230 objective evaluations, 90 classical records
+    |   measured wall-clock: 17 s in this run (0 instances computed, 18 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 9 s
+    |   QAOA methods at n = 12 (mean over 1 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.40, local search 0.40 (+-0.31); LR-QAOA 0.71 -> ahead of the best classical heuristic; QAOA COBYLA 0.88 -> ahead of it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 1.00, local search 1.00 (+-0.20); LR-QAOA 0.99 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     16 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 18 computed 0
+##### e11a_ckpt_with_failure
+  [STATUS] OK  [33.5 s]
+    task04_failures: ["{'key': '9 priority|12|7|CPU + GPU (GPU 4x)', 'error': 'RuntimeError: injected failure for the review'}"] n = 1
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 143 QAOA groups, 207 QAOA runs, 4756 objective evaluations, 90 classical records
+    |   measured wall-clock: 33 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 9 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.88 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.40); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 1
+    qaoa groups: 143 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ'] | reused 0 computed 18
+##### e11b_ckpt_rerun_fixed
+  [STATUS] OK  [21.1 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 143 QAOA groups, 207 QAOA runs, 4756 objective evaluations, 90 classical records
+    |   measured wall-clock: 21 s in this run (0 instances computed, 18 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 12 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.88 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.40); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 143 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ'] | reused 18 computed 0
+##### e12a_ckpt_buggy_code
+  [STATUS] OK  [37.1 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 6235 objective evaluations, 90 classical records
+    |   measured wall-clock: 37 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 11 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.73 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.87 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 0.98 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e12b_ckpt_fixed_code
+    multi.py:51 in <module>
+    cell line 1043 in <module>: assert all(np.allclose(a["final_angles"], b["final_angles"], atol=1e-12) for a, b in zip(repeat_a["runs"], stored["runs"])), "optimiser run not reproducible"
+  [STATUS] CRASH AssertionError: optimiser run not reproducible  [11.3 s]
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 18 computed 0
+ALL_DONE

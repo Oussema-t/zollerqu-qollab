@@ -1,0 +1,410 @@
+{
+ "caught": 30,
+ "total": 30,
+ "final": {
+  "mut_a_mixer_block_sign": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.allclose(apply_uniform_x_mixer(random_state, 0.37, n_test), apply_qubit_gates(random_state, mixer_gates(0.37, np.full(n_test, np.pi / 2)), p`",
+   "round": 2
+  },
+  "mut_b_rx_plus": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.019633659797004866",
+   "round": 2
+  },
+  "mut_c1_bits_to_state_rev": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: classical cost mismatch",
+   "round": 2
+  },
+  "mut_c2_pieces_rev": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: piece count is wrong",
+   "round": 3
+  },
+  "mut_c3_warm_x_rev": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: mixer B recovery returns the wrong bitstring",
+   "round": 2
+  },
+  "mut_c4_spectral_only_rev": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: spectral split is not a Fiedler threshold cut",
+   "round": 3
+  },
+  "mut_c5_warm_state_kron_rev": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: warm-start circuit disagrees (rounded spectral, mixer A, 2 equal devices)",
+   "round": 2
+  },
+  "mut_c6_nonenum_outcome_rev": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.isclose(modelled_outcome(stripped, int(k))[\"modelled_hours\"], modelled_outcome(inst, int(k))[\"modelled_hours\"])`",
+   "round": 3
+  },
+  "mut_d2_lr_gamma_ramps_down": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: LR-QAOA schedule is wrong",
+   "round": 3
+  },
+  "mut_d_lr_beta_ramps_up": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: LR-QAOA schedule is wrong",
+   "round": 3
+  },
+  "mut_e1_swap_AB_setup_only": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: warm-start circuit disagrees (relaxation, mixer A, 2 equal devices)",
+   "round": 2
+  },
+  "mut_e2_swap_AB_consistent": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: mixer B recovery does not return a single bitstring",
+   "round": 2
+  },
+  "mut_f_h_red_no_J": {
+   "outcome": "caught (instance failure recorded by a check)",
+   "detail": "AssertionError: reduction is wrong",
+   "round": 4
+  },
+  "mut_g1_sa_delta_sign": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: classical cost mismatch",
+   "round": 2
+  },
+  "mut_g2_sa_accept_uphill": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: cold annealing did not descend",
+   "round": 3
+  },
+  "mut_g3_sa_local_update_wrong": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: classical cost mismatch",
+   "round": 2
+  },
+  "mut_h_cvar_highest": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.isclose(cvar_of_samples(cvar_sample, 1.0), cvar_sample.mean()) and np.isclose(cvar_of_samples(cvar_sample, 0.1), np.sort(cvar_sample)[:100].`",
+   "round": 2
+  },
+  "mut_i1_balance_no_4": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.max(np.abs(energies - ising_energies_all(J, h, const, n))) < T4_TOL`",
+   "round": 2
+  },
+  "mut_i2_relax_no_4": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: relaxation differs from the objective on a binary point",
+   "round": 3
+  },
+  "mut_j_cost_phase_sign": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.0007253639940710819",
+   "round": 2
+  },
+  "mut_k_rz_h_factor": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: Qiskit and numpy disagree for CPU + GPU (GPU 4x): 0.04034051580868762",
+   "round": 2
+  },
+  "mut_l_hit_near_shots": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: hit probability formula is wrong",
+   "round": 4
+  },
+  "mut_m_near_factor_ignored": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.array_equal(inst[\"near_mask\"], inst[\"energies\"] <= TASK04[\"near_optimal_factor\"] * inst[\"e_min\"] + T4_TOL)`",
+   "round": 3
+  },
+  "mut_n_local_search_argmax": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: local search did not end in a local minimum",
+   "round": 3
+  },
+  "mut_o_noise_uniform_swap": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.isclose(row[\"p_near_noise_estimate\"], fidelity * row[\"p_near\"] + (1.0 - fidelity) * row[\"uniform_p_near\"])`",
+   "round": 3
+  },
+  "mut_p_balanced_mask_eps": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.array_equal(inst[\"balanced_mask\"], np.abs(inst[\"share_b\"] - inst[\"alpha\"]) <= TASK04[\"epsilon\"])`",
+   "round": 3
+  },
+  "mut_q_runtime_model_min": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError at `assert np.isclose(toy_out[\"modelled_hours\"], expected_total) and np.isclose(toy_out[\"modelled_kwh\"], expected_kwh) and (toy_out[\"pieces_a\"], toy_out[\"`",
+   "round": 3
+  },
+  "mut_r_reduced_scale": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: scaled energies disagree with J_scaled, h_scaled",
+   "round": 3
+  },
+  "mut_s_spsa_ascent": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: SPSA does not minimise",
+   "round": 3
+  },
+  "mut_t_energy_scaled_no_const": {
+   "outcome": "caught (run stopped by a check)",
+   "detail": "AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.000361680808846766",
+   "round": 2
+  }
+ },
+ "rounds": {
+  "mut_a_mixer_block_sign": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.allclose(apply_uniform_x_mixer(random_state, 0.37, n_test), apply_qubit_gates(random_state, mixer_gates(0.37, np.full(n_test, np.pi / 2)), p`"
+   }
+  },
+  "mut_b_rx_plus": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.019633659797004866"
+   }
+  },
+  "mut_c1_bits_to_state_rev": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: classical cost mismatch"
+   }
+  },
+  "mut_c2_pieces_rev": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: piece count is wrong"
+   }
+  },
+  "mut_c3_warm_x_rev": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: mixer B recovery returns the wrong bitstring"
+   }
+  },
+  "mut_c4_spectral_only_rev": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: spectral split is not a Fiedler threshold cut"
+   }
+  },
+  "mut_c5_warm_state_kron_rev": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: warm-start circuit disagrees (rounded spectral, mixer A, 2 equal devices)"
+   }
+  },
+  "mut_c6_nonenum_outcome_rev": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.isclose(modelled_outcome(stripped, int(k))[\"modelled_hours\"], modelled_outcome(inst, int(k))[\"modelled_hours\"])`"
+   }
+  },
+  "mut_d2_lr_gamma_ramps_down": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: LR-QAOA schedule is wrong"
+   }
+  },
+  "mut_d_lr_beta_ramps_up": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: LR-QAOA schedule is wrong"
+   }
+  },
+  "mut_e1_swap_AB_setup_only": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: warm-start circuit disagrees (relaxation, mixer A, 2 equal devices)"
+   }
+  },
+  "mut_e2_swap_AB_consistent": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: mixer B recovery does not return a single bitstring"
+   }
+  },
+  "mut_f_h_red_no_J": {
+   "2": {
+    "outcome": "crashed (not a designed check)",
+    "detail": "KeyError: ('2 main', 12, 7, '2 equal devices', 'QAOA', 'COBYLA', 1)"
+   },
+   "3": {
+    "outcome": "crashed (not a designed check)",
+    "detail": "ValueError: max() iterable argument is empty"
+   },
+   "4": {
+    "outcome": "caught (instance failure recorded by a check)",
+    "detail": "AssertionError: reduction is wrong"
+   }
+  },
+  "mut_g1_sa_delta_sign": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: classical cost mismatch"
+   }
+  },
+  "mut_g2_sa_accept_uphill": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: cold annealing did not descend"
+   }
+  },
+  "mut_g3_sa_local_update_wrong": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: classical cost mismatch"
+   }
+  },
+  "mut_h_cvar_highest": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.isclose(cvar_of_samples(cvar_sample, 1.0), cvar_sample.mean()) and np.isclose(cvar_of_samples(cvar_sample, 0.1), np.sort(cvar_sample)[:100].`"
+   }
+  },
+  "mut_i1_balance_no_4": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.max(np.abs(energies - ising_energies_all(J, h, const, n))) < T4_TOL`"
+   }
+  },
+  "mut_i2_relax_no_4": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: relaxation differs from the objective on a binary point"
+   }
+  },
+  "mut_j_cost_phase_sign": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.0007253639940710819"
+   }
+  },
+  "mut_k_rz_h_factor": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: Qiskit and numpy disagree for CPU + GPU (GPU 4x): 0.04034051580868762"
+   }
+  },
+  "mut_l_hit_near_shots": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "4": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: hit probability formula is wrong"
+   }
+  },
+  "mut_m_near_factor_ignored": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.array_equal(inst[\"near_mask\"], inst[\"energies\"] <= TASK04[\"near_optimal_factor\"] * inst[\"e_min\"] + T4_TOL)`"
+   }
+  },
+  "mut_n_local_search_argmax": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: local search did not end in a local minimum"
+   }
+  },
+  "mut_o_noise_uniform_swap": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.isclose(row[\"p_near_noise_estimate\"], fidelity * row[\"p_near\"] + (1.0 - fidelity) * row[\"uniform_p_near\"])`"
+   }
+  },
+  "mut_p_balanced_mask_eps": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.array_equal(inst[\"balanced_mask\"], np.abs(inst[\"share_b\"] - inst[\"alpha\"]) <= TASK04[\"epsilon\"])`"
+   }
+  },
+  "mut_q_runtime_model_min": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError at `assert np.isclose(toy_out[\"modelled_hours\"], expected_total) and np.isclose(toy_out[\"modelled_kwh\"], expected_kwh) and (toy_out[\"pieces_a\"], toy_out[\"`"
+   }
+  },
+  "mut_r_reduced_scale": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: scaled energies disagree with J_scaled, h_scaled"
+   }
+  },
+  "mut_s_spsa_ascent": {
+   "2": {
+    "outcome": "survived",
+    "detail": ""
+   },
+   "3": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: SPSA does not minimise"
+   }
+  },
+  "mut_t_energy_scaled_no_const": {
+   "2": {
+    "outcome": "caught (run stopped by a check)",
+    "detail": "AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.000361680808846766"
+   }
+  }
+ }
+}

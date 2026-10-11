@@ -1,0 +1,2 @@
+CFG = dict(workdir="wd_mut_g1_sa_delta_sign", mode="small", run=dict(quantum_cases=["2 main", "9 priority"]), overrides=dict(eval_budget=40, random_starts=1, lr_grid_gamma=np.linspace(0.05, 1.5, 12), lr_grid_beta=np.linspace(0.1, 1.2, 6), classical_repeats=5, use_checkpoint=False, calibration_seeds=[101], sa_calibration_repeats=3),
+           mutations=[('delta = -2.0 * z[i] * local[i]                         # energy change of flipping spin i', 'delta = 2.0 * z[i] * local[i]', 1)])

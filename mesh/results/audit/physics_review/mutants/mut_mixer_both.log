@@ -1,0 +1,8 @@
+[mixer_both] AssertionError: standard mixer is not exp(+i beta X) (line 908: assert np.allclose(mixer_gates(0.37, np.array([np.pi / 2]))[0], np.cos(0.37) * np.eye(2) + 1j * np.sin(0.37) * pauli_x), "standard mixer is not exp(+i)
+[mixer_both] LR calibration 2 equal devices: energy (0.05, 0.9799999999999999) score 0.8737; success (1.2363636363636363, 0.7599999999999999) score 0.0041; edge True
+[mixer_both] LR calibration CPU + GPU (GPU 4x): energy (0.05, 0.1) score 0.7774; success (0.05, 0.1) score 0.0002; edge True
+[mixer_both] TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+[mixer_both] example 2 equal devices p=1: <E>=1.2718 (uniform 1.3492), p_near=0.00119 (uniform 0.00098)
+[mixer_both] example 2 equal devices p=2: <E>=1.7291 (uniform 1.3492), p_near=0.00067 (uniform 0.00098)
+[mixer_both] example CPU + GPU (GPU 4x) p=1: <E>=2.3647 (uniform 2.2708), p_near=0.00046 (uniform 0.00049)
+[mixer_both] example CPU + GPU (GPU 4x) p=2: <E>=2.3884 (uniform 2.2708), p_near=0.00045 (uniform 0.00049)

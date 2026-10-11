@@ -1,0 +1,2 @@
+CFG = dict(workdir="wd_mut_c1_bits_to_state_rev", mode="small", run=dict(quantum_cases=["2 main", "9 priority"]), overrides=dict(eval_budget=40, random_starts=1, lr_grid_gamma=np.linspace(0.05, 1.5, 12), lr_grid_beta=np.linspace(0.1, 1.2, 6), classical_repeats=5, use_checkpoint=False, calibration_seeds=[101], sa_calibration_repeats=3),
+           mutations=[('return int(np.dot(np.asarray(x, dtype=np.int64), 1 << np.arange(len(x), dtype=np.int64)))', 'return int(np.dot(np.asarray(x, dtype=np.int64), 1 << np.arange(len(x) - 1, -1, -1, dtype=np.int64)))', 1)])

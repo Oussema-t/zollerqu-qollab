@@ -1,0 +1,11 @@
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+notebook run ok in 1107 s
+2 ok | RUN SETTINGS: mode 'small'
+4 ok | TASK 01 RESULT: all checks passed
+7 ok | TASK 01b RESULT: all checks passed for 4 cases (seed 7, each rebuilt identically)
+9 ok | TASK 01c RESULT: all checks passed; 9 cases now have work, border cost and priority arrays
+11 ok | TASK 02 RESULT: all checks passed for 9 coarsenings (mode 'small': 9 cases x region counts [12] x seeds [7])
+13 ok | TASK 03 RESULT: 18 Ising instances built (mode 'small'); 18 solved exactly by enumeration, 0 skipped (n > 22)
+15 ok | TASK 03b RESULT: synthetic HPC pool with 8 devices (seed 7); 236 of 255 device choices fit the job in memory
+17 ok | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 882 QAOA groups, 2016 QAOA runs, 187303 objective evaluations, 90 classic
+19 ok | TASK 04b RESULT: varQITE trained on 18 instances x up to 5 ansatz variants = 90 runs (mode 'small'); measured wall-clock 853 s (step-size calibration 

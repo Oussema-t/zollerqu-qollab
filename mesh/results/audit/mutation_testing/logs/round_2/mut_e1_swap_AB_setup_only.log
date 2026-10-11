@@ -1,0 +1,11 @@
+[load small: 436.7 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 945 in <module>: assert warm_errors[flavour] < 1e-9, f"warm-start circuit disagrees ({flavour}, {scenario})"
+  -> CRASH AssertionError: warm-start circuit disagrees (relaxation, mixer A, 2 equal devices)
+[STATUS] CRASH AssertionError: warm-start circuit disagrees (relaxation, mixer A, 2 equal devices)  [121.7 s]
+  TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+  TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+  TEST CVaR estimator: passed
+  TEST count-key decoder (rightmost bit = region 0): passed
+  failures: []

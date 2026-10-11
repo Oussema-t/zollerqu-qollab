@@ -1,0 +1,11 @@
+[cost_numpy] AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.0008155763901029995 (line 938: assert error < 1e-9, f"Qiskit and numpy disagree for {scenario}: {error}")
+[cost_numpy] LR calibration 2 equal devices: energy (0.02, 1.0499999999999998) score 0.8781; success (2.0, 0.85) score 0.0127; edge True
+[cost_numpy] LR calibration CPU + GPU (GPU 4x): energy (0.02, 0.05) score 0.7825; success (2.0, 1.5) score 0.0004; edge True
+[cost_numpy] TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+[cost_numpy] TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+[cost_numpy] TEST CVaR estimator: passed
+[cost_numpy] TEST count-key decoder (rightmost bit = region 0): passed
+[cost_numpy] example 2 equal devices p=1: <E>=1.1842 (uniform 1.3492), p_near=0.00118 (uniform 0.00098)
+[cost_numpy] example 2 equal devices p=2: <E>=1.5595 (uniform 1.3492), p_near=0.00080 (uniform 0.00098)
+[cost_numpy] example CPU + GPU (GPU 4x) p=1: <E>=2.2896 (uniform 2.2708), p_near=0.00048 (uniform 0.00049)
+[cost_numpy] example CPU + GPU (GPU 4x) p=2: <E>=2.2943 (uniform 2.2708), p_near=0.00048 (uniform 0.00049)

@@ -1,0 +1,20 @@
+\newcommand{\TableNtwelve}{%
+Uniform random sampling & 0 & 0 & 1\,000 & 0.07 & 48 & 0.04 & 29 \\
+Random with target share & 0 & 0 & 1\,000 & 0.07 & 48 & 0.41 & 74 \\
+Simulated annealing & 0 & 0 & 1\,000 & -- & 64 & -- & 87 \\
+Local search (restarts) & 0 & 0 & 1\,000 & -- & 84 & -- & 100 \\
+Spectral bisection & 0 & 0 & 22 & -- & 67 & -- & 100 \\
+\midrule
+LR-QAOA, $p=2$ & 132 & 0 & 1\,000 & 0.27 & 85 & 0.78 & 99 \\
+QAOA + COBYLA, $p=2$ & 132 & 196 & 196\,556 & 0.36 & 94 & 1.1 & 100 \\
+CVaR-QAOA + COBYLA, $p=2$ & 132 & 31 & 31\,778 & 0.31 & 90 & 0.87 & 99 \\
+Warm start (spectral)$^\dagger$, $p=2$ & 132 & 200 & 201\,000 & 7.8 & 94 & 21 & 100 \\
+\midrule
+varQITE ZY (paper, all pairs) & 66 & 8\,675 & 8\,675\,556 & 78 & 100 & $<$0.01 & $<$0.01 \\
+varQITE A (all pairs) & 66 & 7\,566 & 7\,567\,222 & 24 & 33 & $<$0.01 & 0.01 \\
+varQITE A$^{+}$ (edges, our ext.) & 22 & 5\,003 & 5\,004\,222 & $<$0.01 & $<$0.01 & $<$0.01 & $<$0.01 \\
+varQITE B (IonQ-native, edges) & 22 & 4\,686 & 4\,687\,167 & 0.01 & 13 & 0.01 & 7.8 \\
+}
+
+{'NQAOAruns': '2\\,016', 'NEvals': '187\\,303', 'NLargeRuns': '2\\,928', 'VQZYequal': '78', 'COBYLAequal': '0.36', 'LRgainEqual': '3.9', 'LRgainShare': '1.9', 'LRgainUniformCPU': '22', 'COBYLAshare': '2.6', 'NoiseLR': '0.42', 'IdealLR': '0.78', 'ScLocalTwelveEq': '86', 'ScCobylaTwelveEq': '92', 'ScCobylaTwentyEq': '2', 'ScSpectralTwentyEq': '50', 'ScLocalTwentyEq': '18', 'ScCobylaTwentyCpu': '21', 'ScSpectralTwentyCpu': '100', 'ScLocalTwentyCpu': '77', 'AblFields': '0.30', 'AblCouplings': '0.01', 'VQZYcircuits': '6\\,473', 'RuntimeSpread': '2.9', 'VQLApEq': '0.965', 'VQLApCpu': '0.981', 'VQLnearMax': '$<$0.01', 'COBYLAtotal': '196\\,556', 'VQZYtotal': '8\\,675\\,556', 'NIonQ': '12'}
+{"2 equal devices": {"Local search": [0.8616666666666667, 0.4483333333333333, 0.17833333333333334, 0.10333333333333333], "Spectral bisection": [0.5, 0.3333333333333333, 0.5, 0.6666666666666666], "Simulated annealing": [0.65, 0.315, 0.15833333333333335, 0.11666666666666668], "Random, target share": [0.3933333333333333, 0.05333333333333334, 0.005, 0.0], "LR-QAOA $p=2$": [0.7557884518132744, 0.19571971458364304, 0.012100316800097452, NaN], "QAOA+COBYLA $p=2$": [0.9152054579861262, 0.2911960082970166, 0.019483345430770644, NaN]}, "CPU + GPU (GPU 4x)": {"Local search": [0.8683333333333333, 0.961666

@@ -1,0 +1,146 @@
+[load small: 100.9 s]
+##### e01_layers_1
+  [STATUS] OK  [33.7 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 120 QAOA groups, 162 QAOA runs, 2979 objective evaluations, 90 classical records
+    |   measured wall-clock: 33 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 11 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.70 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.77 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 0.98 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.98 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 120 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e02_random_starts_0
+  [STATUS] OK  [27.5 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 188 QAOA runs, 3013 objective evaluations, 90 classical records
+    |   measured wall-clock: 27 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 12 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.88 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 0.99 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e03_single_case
+  [STATUS] OK  [25.6 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 94 QAOA groups, 136 QAOA runs, 3117 objective evaluations, 90 classical records
+    |   measured wall-clock: 25 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 9 s
+    |   QAOA methods at n = 12 (mean over 1 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.40, local search 0.40 (+-0.44); LR-QAOA 0.69 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.85 -> ahead of it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 1.00, local search 1.00 (+-0.40); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     16 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 94 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +'] | reused 0 computed 18
+##### e04_no_2main
+  [STATUS] OK  [22.3 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 94 QAOA groups, 136 QAOA runs, 3113 objective evaluations, 90 classical records
+    |   measured wall-clock: 22 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 9 s
+    |   QAOA methods at n = 12 (mean over 1 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 1.00, local search 1.00 (+-0.40); LR-QAOA 0.73 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.91 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.20, local search 1.00 (+-0.40); LR-QAOA 0.99 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     16 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 94 | cases with QAOA: ['9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e04b_two_other
+  [STATUS] OK  [30.1 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 6239 objective evaluations, 90 classical records
+    |   measured wall-clock: 30 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 8 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 0.80 (+-0.25); LR-QAOA 0.75 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.86 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 1.00 (+-0.20); LR-QAOA 0.99 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['3 hard/2 equ', '3 hard/CPU +', '6 three sources/2 equ', '6 three sources/CPU +'] | reused 0 computed 18
+##### e05_shots_100
+  [STATUS] OK  [29.9 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 6198 objective evaluations, 90 classical records
+    |   measured wall-clock: 30 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 10 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 100 candidates each, probability of containing a split within 5 %: simulated annealing 0.00, local search 0.00 (+-0.20); LR-QAOA 0.12 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.19 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 100 candidates each, probability of containing a split within 5 %: simulated annealing 0.40, local search 0.70 (+-0.29); LR-QAOA 0.48 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.54 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e06_mu_positive
+  [STATUS] OK  [34.9 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 6223 objective evaluations, 90 classical records
+    |   measured wall-clock: 35 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 9 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.88 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e07_no_quantum_cases
+    multi.py:51 in <module>
+    cell line 1038 in <module>: example_scenario, example = next(iter(t4_examples.items()))
+  [STATUS] CRASH StopIteration:   [13.1 s]
+    qaoa groups: 0 | cases with QAOA: [] | reused 0 computed 18
+##### e08_fail_nonexample
+  [STATUS] OK  [32.8 s]
+    task04_failures: ["{'key': '9 priority|12|7|CPU + GPU (GPU 4x)', 'error': 'RuntimeError: injected failure for the review'}"] n = 1
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 143 QAOA groups, 207 QAOA runs, 4756 objective evaluations, 90 classical records
+    |   measured wall-clock: 33 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 11 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.88 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.40); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 1
+    qaoa groups: 143 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ'] | reused 0 computed 18
+##### e09_fail_example
+    multi.py:51 in <module>
+    cell line 1044 in <module>: stored = qaoa_results[example_key + ("QAOA", "COBYLA", T4_LAYERS[0])]
+  [STATUS] CRASH KeyError: ('2 main', 12, 7, '2 equal devices', 'QAOA', 'COBYLA', 1)  [22.6 s]
+    task04_failures: ["{'key': '2 main|12|7|2 equal devices', 'error': 'RuntimeError: injected failure for the review'}"] n = 1
+    qaoa groups: 139 | cases with QAOA: ['2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e13_classical_budget_200
+  [STATUS] OK  [28.4 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 6230 objective evaluations, 90 classical records
+    |   measured wall-clock: 28 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 9 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.19, local search 0.16 (+-0.09); LR-QAOA 0.71 -> ahead of the best classical heuristic; QAOA COBYLA 0.88 -> ahead of it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.57, local search 0.86 (+-0.08); LR-QAOA 0.99 -> ahead of the best classical heuristic; QAOA COBYLA 1.00 -> ahead of it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e14_eval_budget_8
+  [STATUS] OK  [14.0 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 188 QAOA groups, 272 QAOA runs, 1344 objective evaluations, 90 classical records
+    |   measured wall-clock: 14 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 6 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.77 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 0.99 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 188 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e15_stress_layers_empty
+  [STATUS] OK  [18.5 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 152 QAOA groups, 236 QAOA runs, 6230 objective evaluations, 90 classical records
+    |   measured wall-clock: 19 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 6 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.71 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.88 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 0.99 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 152 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+##### e16_layers_2_3
+  [STATUS] OK  [17.9 s]
+    | TASK 04 RESULT: local noiseless QAOA benchmark (mode 'small'): 18 instances, 176 QAOA groups, 260 QAOA runs, 6576 objective evaluations, 90 classical records
+    |   measured wall-clock: 18 s in this run (18 instances computed, 0 loaded from the checkpoint results/task04_checkpoint_small.json.gz); calibration 6 s
+    |   QAOA methods at n = 12 (mean over 2 cases; per shot unless stated; optimisers from their given start; noiseless):
+    |   interpretation (computed from these results):
+    |     equal: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.70, local search 0.70 (+-0.29); LR-QAOA 0.80 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 0.87 -> level with (within sampling error) it.
+    |     cpu_gpu: vs classical, 1000 candidates each, probability of containing a split within 5 %: simulated annealing 0.60, local search 1.00 (+-0.20); LR-QAOA 1.00 -> level with (within sampling error) the best classical heuristic; QAOA COBYLA 1.00 -> level with (within sampling error) it.
+    |     14 instance(s): QAOA not run (case not in RUN['quantum_cases']); classical baselines only
+    |   failures: 0 (none)
+    qaoa groups: 176 | cases with QAOA: ['2 main/2 equ', '2 main/CPU +', '9 priority/2 equ', '9 priority/CPU +'] | reused 0 computed 18
+ALL_DONE

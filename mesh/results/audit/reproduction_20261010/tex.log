@@ -1,0 +1,29 @@
+note: using only cached resource files
+note: Running TeX ...
+warning: main.tex:70: Underfull \vbox (badness 6157) has occurred while \output is active
+warning: main.tex:91: Underfull \hbox (badness 1418) in paragraph at lines 86--91
+warning: main.tex:91: Underfull \hbox (badness 1163) in paragraph at lines 86--91
+warning: main.tex:95: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:133: Underfull \hbox (badness 1194) in paragraph at lines 132--133
+warning: main.tex:157: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:181: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:181: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:183: Underfull \hbox (badness 1215) in paragraph at lines 182--183
+warning: main.tex:187: Underfull \hbox (badness 1448) in paragraph at lines 186--187
+note: Rerunning TeX because "main.aux" changed ...
+warning: main.tex:70: Underfull \vbox (badness 6157) has occurred while \output is active
+warning: main.tex:91: Underfull \hbox (badness 1418) in paragraph at lines 86--91
+warning: main.tex:91: Underfull \hbox (badness 1163) in paragraph at lines 86--91
+warning: main.tex:95: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:133: Underfull \hbox (badness 1194) in paragraph at lines 132--133
+warning: main.tex:157: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:162: Underfull \hbox (badness 1067) in paragraph at lines 161--162
+warning: main.tex:181: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:181: Underfull \vbox (badness 10000) has occurred while \output is active
+warning: main.tex:183: Underfull \hbox (badness 1215) in paragraph at lines 182--183
+warning: main.tex:187: Underfull \hbox (badness 1448) in paragraph at lines 186--187
+warning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details.
+note: Running xdvipdfmx ...
+note: Writing `main.pdf` (3.4804277420043945 MiB)
+note: Writing `main.log` (19.9814453125 KiB)
+note: Skipped writing 2 intermediate files (use --keep-intermediates to keep them)

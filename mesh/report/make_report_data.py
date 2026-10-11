@@ -115,7 +115,7 @@ fig.savefig(os.path.join(HERE, "fig_results_preview.png"), dpi=250)
 t = S04["workload"]; tests = S04["tests"]
 macros = {
     "NQAOAruns": f"{t['qaoa_runs']:,}".replace(",", "\\,"), "NEvals": f"{t['objective_evaluations']:,}".replace(",", "\\,"),
-    "NLargeRuns": "2\\,928", "VQZYequal": pct(vq(SCEN[0], "varQITE ZY (paper, all pairs)", "p_near")),
+    "NLargeRuns": f"{len(lrows):,}".replace(",", "\\,"), "NLargeInstances": str(len(ck)), "VQZYequal": pct(vq(SCEN[0], "varQITE ZY (paper, all pairs)", "p_near")),
     "COBYLAequal": pct(summary(SCEN[0], "QAOA COBYLA", 2)["p_near"]), "LRgainEqual": f"{summary(SCEN[0], 'LR-QAOA', 2)['p_near'] / u[0]['p_near']:.1f}",
     "LRgainShare": f"{summary(SCEN[1], 'LR-QAOA', 2)['p_near'] / u[1]['p_near_target_share_sampler']:.1f}",
     "LRgainUniformCPU": f"{summary(SCEN[1], 'LR-QAOA', 2)['p_near'] / u[1]['p_near']:.0f}",
@@ -158,6 +158,18 @@ with open(os.path.join(HERE, "table_ionq.tex"), "w") as f:
         f.write(f"{label} & {cs[0]['two_qubit_gates']} & " + " & ".join(f"{pct(c['predicted']['p_opt'])} & {pct(c['predicted']['p_near'])}" for c in cs) + " \\\\\n")
     f.write("}\n")
 macros.update(NIonQ=str(sum(len(s["circuits"]) for s in BATCH["scenarios"])))
+# meshes (frozen data files), the cross-platform check and the device-choice plans (Task 03b, saved as JSON)
+import glob
+triangles = [len(np.load(path)["triangles"]) for path in sorted(glob.glob(os.path.join(HERE, "..", "data", "frozen_meshes", "*_seed7.npz")))]
+fp_mac = json.load(open(os.path.join(LARGE, "fingerprints_mac_arm64.json")))["meshes"]
+fp_linux = json.load(open(os.path.join(LARGE, "fingerprints_linux_x86_64.json")))["meshes"]
+POOL = json.load(open(os.path.join(RES, "hpc_pool_goals_seed7.json")))
+macros.update(TriMin=f"{min(triangles):,}".replace(",", "\\,"), TriMax=f"{max(triangles):,}".replace(",", "\\,"),
+              MeshDiffer=str(sum(fp_mac[k] != fp_linux.get(k) for k in fp_mac)), MeshTotal=str(len(fp_mac)), PoolDevices=str(len(POOL["devices"])))
+for goal, tag in (("fastest", "Fast"), ("overnight", "Night"), ("lowest energy", "Eco")):
+    macros[f"Pool{tag}Time"], macros[f"Pool{tag}Energy"] = f"{POOL['plans'][goal]['time_h']:.1f}", f"{POOL['plans'][goal]['energy_kwh']:.1f}"
+macros["PoolNaiveTime"], macros["PoolNaiveEnergy"] = f"{POOL['no_planning']['time_h']:.1f}", f"{POOL['no_planning']['energy_kwh']:.1f}"
+macros["PoolNightLimit"] = f"{POOL['overnight_hours']:g}"
 with open(os.path.join(HERE, "numbers.tex"), "w") as f:
     for k, v in macros.items():
         f.write(f"\\newcommand{{\\{k}}}{{{v}}}\n")

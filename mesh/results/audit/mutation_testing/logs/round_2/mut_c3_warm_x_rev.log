@@ -1,0 +1,11 @@
+[load small: 435.3 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 950 in <module>: assert int(np.argmax(recovered)) == target, "mixer B recovery returns the wrong bitstring"
+  -> CRASH AssertionError: mixer B recovery returns the wrong bitstring
+[STATUS] CRASH AssertionError: mixer B recovery returns the wrong bitstring  [121.3 s]
+  TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+  TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+  TEST CVaR estimator: passed
+  TEST count-key decoder (rightmost bit = region 0): passed
+  failures: []

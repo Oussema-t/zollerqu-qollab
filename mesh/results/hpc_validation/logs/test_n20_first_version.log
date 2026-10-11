@@ -1,0 +1,25 @@
+cell7:291: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell9:126: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell13:228: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell17:442: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell17:522: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell17:548: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+cell19:194: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+[   40.2 s] notebook cells loaded (frozen regions: {'loaded': 4, 'created': 0}); LR deltas 2 equal devices: (0.26, 0.2); CPU + GPU (GPU 4x): (0.9600000000000001, 0.5499999999999999)
+[   40.3 s] 2 main seed 7 2 equal devices: optimum 0.182480 (2 state(s)), 2 states within 5 %
+[   41.5 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 9.818e-05, P(optimum) 9.818e-05, 0 s
+[   41.8 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 1.707e-05, P(optimum) 1.707e-05, 0 s
+[   42.2 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.131e-05, P(optimum) 1.131e-05, 0 s
+[   42.6 s] 2 main seed 7 CPU + GPU (GPU 4x): optimum 0.080143 (1 state(s)), 1 states within 5 %
+[   44.0 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 2.674e-04, P(optimum) 2.674e-04, 0 s
+[   44.5 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 2.065e-04, P(optimum) 2.065e-04, 0 s
+[   45.0 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.200e-04, P(optimum) 1.200e-04, 0 s
+[   45.2 s] 9 priority seed 7 2 equal devices: optimum 0.068917 (2 state(s)), 2 states within 5 %
+[   46.3 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 1.033e-04, P(optimum) 1.033e-04, 0 s
+[   46.7 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 1.577e-05, P(optimum) 1.577e-05, 0 s
+[   47.1 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 9.469e-06, P(optimum) 9.469e-06, 0 s
+[   47.3 s] 9 priority seed 7 CPU + GPU (GPU 4x): optimum 0.051557 (1 state(s)), 1 states within 5 %
+[   48.4 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 2.506e-04, P(optimum) 2.506e-04, 0 s
+[   48.8 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 9.733e-05, P(optimum) 9.733e-05, 0 s
+[   49.2 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.204e-05, P(optimum) 1.204e-05, 0 s
+[   49.3 s] all instances done

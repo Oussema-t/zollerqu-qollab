@@ -10,7 +10,8 @@
  "QnGainShareEq": "1\\,204",
  "QnCobylaHitEq": "0.019",
  "QnLRHitEq": "0.0098",
- "QnRandomHitEq": "0",
+ "QnRandomUniformHitEq": "$6{\\times}10^{-4}$",
+ "QnRandomShareHitEq": "$6{\\times}10^{-4}$",
  "QnSimulatedHitEq": "10",
  "QnLocalHitEq": "5.0",
  "QnSpectralHitEq": "50",
@@ -25,7 +26,8 @@
  "QnGainShareCpu": "0.7",
  "QnCobylaHitCpu": "0.46",
  "QnLRHitCpu": "0.2",
- "QnRandomHitCpu": "1.3",
+ "QnRandomUniformHitCpu": "$3{\\times}10^{-4}$",
+ "QnRandomShareHitCpu": "1.0",
  "QnSimulatedHitCpu": "43",
  "QnLocalHitCpu": "45",
  "QnSpectralHitCpu": "100",
@@ -35,7 +37,10 @@
  "QnNearStatesCpu": "1--3",
  "QnBestFixedEqName": "paper default 0.6/0.3",
  "QnSimMinutes": "6",
- "QnInstanceMinutes": "6",
+ "QnInstanceMinutes": "8",
  "QnEnumSeconds": "5",
- "QnNormDev": "1.7{\\times}10^{-6}"
+ "QnNormDev": "1.7{\\times}10^{-6}",
+ "QnValidationMaxDiff": "1.8{\\times}10^{-8}",
+ "QnValidationSizes": "12, 16, 20",
+ "QnAngleSpread": "0.15"
 }

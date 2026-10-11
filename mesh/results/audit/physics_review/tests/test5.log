@@ -1,0 +1,65 @@
+1. many-layer LR-QAOA on real instances (direction of the implemented evolution)
+   1 control / 2 equal devices: E_min=0.1958 E_mean=1.3492 E_max=10.000
+      p=1: P(opt)=0.0008 <E>=1.322 | flipped beta: P(max)=0.0206 <E>=3.943
+      p=2: P(opt)=0.0022 <E>=0.793 | flipped beta: P(max)=0.0381 <E>=3.551
+      p=5: P(opt)=0.0055 <E>=0.582 | flipped beta: P(max)=0.0419 <E>=4.971
+      p=20: P(opt)=0.0219 <E>=0.501 | flipped beta: P(max)=0.4038 <E>=7.943
+      p=100: P(opt)=0.2013 <E>=0.301 | flipped beta: P(max)=0.9360 <E>=9.820
+      p=400: P(opt)=0.5517 <E>=0.202 | flipped beta: P(max)=0.9804 <E>=9.888
+   1 control / CPU + GPU (GPU 4x): E_min=0.1576 E_mean=2.2708 E_max=10.189
+      p=1: P(opt)=0.0009 <E>=1.086 | flipped beta: P(max)=0.0180 <E>=3.956
+      p=2: P(opt)=0.0012 <E>=0.990 | flipped beta: P(max)=0.0287 <E>=4.421
+      p=5: P(opt)=0.0040 <E>=0.562 | flipped beta: P(max)=0.1455 <E>=6.561
+      p=20: P(opt)=0.0085 <E>=0.422 | flipped beta: P(max)=0.8730 <E>=9.943
+      p=100: P(opt)=0.0255 <E>=0.329 | flipped beta: P(max)=0.9993 <E>=10.188
+      p=400: P(opt)=0.0912 <E>=0.261 | flipped beta: P(max)=1.0000 <E>=10.189
+   2 main / 2 equal devices: E_min=0.2557 E_mean=1.4569 E_max=10.000
+      p=1: P(opt)=0.0014 <E>=0.829 | flipped beta: P(max)=0.0440 <E>=3.592
+      p=2: P(opt)=0.0016 <E>=0.758 | flipped beta: P(max)=0.0502 <E>=4.035
+      p=5: P(opt)=0.0019 <E>=0.754 | flipped beta: P(max)=0.1263 <E>=5.709
+      p=20: P(opt)=0.0047 <E>=0.623 | flipped beta: P(max)=0.5981 <E>=8.758
+      p=100: P(opt)=0.0272 <E>=0.503 | flipped beta: P(max)=0.9867 <E>=9.971
+      p=400: P(opt)=0.1434 <E>=0.360 | flipped beta: P(max)=1.0000 <E>=10.000
+   2 main / CPU + GPU (GPU 4x): E_min=0.1426 E_mean=2.3136 E_max=10.189
+      p=1: P(opt)=0.0006 <E>=1.364 | flipped beta: P(max)=0.0059 <E>=3.528
+      p=2: P(opt)=0.0007 <E>=1.260 | flipped beta: P(max)=0.0092 <E>=3.847
+      p=5: P(opt)=0.0017 <E>=0.780 | flipped beta: P(max)=0.0535 <E>=5.512
+      p=20: P(opt)=0.0043 <E>=0.500 | flipped beta: P(max)=0.9418 <E>=10.080
+      p=100: P(opt)=0.0126 <E>=0.356 | flipped beta: P(max)=0.9993 <E>=10.188
+      p=400: P(opt)=0.0402 <E>=0.281 | flipped beta: P(max)=0.9999 <E>=10.189
+   6 three sources / 2 equal devices: E_min=0.2508 E_mean=1.4088 E_max=10.000
+      p=1: P(opt)=0.0016 <E>=0.979 | flipped beta: P(max)=0.0338 <E>=3.949
+      p=2: P(opt)=0.0019 <E>=0.767 | flipped beta: P(max)=0.0098 <E>=4.065
+      p=5: P(opt)=0.0029 <E>=0.644 | flipped beta: P(max)=0.0812 <E>=5.372
+      p=20: P(opt)=0.0091 <E>=0.561 | flipped beta: P(max)=0.5154 <E>=8.443
+      p=100: P(opt)=0.0902 <E>=0.389 | flipped beta: P(max)=0.9722 <E>=9.928
+      p=400: P(opt)=0.4857 <E>=0.273 | flipped beta: P(max)=0.9966 <E>=9.976
+   6 three sources / CPU + GPU (GPU 4x): E_min=0.1136 E_mean=2.2945 E_max=10.189
+      p=1: P(opt)=0.0006 <E>=1.412 | flipped beta: P(max)=0.0057 <E>=3.407
+      p=2: P(opt)=0.0007 <E>=1.310 | flipped beta: P(max)=0.0089 <E>=3.703
+      p=5: P(opt)=0.0017 <E>=0.835 | flipped beta: P(max)=0.0541 <E>=5.305
+      p=20: P(opt)=0.0043 <E>=0.529 | flipped beta: P(max)=0.9133 <E>=10.026
+      p=100: P(opt)=0.0130 <E>=0.373 | flipped beta: P(max)=0.9992 <E>=10.187
+      p=400: P(opt)=0.0477 <E>=0.300 | flipped beta: P(max)=0.9999 <E>=10.189
+2. relaxation warm start degeneracy
+   1 control / 2 equal devices: c = [0.5]; max |P_ws(relax, mixer A) - P_standard QAOA| over 20 random angle sets = 5.90e-16; max |P_start - P('random with target share')| = 4.88e-19; max |P_start - uniform| = 4.88e-19
+   1 control / CPU + GPU (GPU 4x): c = [0.8]; max |P_ws(relax, mixer A) - P_standard QAOA| over 20 random angle sets = 2.07e-01; max |P_start - P('random with target share')| = 6.94e-17; max |P_start - uniform| = 6.85e-02
+   2 main / 2 equal devices: c = [0.5]; max |P_ws(relax, mixer A) - P_standard QAOA| over 20 random angle sets = 5.00e-16; max |P_start - P('random with target share')| = 4.88e-19; max |P_start - uniform| = 4.88e-19
+   2 main / CPU + GPU (GPU 4x): c = [0.8]; max |P_ws(relax, mixer A) - P_standard QAOA| over 20 random angle sets = 1.45e-01; max |P_start - P('random with target share')| = 3.05e-16; max |P_start - uniform| = 6.85e-02
+3. beta periodicity (pi/2) for the Z2-symmetric scenario, and what the 'success-calibrated' schedule is
+   equal, p=1: max |P(gamma, beta) - P(gamma, beta - pi/2)| = 7.05e-19
+   equal, p=2: max |P(gamma, beta) - P(gamma, beta - pi/2)| = 5.90e-17
+   cpu_gpu (fields), p=1: max |P(beta) - P(beta - pi/2)| = 9.83e-02 (not periodic, as expected); beta period pi: 2.78e-17
+   equal 'success-calibrated' (1.74, 1.45), p=1: betas [1.45] are equivalent to [-0.121] (mod pi/2); gammas [1.74]
+   equal 'success-calibrated' (1.74, 1.45), p=2: betas [1.45, 0.725] are equivalent to [-0.121, 0.725] (mod pi/2); gammas [0.87, 1.74]
+4. normalisation: max|J| vs max|h| and the 'paper default' schedule
+   2 equal devices: mean max|J| = 0.3222, mean max|h| = 0.0000, scale used by the cell = max of both
+      near_cell_p1=0.0018, near_maxJ_p1=0.0018, near_cal_p1=0.0023, ratio_cell_p1=0.8534, ratio_maxJ_p1=0.8534, near_cell_p2=0.0043, near_maxJ_p2=0.0043, near_cal_p2=0.0027, ratio_cell_p2=0.9209, ratio_maxJ_p2=0.9209
+   CPU + GPU (GPU 4x): mean max|J| = 0.1203, mean max|h| = 0.6942, scale used by the cell = max of both
+      near_cell_p1=0.0026, near_maxJ_p1=0.0030, near_cal_p1=0.0062, ratio_cell_p1=0.9297, ratio_maxJ_p1=0.7747, near_cell_p2=0.0034, near_maxJ_p2=0.0084, near_cal_p2=0.0078, ratio_cell_p2=0.9398, ratio_maxJ_p2=0.8236
+5. recovery angles are a stationary point of <E> (mixer B)
+   2 equal devices p=1: <E>(recovery) = 0.2905 (E spectral 0.2905, E_min 0.2557); |grad| = 0.00e+00; Hessian eigenvalues [5.346, 10.434]
+   2 equal devices p=2: <E>(recovery) = 0.2905 (E spectral 0.2905, E_min 0.2557); |grad| = 0.00e+00; Hessian eigenvalues [-0.0, -0.0, 7.129, 15.65]
+   CPU + GPU (GPU 4x) p=1: <E>(recovery) = 0.1426 (E spectral 0.1426, E_min 0.1426); |grad| = 0.00e+00; Hessian eigenvalues [1.004, 7.192]
+   CPU + GPU (GPU 4x) p=2: <E>(recovery) = 0.1426 (E spectral 0.1426, E_min 0.1426); |grad| = 0.00e+00; Hessian eigenvalues [-0.0, 0.0, 1.32, 10.945]
+exit 0

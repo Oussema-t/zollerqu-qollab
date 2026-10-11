@@ -1,0 +1,16 @@
+[load small: 432.9 s]
+[STATUS] OK  [142.1 s]
+  TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+  TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+  TEST CVaR estimator: passed
+  TEST count-key decoder (rightmost bit = region 0): passed
+  TEST Qiskit circuit = numpy simulator (standard and three warm-start circuits): passed, max probability error 2.4e-18, 8.9e-16
+  TEST sign convention: LR-QAOA mean cost below the uniform mean: 8/8 instance-layer pairs; mixer-sign flip makes it worse than uniform on the example instances
+  TEST p = 0 control is uniform; exact and sampled values consistent: passed
+  TEST exact optimum and degeneracy equal Task 03 (same lambda): 9 instances compared; the others use a different lambda and were re-enumerated
+  TEST symmetry reduction keeps the optimum and is used only at alpha = 0.5: passed (8 reduced groups)
+  TEST same evaluation budget for every optimiser: budget 40; evaluations used (min-max): COBYLA 19-40, Nelder-Mead 40-40, Powell 40-40, L-BFGS-B 21-40, SPSA 40-40
+  TEST classical baselines use the same Ising objective: passed (90 records)
+  TEST reproducible with fixed seeds (optimiser run, annealing run): passed
+  TEST no missing or non-finite results: passed (272 runs)
+  failures: []

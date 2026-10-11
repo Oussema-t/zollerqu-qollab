@@ -1,0 +1,17 @@
+[load small: 434.6 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 1035 in <module>: assert abs(record["best_cost"] - state_cost(task04_ising_cases[key[:4]], record["best_state"])) < T4_TOL, "classical cost mismatch"
+  -> CRASH AssertionError: classical cost mismatch
+[STATUS] CRASH AssertionError: classical cost mismatch  [121.0 s]
+  TEST mixer unitary, norm kept, three code paths agree: passed (11 and 12 qubits)
+  TEST warm-start identities (mixer A eigenstate, mixer B recovery at eps = 0.25): passed
+  TEST CVaR estimator: passed
+  TEST count-key decoder (rightmost bit = region 0): passed
+  TEST Qiskit circuit = numpy simulator (standard and three warm-start circuits): passed, max probability error 5.5e-18, 1.6e-16
+  TEST sign convention: LR-QAOA mean cost below the uniform mean: 8/8 instance-layer pairs; mixer-sign flip makes it worse than uniform on the example instances
+  TEST p = 0 control is uniform; exact and sampled values consistent: passed
+  TEST exact optimum and degeneracy equal Task 03 (same lambda): 9 instances compared; the others use a different lambda and were re-enumerated
+  TEST symmetry reduction keeps the optimum and is used only at alpha = 0.5: passed (8 reduced groups)
+  TEST same evaluation budget for every optimiser: budget 40; evaluations used (min-max): COBYLA 19-40, Nelder-Mead 40-40, Powell 40-40, L-BFGS-B 24-40, SPSA 40-40
+  failures: []

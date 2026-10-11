@@ -1,0 +1,2 @@
+CFG = dict(workdir="wd_mut_c6_nonenum_outcome_rev", mode="small", run=dict(quantum_cases=["2 main", "9 priority"]), overrides=dict(eval_budget=40, random_starts=1, lr_grid_gamma=np.linspace(0.05, 1.5, 12), lr_grid_beta=np.linspace(0.1, 1.2, 6), classical_repeats=5, use_checkpoint=False, calibration_seeds=[101], sa_calibration_repeats=3),
+           mutations=[('share_b = float(inst["model"]["a_tilde"] @ state_index_to_x(state, inst["n"]))', 'share_b = float(inst["model"]["a_tilde"] @ state_index_to_x(state, inst["n"])[::-1])', 1)])

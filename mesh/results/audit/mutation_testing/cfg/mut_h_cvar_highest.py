@@ -1,0 +1,2 @@
+CFG = dict(workdir="wd_mut_h_cvar_highest", mode="small", run=dict(quantum_cases=["2 main", "9 priority"]), overrides=dict(eval_budget=40, random_starts=1, lr_grid_gamma=np.linspace(0.05, 1.5, 12), lr_grid_beta=np.linspace(0.1, 1.2, 6), classical_repeats=5, use_checkpoint=False, calibration_seeds=[101], sa_calibration_repeats=3),
+           mutations=[('return float(ordered[: int(np.ceil(fraction * ordered.size - 1e-9))].mean())', 'return float(ordered[::-1][: int(np.ceil(fraction * ordered.size - 1e-9))].mean())', 1)])

@@ -25,7 +25,7 @@ CLASSICAL = [("Random, uniform", "uniform random sampling", "uniform_p_near"),
              ("Simulated annealing", "simulated annealing", None),
              ("Local search", "local search (restarts)", None),
              ("Spectral bisection", "spectral bisection", None)]
-records = [json.loads(path.read_text()) for path in sorted((ROOT / "results" / f"hpc_n{N}").glob("*.json"))]
+records = [json.loads(path.read_text()) for path in sorted((ROOT / "results" / f"hpc_n{N}").glob("*_seed*_*.json"))]   # instance files only
 assert records, "no 29-qubit results yet"
 by_scenario = {tag: [r for r in records if r["scenario"] == name] for tag, name in SCENARIOS.items()}
 roles = ["best fixed schedule", "transferred trained angles", "continuity"]
@@ -111,9 +111,12 @@ for scen, short in (("equal", "Eq"), ("cpu_gpu", "Cpu")):
     num[f"QnGainShare{short}"] = f"{share_gain:.1f}" if share_gain < 10 else thin(round(share_gain))
     num[f"QnCobylaHit{short}"] = pct(mean(q["hit_near"] for q in quantum(scen, "transferred trained angles")))
     num[f"QnLRHit{short}"] = pct(mean(q["hit_near"] for q in quantum(scen, "continuity")))
-    for label, method, _ in CLASSICAL:
-        key = label.split()[0].replace(",", "")
-        num[f"Qn{key}Hit{short}"] = pct(mean(r["classical"][method]["hit_near"] for r in rs))
+    for label, method, per_shot_key in CLASSICAL:                # same definition as the table (exact for the samplers)
+        key = {"Random, uniform": "RandomUniform", "Random, target share": "RandomShare"}.get(label, label.split()[0])
+        if per_shot_key:
+            num[f"Qn{key}Hit{short}"] = pct(mean(1 - (1 - r["per_shot_random"][per_shot_key]) ** 1000 for r in rs))
+        else:
+            num[f"Qn{key}Hit{short}"] = pct(mean(r["classical"][method]["hit_near"] for r in rs))
     num[f"QnBalancedOpt{short}"] = str(sum(r["optimum_balanced"] for r in rs))
     num[f"QnNoiseBest{short}"] = sci(mean(q["p_near_noise_estimate"] for q in best))
     num[f"QnFidBest{short}"] = sci(best[0]["noise_fidelity_estimate"])
@@ -123,7 +126,58 @@ num["QnSimMinutes"] = f"{mean(sum(q['simulation_seconds'] for q in r['quantum'])
 num["QnInstanceMinutes"] = f"{mean(r['seconds'] for r in records) / 60:.0f}"
 num["QnEnumSeconds"] = f"{mean(r['enumeration_seconds'] for r in records):.0f}"
 num["QnNormDev"] = sci(max(abs(q["norm"] - 1) for r in records for q in r["quantum"]))
+# validation of the 29-qubit simulator against the notebook's float64 simulator (results/hpc_validation, written in test mode)
+validation = {}
+for path in sorted((ROOT / "results" / "hpc_validation").glob("hpc_n*/*.json")):
+    v = json.loads(path.read_text())
+    validation[v["n"]] = max(validation.get(v["n"], 0.0), max(q["test_max_probability_difference"] for q in v["quantum"]))
+assert sorted(validation) == [12, 16, 20], f"validation files missing: {sorted(validation)}"
+num["QnValidationMaxDiff"] = sci(max(validation.values()))
+num["QnValidationSizes"] = ", ".join(str(n) for n in sorted(validation))
+choice_file = json.loads((ROOT / "scripts" / "q29_choice.json").read_text())
+num["QnAngleSpread"] = f"{max(max(c['cobyla_angles_n20'][str(c['trained']['p'])]['std']) for c in choice_file['choice'].values()):.2f}"
 (ROOT / "report" / "numbers_q29.tex").write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in num.items()))
+
+# ---------------------------------------------------------------- flat summary + rerun check (saved for later display) ----
+import csv
+rows_csv = []
+for r in records:
+    base = dict(case=r["case"], seed=r["seed"], scenario=r["scenario"], alpha=r["alpha"], e_min=r["e_min"], n_optimal=r["n_optimal"], n_near=r["n_near"])
+    for label, method, key in CLASSICAL:
+        c = r["classical"][method]
+        per_shot = r["per_shot_random"][key] if key else ""
+        hit = 1 - (1 - per_shot) ** 1000 if key else c["hit_near"]
+        rows_csv.append(dict(base, kind="classical", method=label, p=0, two_qubit_gates=0, evaluations=c["evaluations"], per_shot_p_near=per_shot,
+                             hit_near_1000=hit, gap_best_percent=100 * (c["mean_best_cost"] / r["e_min"] - 1), p_opt="", mean_cost=""))
+    for q in r["quantum"]:
+        rows_csv.append(dict(base, kind="quantum", method=q["label"], p=q["p"], two_qubit_gates=q["two_qubit_gates"], evaluations=q["shots"],
+                             per_shot_p_near=q["p_near"], hit_near_1000=q["hit_near"], gap_best_percent=100 * (q["sampled_best_cost"] / r["e_min"] - 1),
+                             p_opt=q["p_opt"], mean_cost=q["mean_cost"]))
+with open(ROOT / "results" / f"hpc_n{N}" / "summary_q29.csv", "w", newline="") as handle:
+    writer = csv.DictWriter(handle, fieldnames=list(rows_csv[0]))
+    writer.writeheader()
+    writer.writerows(rows_csv)
+first = {(r["case"], r["seed"], r["scenario"]): r for r in
+         (json.loads(path.read_text()) for path in sorted((ROOT / "results" / f"hpc_n{N}" / "first_run").glob("*.json")))}
+if first:
+    diffs = {}
+    for r in records:
+        old_r = first.get((r["case"], r["seed"], r["scenario"]))
+        if old_r is None:
+            continue
+        pairs = [("e_min", r["e_min"], old_r["e_min"])]
+        pairs += [(f"classical {m} hit_near", c["hit_near"], old_r["classical"][m]["hit_near"]) for m, c in r["classical"].items()]
+        for q, qo in zip(r["quantum"], old_r["quantum"]):
+            pairs += [(f"quantum {k}", q[k], qo[k]) for k in ("p_opt", "p_near", "mean_cost", "p_balanced", "sampled_best_cost", "best_state")]
+        for name, a, b in pairs:
+            key = name.split(" hit")[0] if name.startswith("classical") else name
+            diffs[key] = max(diffs.get(key, 0.0), abs(float(a) - float(b)))
+    check = dict(instances_compared=sum((r["case"], r["seed"], r["scenario"]) in first for r in records), max_abs_difference=diffs,
+                 identical=all(v == 0 for v in diffs.values()),
+                 note="first run: results/hpc_n29/first_run (metrics only); rerun: results/hpc_n29 (metrics + raw arrays), same seeds and code path")
+    (ROOT / "results" / f"hpc_n{N}" / "rerun_check.json").write_text(json.dumps(check, indent=1))
+    print(f"rerun check: {check['instances_compared']} instances, identical = {check['identical']}, "
+          f"largest difference {max(diffs.values()):.1e}")
 (ROOT / "report" / "q29_numbers.json").write_text(json.dumps(num, indent=1))
 
 

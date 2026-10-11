@@ -1,0 +1,44 @@
+[load small: 128.3 s]
+##### mut_e1_swap_AB_setup_only
+    multi.py:51 in <module>
+    cell line 945 in <module>: assert warm_errors[flavour] < 1e-9, f"warm-start circuit disagrees ({flavour}, {scenario})"
+  [STATUS] CRASH AssertionError: warm-start circuit disagrees (relaxation, mixer A, 2 equal devices)  [52.5 s]
+##### mut_e2_swap_AB_consistent
+    multi.py:51 in <module>
+    cell line 948 in <module>: assert np.isclose(recovered.max(), 1.0), "mixer B recovery does not return a single bitstring"
+  [STATUS] CRASH AssertionError: mixer B recovery does not return a single bitstring  [40.6 s]
+##### mut_f_h_red_no_J
+    multi.py:51 in <module>
+    cell line 1042 in <module>: stored = qaoa_results[example_key + ("QAOA", "COBYLA", T4_LAYERS[0])]
+  [STATUS] CRASH KeyError: ('2 main', 12, 7, '2 equal devices', 'QAOA', 'COBYLA', 1)  [34.4 s]
+    task04_failures: ["{'key': '2 main|12|7|2 equal devices', 'error': 'AssertionError: reduction is wrong'}", "{'key': '9 priority|12|7|2 equal devices', 'error': 'AssertionError: reduction is wrong'}"] n = 2
+##### mut_g1_sa_delta_sign
+    multi.py:51 in <module>
+    cell line 1035 in <module>: assert abs(record["best_cost"] - state_cost(task04_ising_cases[key[:4]], record["best_state"])) < T4_TOL, "classical cost mismatch"
+  [STATUS] CRASH AssertionError: classical cost mismatch  [48.5 s]
+##### mut_g2_sa_accept_uphill
+  [STATUS] OK  [78.8 s]
+##### mut_g3_sa_local_update_wrong
+    multi.py:51 in <module>
+    cell line 1034 in <module>: assert abs(record["best_cost"] - state_cost(task04_ising_cases[key[:4]], record["best_state"])) < T4_TOL, "classical cost mismatch"
+  [STATUS] CRASH AssertionError: classical cost mismatch  [34.2 s]
+##### mut_h_cvar_highest
+    multi.py:51 in <module>
+    cell line 921 in <module>: assert np.isclose(cvar_of_samples(cvar_sample, 1.0), cvar_sample.mean()) and np.isclose(cvar_of_samples(cvar_sample, 0.1), np.sort(cvar_sample)[:100].mean())
+  [STATUS] CRASH AssertionError:   [32.8 s]
+##### mut_i1_balance_no_4
+    multi.py:51 in <module>
+    cell line 694 in <module>: calibration_instances[scenario] = [t4_build_instance(regions, case_name, TASK04["calibration_n"], seed, scenario)
+    cell line 260 in t4_build_instance: assert np.max(np.abs(energies - ising_energies_all(J, h, const, n))) < T4_TOL
+  [STATUS] CRASH AssertionError:   [7.4 s]
+##### mut_i2_relax_no_4
+  [STATUS] OK  [40.3 s]
+##### mut_j_cost_phase_sign
+    multi.py:51 in <module>
+    cell line 938 in <module>: assert error < 1e-9, f"Qiskit and numpy disagree for {scenario}: {error}"
+  [STATUS] CRASH AssertionError: Qiskit and numpy disagree for 2 equal devices: 0.0007253639940710819  [38.2 s]
+##### mut_k_rz_h_factor
+    multi.py:51 in <module>
+    cell line 938 in <module>: assert error < 1e-9, f"Qiskit and numpy disagree for {scenario}: {error}"
+  [STATUS] CRASH AssertionError: Qiskit and numpy disagree for CPU + GPU (GPU 4x): 0.04034051580868762  [34.8 s]
+ALL_DONE

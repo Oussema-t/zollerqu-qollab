@@ -1,0 +1,52 @@
+[   52.4 s] notebook cells loaded (frozen regions: {'loaded': 4, 'created': 0}); LR deltas 2 equal devices: (0.26, 0.2); CPU + GPU (GPU 4x): (0.9600000000000001, 0.5499999999999999)
+/root/mesh/scripts/run_29_qubits.py:321: DeprecationWarning: This process (pid=4375) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+[   52.4 s] started 2_main_seed7_equal.json
+[   52.4 s] started 2_main_seed7_cpu_gpu.json
+[   52.4 s] started 9_priority_seed7_equal.json
+[   52.4 s] started 9_priority_seed7_cpu_gpu.json
+[   58.3 s] 9 priority seed 7 CPU + GPU (GPU 4x): optimum 0.042434 (1 state(s)), 1 states within 5 %
+[   58.4 s] 2 main seed 7 2 equal devices: optimum 0.135999 (2 state(s)), 4 states within 5 %
+[   58.4 s] 2 main seed 7 CPU + GPU (GPU 4x): optimum 0.068456 (2 state(s)), 3 states within 5 %
+[   58.5 s] 9 priority seed 7 2 equal devices: optimum 0.066874 (2 state(s)), 4 states within 5 %
+[  256.7 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 2.120e-06, P(optimum) 2.120e-06, 188 s
+[  258.0 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 1.689e-05, P(optimum) 9.660e-06, 189 s
+[  259.8 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 5.580e-06, P(optimum) 2.644e-06, 191 s
+[  261.7 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 9.643e-06, P(optimum) 4.741e-06, 194 s
+[  339.7 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 1.377e-06, P(optimum) 1.377e-06, 74 s
+[  341.7 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 1.164e-05, P(optimum) 6.579e-06, 75 s
+[  343.9 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 2.091e-07, P(optimum) 9.066e-08, 75 s
+[  346.2 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 2.129e-07, P(optimum) 9.272e-08, 77 s
+[  422.4 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 5.082e-07, P(optimum) 5.082e-07, 74 s
+[  422.7 s] finished 9_priority_seed7_cpu_gpu.json (exit status 0)
+[  422.7 s] started 2_main_seed9_equal.json
+[  425.0 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 5.137e-06, P(optimum) 2.998e-06, 75 s
+[  425.4 s] finished 2_main_seed7_cpu_gpu.json (exit status 0)
+[  425.4 s] started 2_main_seed9_cpu_gpu.json
+[  427.7 s] 2 main seed 9 2 equal devices: optimum 0.127617 (2 state(s)), 2 states within 5 %
+[  428.2 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.096e-07, P(optimum) 5.316e-08, 75 s
+[  428.6 s] finished 9_priority_seed7_equal.json (exit status 0)
+[  428.6 s] started 9_priority_seed9_equal.json
+[  429.8 s] 2 main seed 9 CPU + GPU (GPU 4x): optimum 0.069919 (1 state(s)), 1 states within 5 %
+[  430.6 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.087e-07, P(optimum) 5.019e-08, 75 s
+[  430.9 s] finished 2_main_seed7_equal.json (exit status 0)
+[  430.9 s] started 9_priority_seed9_cpu_gpu.json
+[  432.3 s] 9 priority seed 9 2 equal devices: optimum 0.072758 (2 state(s)), 4 states within 5 %
+[  434.3 s] 9 priority seed 9 CPU + GPU (GPU 4x): optimum 0.053804 (1 state(s)), 3 states within 5 %
+[  620.9 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 4.301e-06, P(optimum) 4.301e-06, 184 s
+[  625.3 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 3.550e-06, P(optimum) 3.550e-06, 186 s
+[  629.1 s]   LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20): P(within 5 %) 1.164e-05, P(optimum) 5.772e-06, 188 s
+[  629.7 s]   LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20): P(within 5 %) 1.186e-05, P(optimum) 8.255e-06, 187 s
+[  702.3 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 9.597e-08, P(optimum) 9.597e-08, 74 s
+[  707.3 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 2.296e-06, P(optimum) 2.296e-06, 74 s
+[  711.7 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 7.629e-06, P(optimum) 6.452e-06, 76 s
+[  712.3 s]   QAOA + COBYLA p = 2, angles transferred from n = 20: P(within 5 %) 2.451e-07, P(optimum) 1.213e-07, 76 s
+[  782.2 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 5.390e-08, P(optimum) 5.390e-08, 73 s
+[  782.6 s] finished 2_main_seed9_equal.json (exit status 0)
+[  788.2 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.190e-06, P(optimum) 1.190e-06, 74 s
+[  788.6 s] finished 2_main_seed9_cpu_gpu.json (exit status 0)
+[  792.1 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 2.993e-06, P(optimum) 2.039e-06, 75 s
+[  792.3 s]   LR-QAOA p = 2 (scaling-table row): P(within 5 %) 1.305e-07, P(optimum) 6.476e-08, 74 s
+[  792.4 s] finished 9_priority_seed9_cpu_gpu.json (exit status 0)
+[  792.5 s] finished 9_priority_seed9_equal.json (exit status 0)
+[  792.5 s] all instances done

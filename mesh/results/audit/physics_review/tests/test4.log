@@ -1,0 +1,68 @@
+constants: EXACT_BRUTE_FORCE_MAX_QUBITS 22 LOCAL_STATEVECTOR_MAX_QUBITS 20 IONQ_SIMULATOR_MAX_QUBITS 29 shots 1000 layers [1, 2] mu 0.0
+TARGET_SHARES {'2 equal devices': 0.5, 'CPU + GPU (GPU 4x)': 0.8} DEVICE_SCENARIOS {'2 equal devices': {'CPU-A': 1.0, 'CPU-B': 1.0}, 'CPU + GPU (GPU 4x)': {'CPU': 1.0, 'GPU': 4.0}} JOB_REFERENCE_HOURS 300.0
+RUN {'region_counts': [12], 'seeds': [7], 'qaoa_layers': [1, 2], 'shots': 1000}
+instances built: 18
+A. max |lower-tri/diag of J| = 0 ; J_scaled*scale-J, h_scaled*scale-h: 5.551115123125783e-17 ; energies vs my enumeration: 8.881784197001252e-15 ; energy_scaled vs my enumeration of J_scaled,h_scaled: 4.973799150320701e-14
+   max|h| per scenario: {'2 equal devices': (0.0, 0.0), 'CPU + GPU (GPU 4x)': (0.42662645011600936, 0.8322219755826861)}
+   e_min range: 0.09421223580187939 0.27128159076752395 | #optimal states: [1, 2] | #near states: [1, 2, 4, 6]
+B. symmetry reduction
+   ('1 control', 12, 7, '2 equal devices'): reduced n=11, scale_red/scale_full=1.0000, e_max full 10.0000 red 10.0000, e_mean full 1.3492 red 1.3492, e_std full 1.0886 red 1.0886
+   ('2 main', 12, 7, '2 equal devices'): reduced n=11, scale_red/scale_full=1.0000, e_max full 10.0000 red 10.0000, e_mean full 1.4569 red 1.4569, e_std full 1.1845 red 1.1845
+   all equal-device instances: reduced energies = full energies at k<<1, optimal/near/balanced masks map, uniform bookkeeping equal: ok
+   synthetic random J,h n=2..9: max |E_full(even states) - E_reduced(J',h',const')| = 7.993605777301127e-15
+C. relaxed_solution
+   objective(binary x) - Ising energy, max over 300 random states x all instances: 1.0658141036401503e-14
+   analytic vs finite-difference gradient (relative): 6.359260895649754e-10
+   1 control        2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=0.000e+00; exact binary optimum=0.1958; L-BFGS nit=0
+   1 control        CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 1.11e-16); objective=5.683e-33; exact binary optimum=0.1576; L-BFGS nit=2
+   2 main           2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=1.233e-31; exact binary optimum=0.2557; L-BFGS nit=0
+   2 main           CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 1.11e-16); objective=2.006e-31; exact binary optimum=0.1426; L-BFGS nit=2
+   3 hard           2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=0.000e+00; exact binary optimum=0.2713; L-BFGS nit=0
+   3 hard           CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 0.00e+00); objective=0.000e+00; exact binary optimum=0.1366; L-BFGS nit=2
+   4 structural     2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=1.233e-31; exact binary optimum=0.2706; L-BFGS nit=0
+   4 structural     CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 5.04e-08); objective=7.935e-16; exact binary optimum=0.1989; L-BFGS nit=19
+   5 L uniform      2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=0.000e+00; exact binary optimum=0.1972; L-BFGS nit=0
+   5 L uniform      CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 1.11e-16); objective=2.012e-31; exact binary optimum=0.1498; L-BFGS nit=2
+   6 three sources  2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=4.930e-31; exact binary optimum=0.2508; L-BFGS nit=0
+   6 three sources  CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 0.00e+00); objective=0.000e+00; exact binary optimum=0.1136; L-BFGS nit=2
+   7 materials      2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=1.233e-31; exact binary optimum=0.1303; L-BFGS nit=0
+   7 materials      CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 2.94e-08); objective=6.173e-17; exact binary optimum=0.1395; L-BFGS nit=18
+   8 coupling       2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=1.233e-31; exact binary optimum=0.0942; L-BFGS nit=0
+   8 coupling       CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 1.46e-08); objective=2.048e-17; exact binary optimum=0.0980; L-BFGS nit=22
+   9 priority       2 equal d alpha=0.5: relaxed c min=0.500000 max=0.500000 (spread 0.00e+00); objective=1.233e-31; exact binary optimum=0.0942; L-BFGS nit=0
+   9 priority       CPU + GPU alpha=0.8: relaxed c min=0.800000 max=0.800000 (spread 1.46e-08); objective=2.048e-17; exact binary optimum=0.0980; L-BFGS nit=22
+   mu=0.7 9 priority CPU + GPU: binary equality err 2.66e-15; gradient rel err 2.58e-10; relaxed c spread 0.374
+   instances with active priority at mu=0.7: 1
+D. warm_start_setup
+   1 control        2 equal d relaxation, mixer A        c in [0.500,0.500] marg err 0.0e+00 product err 4.9e-19 | mixer A eigenstate: |U start - e^(i n beta) start| = 5.8e-17; gamma=0 leaves P unchanged: 1.3e-18
+   1 control        2 equal d rounded spectral, mixer A  c in [0.250,0.750] marg err 2.2e-16 product err 8.7e-18 | mixer A eigenstate: |U start - e^(i n beta) start| = 2.1e-16; gamma=0 leaves P unchanged: 2.1e-17
+   1 control        2 equal d rounded spectral, mixer B  c in [0.250,0.750] marg err 2.2e-16 product err 8.7e-18 | p=1 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: False, ==complement(spectral): True | p=2 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: False, ==complement(spectral): True | fields=False E(spectral)=0.1958 E(complement)=0.1958 E(recovered)=0.1958 e_min=0.1958
+   1 control        CPU + GPU relaxation, mixer A        c in [0.800,0.800] marg err 5.6e-16 product err 2.1e-17 | mixer A eigenstate: |U start - e^(i n beta) start| = 1.1e-16; gamma=0 leaves P unchanged: 1.9e-16
+   1 control        CPU + GPU rounded spectral, mixer A  c in [0.250,0.750] marg err 1.1e-16 product err 2.1e-17 | mixer A eigenstate: |U start - e^(i n beta) start| = 1.7e-16; gamma=0 leaves P unchanged: 6.9e-18
+   1 control        CPU + GPU rounded spectral, mixer B  c in [0.250,0.750] marg err 0.0e+00 product err 2.1e-17 | p=1 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: True, ==complement(spectral): False | p=2 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: True, ==complement(spectral): False | fields=True E(spectral)=0.1576 E(complement)=6.0901 E(recovered)=0.1576 e_min=0.1576
+   2 main           2 equal d relaxation, mixer A        c in [0.500,0.500] marg err 0.0e+00 product err 4.9e-19 | mixer A eigenstate: |U start - e^(i n beta) start| = 5.8e-17; gamma=0 leaves P unchanged: 1.3e-18
+   2 main           2 equal d rounded spectral, mixer A  c in [0.250,0.750] marg err 1.1e-16 product err 8.7e-18 | mixer A eigenstate: |U start - e^(i n beta) start| = 2.1e-16; gamma=0 leaves P unchanged: 1.0e-17
+   2 main           2 equal d rounded spectral, mixer B  c in [0.250,0.750] marg err 1.1e-16 product err 8.7e-18 | p=1 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: False, ==complement(spectral): True | p=2 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: False, ==complement(spectral): True | fields=False E(spectral)=0.2905 E(complement)=0.2905 E(recovered)=0.2905 e_min=0.2557
+   2 main           CPU + GPU relaxation, mixer A        c in [0.800,0.800] marg err 8.9e-16 product err 6.9e-17 | mixer A eigenstate: |U start - e^(i n beta) start| = 1.8e-16; gamma=0 leaves P unchanged: 2.8e-17
+   2 main           CPU + GPU rounded spectral, mixer A  c in [0.250,0.750] marg err 2.2e-16 product err 6.9e-18 | mixer A eigenstate: |U start - e^(i n beta) start| = 2.8e-16; gamma=0 leaves P unchanged: 1.2e-17
+   2 main           CPU + GPU rounded spectral, mixer B  c in [0.250,0.750] marg err 2.2e-16 product err 2.8e-17 | p=1 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: True, ==complement(spectral): False | p=2 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: True, ==complement(spectral): False | fields=True E(spectral)=0.1426 E(complement)=6.1141 E(recovered)=0.1426 e_min=0.1426
+   6 three sources  2 equal d relaxation, mixer A        c in [0.500,0.500] marg err 0.0e+00 product err 4.9e-19 | mixer A eigenstate: |U start - e^(i n beta) start| = 5.8e-17; gamma=0 leaves P unchanged: 1.3e-18
+   6 three sources  2 equal d rounded spectral, mixer A  c in [0.250,0.750] marg err 5.6e-17 product err 6.9e-18 | mixer A eigenstate: |U start - e^(i n beta) start| = 2.5e-16; gamma=0 leaves P unchanged: 2.1e-17
+   6 three sources  2 equal d rounded spectral, mixer B  c in [0.250,0.750] marg err 5.6e-17 product err 6.9e-18 | p=1 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: False, ==complement(spectral): True | p=2 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: False, ==complement(spectral): True | fields=False E(spectral)=0.2634 E(complement)=0.2634 E(recovered)=0.2634 e_min=0.2508
+   6 three sources  CPU + GPU relaxation, mixer A        c in [0.800,0.800] marg err 4.4e-16 product err 5.6e-17 | mixer A eigenstate: |U start - e^(i n beta) start| = 1.9e-16; gamma=0 leaves P unchanged: 2.8e-17
+   6 three sources  CPU + GPU rounded spectral, mixer A  c in [0.250,0.750] marg err 2.2e-16 product err 8.7e-18 | mixer A eigenstate: |U start - e^(i n beta) start| = 2.3e-16; gamma=0 leaves P unchanged: 8.7e-18
+   6 three sources  CPU + GPU rounded spectral, mixer B  c in [0.250,0.750] marg err 1.1e-16 product err 2.8e-17 | p=1 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: True, ==complement(spectral): False | p=2 recovery: max P=1.000000000000, argmax==complement(start rounding): True, ==spectral: True, ==complement(spectral): False | fields=True E(spectral)=0.1136 E(complement)=5.6840 E(recovered)=0.1136 e_min=0.1136
+E. distribution_metrics (hand example), shots = 1000
+   got      {'p_opt': 0.4, 'p_near': 0.4, 'mean_cost': 2.8, 'mean_ratio': 0.55, 'p_balanced': 0.3, 'hit_opt': 1.0, 'hit_near': 1.0}
+   expected {'p_opt': 0.4, 'p_near': 0.4, 'mean_cost': 2.8, 'mean_ratio': 0.55, 'p_balanced': 0.3, 'hit_opt': 1.0, 'hit_near': 1.0}
+   small p: p_opt 0.001 hit_opt 0.6323045752290363 expected 0.6323045752290363 | p_near 0.003 hit_near 0.9504369171768445 expected 0.9504369171768445
+   near_mask = (E <= 1.05 E_min), balanced_mask = |share_B - alpha| <= 0.05 on real instances: ok
+F. modelled_outcome
+   2 equal devices: speeds (1.0, 1.0) power(active,idle) ((327.75, 115.0), (327.75, 115.0)) | max |hours - mine| = 5.7e-14, |kWh - mine| = 4.3e-14, non-enumerated path = 5.7e-14
+   optimum outcome: {'state': 207, 'share_b': 0.4952, 'load_a': 843.0, 'load_b': 827.0, 'imbalance': 0.0048, 'cut_fraction': 0.2548, 'pieces_a': 1, 'pieces_b': 1, 'compute_hours': 151.4371, 'comm_hours': 3.8217, 'modelled_hours': 155.2588, 'modelled_kwh': 99.5345}
+   runtime-optimal state 207: hours 155.259, Ising cost 0.2557 (rank 0); Ising optimum hours 155.259
+   CPU + GPU (GPU 4x): speeds (1.0, 4.0) power(active,idle) ((327.75, 115.0), (474.0, 48.25)) | max |hours - mine| = 5.7e-14, |kWh - mine| = 2.8e-14, non-enumerated path = 5.7e-14
+   optimum outcome: {'state': 511, 'share_b': 0.8126, 'load_a': 313.0, 'load_b': 1357.0, 'imbalance': 0.0126, 'cut_fraction': 0.1401, 'pieces_a': 1, 'pieces_b': 1, 'compute_hours': 60.9431, 'comm_hours': 2.1019, 'modelled_hours': 63.045, 'modelled_kwh': 48.201}
+   runtime-optimal state 3902: hours 62.826, Ising cost 0.1476 (rank 1); Ising optimum hours 63.045
+   hand example: hours 195.0000 (expected 195.0000); kWh 78.7500 (expected 78.7500)
+exit 0

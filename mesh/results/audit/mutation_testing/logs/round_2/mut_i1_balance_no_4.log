@@ -1,0 +1,7 @@
+[load small: 435.2 s]
+=== TRACEBACK (cell frames) ===
+  runner.py:48 in <module>
+  cell line 694 in <module>: calibration_instances[scenario] = [t4_build_instance(regions, case_name, TASK04["calibration_n"], seed, scenario)
+  cell line 260 in t4_build_instance: assert np.max(np.abs(energies - ising_energies_all(J, h, const, n))) < T4_TOL
+  -> CRASH AssertionError: 
+[STATUS] CRASH AssertionError:   [37.8 s]
