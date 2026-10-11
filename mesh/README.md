@@ -52,6 +52,7 @@ The report is [`report/main.pdf`](report/main.pdf) (6 pages). Figure 1 shows all
 | 04c | The region graph before and after the cut: original graph, QAOA's split, varQITE's split, exact optimum |
 | 04d | The saved large-mode HPC results (12–24 qubits), display only |
 | 05 | Export of the single IonQ batch for Qollab (p = 0 control, LR-QAOA, QAOA + COBYLA, final varQITE circuits) |
+| Code for Qollab | The self-contained `main.py` to paste into Qollab (one circuit per job); the cell runs it locally as a noiseless preview |
 | 06 | 29 qubits on HPC: shows the saved results of `scripts/run_29_qubits.py` (best settings from n = 20 against the classical methods, exact optimum) |
 
 ## How to run
@@ -72,10 +73,33 @@ python report/make_q29_report.py && cd report && SOURCE_DATE_EPOCH=1791676800 te
 
 The checkpoints in `results/` let Task 04 and 04b resume. They are reused only when the settings, the problem data and the code are unchanged. The code check compares Python bytecode, so the checkpoints are reused when the notebook runs in Jupyter, VS Code or nbconvert with Python 3.12. A script that `exec()`s whole cells, or another Python version, recomputes everything (about 17 minutes in small mode); the recomputed results were identical.
 
-## Run the IonQ job (one job, 12 circuits)
+## Run on Qollab (IonQ Forte 1 noise model)
 
-- **Qollab:** create a project, upload the four files of `qollab/` (`main.py`, `mesh_ionq.py`, `mesh_batch.json`, `requirements.txt`), press **Run** and choose **IonQ Forte 1 (29q) noise model** (never the paid "Quantum Computer" entries). The console prints the measured results next to the noiseless predictions and a `RAW_RESULT_JSON` line with all counts; save that line as `qollab/results_ionq/<date>.json` so later runs show it as the recorded result.
-- **Locally:** `pip install qiskit-ionq`, then `IONQ_API_KEY=... python scripts/run_ionq_batch.py`.
+Qollab's IonQ simulators accept **one circuit per job**. So `qollab/main.py` is self-contained, with the circuits, angles and exact optima embedded, and runs the circuit chosen in the Run dialog:
+
+1. Create a Qollab project and paste `qollab/main.py`; it is the same as the notebook's last cell, "Code for Qollab".
+2. Press **Run** and choose **IonQ Forte 1 (29q) noise model** in Select QPU. Never use the paid "Quantum Computer" entries.
+3. Optional: set `circuit` in the Run dialog. The default is `varqite_zy_equal`.
+
+| `circuit` | What it is | Noiseless P(optimum) | Crude noisy estimate | 2-qubit gates |
+|---|---|---|---|---|
+| `varqite_zy_equal` (default) | varQITE ZY, equal devices | 0.750 | 0.539 | 66 |
+| `varqite_a_equal` | varQITE A, equal devices | 0.706 | 0.507 | 66 |
+| `warm_recovery_p1_cpu_gpu` | warm start that returns the classical spectral split (a noise reference, not a quantum search) | 1.000 | 0.718 | 66 |
+| `cvar_spsa_p2_cpu_gpu` | best pure-quantum circuit for CPU + GPU (CVaR-QAOA, p = 2) | 0.0058 | 0.0030 | 132 |
+| `control_p0` | p = 0 control (uniform guessing), graded under both scenarios | 0.0005 / 0.0002 | same | 0 |
+| `lemma_varqite_zy_cpu_gpu` | varQITE ZY trained for CPU + GPU: Lemma 1 predicts failure | ~0 | ~0 | 66 |
+
+**What the program does**
+- Re-checks the exact optimum by brute force.
+- Grades every shot and prints the results next to the predictions.
+- Ends with a `RAW COUNTS` line; save it as `qollab/results_ionq/<date>_<circuit>.json`.
+
+**How the circuits were chosen** (from the existing 12-qubit results, no new training): `scripts/ionq_selection_extract.py` → `scripts/ionq_selection_evaluate.py` → `qollab/selected_circuits.json` → `scripts/make_qollab_main.py`. The full table of 104 candidates is in [`results/ionq_selection/candidates_table.md`](results/ionq_selection/candidates_table.md). It gives noiseless scores, two-qubit gates measured on IonQ Forte 1, the crude estimate, an approximate Aer noise check and samples to solution.
+
+**Earlier versions**
+- The multi-circuit version is kept in `qollab/legacy/main_batch.py`.
+- With an IonQ API key, the 12-circuit batch can still be sent through the IonQ cloud: `scripts/run_ionq_batch.py`.
 
 ## Honesty notes
 

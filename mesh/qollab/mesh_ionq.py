@@ -146,3 +146,62 @@ def local_counts(circuits, shots, seed=2026):
         state.seed(seed + index)
         counts.append({str(key): int(value) for key, value in state.sample_counts(shots).items()})
     return counts
+
+
+# ---------------------------------------------------------------- circuits from qollab/selected_circuits.json ----
+def round_robin_pairs(n):
+    """All pairs of n qubits in rounds of disjoint pairs (circle method): a dense rzz layer with minimal depth.
+    Same order as the notebook's build_qaoa_circuit."""
+    players = list(range(n)) + ([None] if n % 2 else [])
+    m, rounds = len(players), []
+    for _ in range(m - 1):
+        rounds.append([(min(a, b), max(a, b)) for a, b in zip(players[: m // 2], players[::-1][: m // 2]) if a is not None and b is not None])
+        players = [players[0], players[-1]] + players[1:-1]
+    return rounds
+
+
+def circuit_from_spec(spec, measure=True):
+    """Rebuild one selected circuit exactly from its spec (see qollab/selected_circuits.json).
+    kind 'qaoa': start H (or RY(theta_q) for warm starts); per layer rzz(2 gamma J_ij) in spec['zz_pairs'] order, rz(2 gamma h_i),
+    then the mixer: 'x' = rx(-2 beta) (exp(+i beta X)); 'warm A' / 'warm B' = ry(-s theta) rz(-2 beta) ry(s theta), s = +1 / -1.
+    kind 'varqite': the trained varQITE circuit (varqite_circuit). Qubit q is region spec['qubit_to_region'][q]."""
+    n = spec["n_qubits"]
+    if spec["kind"] == "varqite":
+        return varqite_circuit([(g[0], tuple(g[1]), g[2]) for g in spec["gates"]], spec["params"], n, measure=measure)
+    J, h = np.asarray(spec["J_scaled"], dtype=float), np.asarray(spec["h_scaled"], dtype=float)
+    thetas = spec.get("thetas")
+    pairs = [tuple(pair) for layer_round in spec["zz_pairs"] for pair in layer_round]
+    circuit = QuantumCircuit(n)
+    for q in range(n):
+        circuit.h(q) if spec["start"] == "plus" else circuit.ry(float(thetas[q]), q)
+    for gamma, beta in zip(spec["gammas"], spec["betas"]):
+        for i, j in pairs:
+            if J[i, j] != 0:
+                circuit.rzz(float(2 * gamma * J[i, j]), i, j)
+        for q in range(n):
+            if h[q] != 0:
+                circuit.rz(float(2 * gamma * h[q]), q)
+        for q in range(n):
+            if spec["mixer"] == "x":
+                circuit.rx(float(-2 * beta), q)
+            else:
+                sign = -1.0 if spec["mixer"] == "warm B" else 1.0
+                circuit.ry(float(-sign * thetas[q]), q)
+                circuit.rz(float(-2 * beta), q)
+                circuit.ry(float(sign * thetas[q]), q)
+    if measure:
+        circuit.measure_all()
+    return circuit
+
+
+def region_bits_of_key(key, spec, n_regions):
+    """Qiskit count key -> bits of ALL regions (rightmost character = qubit 0; qubit q is region spec['qubit_to_region'][q];
+    regions in spec['fixed_regions'] are not measured and take their fixed device, e.g. region 0 on device A for the
+    symmetry-reduced circuit)."""
+    qubit_bits = bits_of_key(key, spec["n_qubits"])
+    bits = np.zeros(n_regions, dtype=int)
+    for region, value in spec.get("fixed_regions", {}).items():
+        bits[int(region)] = int(value)
+    for qubit, region in enumerate(spec["qubit_to_region"]):
+        bits[region] = qubit_bits[qubit]
+    return bits

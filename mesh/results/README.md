@@ -39,6 +39,16 @@ Checkpoint, CSV, summaries, plots, server logs, Mac/Linux mesh fingerprints and 
 
 Mutation testing (30 of 30 injected bugs caught; see `audit/mutation_testing/SUMMARY.md`), fairness and physics reviews, validation logs and an independent reproduction. Details in `audit/README.md`. The literature checks are in `../docs/literature/`.
 
+## IonQ circuit selection — `ionq_selection/`
+
+| File | What it is |
+|---|---|
+| `candidates_table.md` / `.csv` | All 104 candidate circuits at 12 qubits (case 2, both scenarios). Per circuit: noiseless P(optimum) and P(within 5 %); two-qubit gates and depth measured by transpiling to IonQ Forte 1; the crude estimate; the Aer noise check (approximate noise model, not IonQ); shots to solution |
+| `selection_summary.json` | The chosen circuits, the fallback, and the classical samples to solution (median evaluations for simulated annealing and local search) |
+| `candidates.pkl`, `aer_cache.json` | Exact parameters and reference distributions of every candidate, and the cached Aer results |
+
+Made by `scripts/ionq_selection_extract.py` and `scripts/ionq_selection_evaluate.py`; `scripts/check_selected_circuits.py` checks that `../qollab/selected_circuits.json` rebuilds every circuit exactly.
+
 ## IonQ
 
-`../qollab/mesh_batch.json` is the single IonQ batch (12 circuits with noiseless predictions). `../qollab/results_ionq/` will hold the recorded IonQ run; it is empty until the job is run.
+`../qollab/main.py` is the self-contained Qollab program (one circuit per job; the circuits come from `../qollab/selected_circuits.json`). `../qollab/mesh_batch.json` is the earlier 12-circuit batch for the IonQ cloud. `../qollab/results_ionq/` will hold the recorded IonQ run; it is empty until the job is run.

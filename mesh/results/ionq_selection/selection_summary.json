@@ -1,0 +1,80 @@
+{
+ "selected": [
+  {
+   "circuit": "p = 0 control (uniform)",
+   "scenario": "both scenarios",
+   "role": "p = 0 control (uniform guessing; the same circuit is graded under both scenarios)"
+  },
+  {
+   "circuit": "varQITE ZY (paper, all pairs)",
+   "scenario": "2 equal devices",
+   "role": "2 equal devices: best #1 by crude estimate (<= 200 two-qubit gates)"
+  },
+  {
+   "circuit": "varQITE A (all pairs)",
+   "scenario": "2 equal devices",
+   "role": "2 equal devices: best #2 by crude estimate (<= 200 two-qubit gates)"
+  },
+  {
+   "circuit": "warm-start QAOA (rounded spectral, mixer B), fixed: recovery angles, p = 1",
+   "scenario": "CPU + GPU (GPU 4x)",
+   "role": "CPU + GPU (GPU 4x): best #1 by crude estimate (<= 200 two-qubit gates)"
+  },
+  {
+   "circuit": "CVaR-QAOA + SPSA, p = 2",
+   "scenario": "CPU + GPU (GPU 4x)",
+   "role": "CPU + GPU (GPU 4x): best #2 by crude estimate (<= 200 two-qubit gates)"
+  }
+ ],
+ "extras": [
+  {
+   "circuit": "varQITE ZY (paper, all pairs)",
+   "scenario": "CPU + GPU (GPU 4x)",
+   "role": "optional extra: Lemma 1 demonstration (varQITE ZY trained for CPU + GPU; predicted to fail)"
+  }
+ ],
+ "fallback": {
+  "circuit": "varQITE ZY (paper, all pairs)",
+  "scenario": "2 equal devices"
+ },
+ "classical": {
+  "2 equal devices": {
+   "simulated annealing": {
+    "median": 1181.0,
+    "mean": 1751.67,
+    "runs": 100
+   },
+   "local search (restarts)": {
+    "median": 1111.0,
+    "mean": 1603.37,
+    "runs": 100
+   }
+  },
+  "CPU + GPU (GPU 4x)": {
+   "simulated annealing": {
+    "median": 337.5,
+    "mean": 409.89,
+    "runs": 100
+   },
+   "local search (restarts)": {
+    "median": 122.0,
+    "mean": 178.37,
+    "runs": 100
+   }
+  }
+ },
+ "uniform_p_opt": {
+  "2 equal devices": 0.00048828125,
+  "CPU + GPU (GPU 4x)": 0.000244140625
+ },
+ "target_share_p_opt": {
+  "2 equal devices": 0.00048828125,
+  "CPU + GPU (GPU 4x)": 0.0010737418239999998
+ },
+ "noise": {
+  "two_qubit_depolarizing": 0.005,
+  "one_qubit_depolarizing": 0.0005,
+  "readout_flip": 0.005
+ },
+ "max_two_qubit": 200
+}
