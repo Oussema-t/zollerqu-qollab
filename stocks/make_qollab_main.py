@@ -434,7 +434,12 @@ def run_one(spec, key, detection, checks, shots, wait_minutes, seed, backend, sh
             compiled_two = sum(1 for inst in transpile(qc, backend, optimization_level=1).data if inst.operation.num_qubits == 2)
         except Exception:
             compiled_two = None
-        counts = run_backend(qc, backend, shots, wait_minutes, noise_model)
+        reported = backend_noise(backend)
+        request = noise_model
+        if reported and reported.lower() not in ("ideal", "none", ""):
+            print("Using the noise model chosen in Select QPU:", reported)
+            request = None   # the dialog already set a noise model: do not override it
+        counts = run_backend(qc, backend, shots, wait_minutes, request)
         source = "backend"
     if counts is None:
         print("No backend result: sampling the exact NOISELESS probabilities locally instead (not a hardware result).")
@@ -574,7 +579,8 @@ def comparison_plot(payloads):
 def main(layers: str = "1,2,3", error_detection: str = "both", noise_model: str = "forte-1", circuit: str = "B_lr", checks: int = 1, shots: int = 1000, wait_minutes: int = 30, seed: int = 2026):
     """Press Run once: every layer count in `layers` (e.g. 1,2,3) is run without and with Iceberg (error_detection: both,
     none or iceberg), ONE circuit per job, one job after the other; a comparison figure follows at the end.
-    noise_model: IonQ simulator noise model requested for every job (forte-1 = IonQ Forte 1; 'default' = whatever the backend uses).
+    noise_model: requested only when the backend reports no noise model or 'ideal' (forte-1 = IonQ Forte 1); a noise model chosen in
+    Select QPU (e.g. aria-2 or forte-1) is always kept.
     circuit: B_lr (layers 1-6, 8, 10, 12, 16) or a fixed circuit (B_cvar_p3, B_lr_p1, B_lr_p3, A_cd_p3, control_p0)."""
     print("ZollerQu portfolio selection, 12 assets. This effort is supported by Qollab & IonQ.")
     print("assets (qubit 0 first):", ", ".join(TICKERS))
