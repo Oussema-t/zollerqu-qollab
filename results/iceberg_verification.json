@@ -1,0 +1,349 @@
+{
+ "note": "exact statevector verification of the Iceberg circuits in qollab/main.py",
+ "equivalence": [
+  {
+   "circuit": "B LR-QAOA p=1",
+   "checks": 1,
+   "qubits": 17,
+   "two_qubit_gates": 133,
+   "pass_probability": 0.9999999999999973,
+   "tvd_vs_plain": 3.394038971148754e-16,
+   "decoder_tvd_vs_plain": 1.0149268872535303e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 4.192566354122245e-34
+  },
+  {
+   "circuit": "B LR-QAOA p=2",
+   "checks": 1,
+   "qubits": 17,
+   "two_qubit_gates": 223,
+   "pass_probability": 0.9999999999999974,
+   "tvd_vs_plain": 4.804334245880174e-16,
+   "decoder_tvd_vs_plain": 1.0363655367387964e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 3.771742651954624e-34
+  },
+  {
+   "circuit": "B LR-QAOA p=2",
+   "checks": 2,
+   "qubits": 19,
+   "two_qubit_gates": 251,
+   "pass_probability": 0.9999999999999971,
+   "tvd_vs_plain": 4.44742182069918e-16,
+   "decoder_tvd_vs_plain": 1.0363655367387964e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 4.265808871658906e-34
+  },
+  {
+   "circuit": "B LR-QAOA p=3",
+   "checks": 1,
+   "qubits": 17,
+   "two_qubit_gates": 313,
+   "pass_probability": 0.9999999999999983,
+   "tvd_vs_plain": 5.740812646495381e-16,
+   "decoder_tvd_vs_plain": 1.0272559752762082e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 3.841959222633927e-34
+  },
+  {
+   "circuit": "B LR-QAOA p=3",
+   "checks": 2,
+   "qubits": 19,
+   "two_qubit_gates": 341,
+   "pass_probability": 0.9999999999999979,
+   "tvd_vs_plain": 5.45906452531308e-16,
+   "decoder_tvd_vs_plain": 1.0272559752762082e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 4.351768233621142e-34
+  },
+  {
+   "circuit": "B LR-QAOA p=3",
+   "checks": 3,
+   "qubits": 21,
+   "two_qubit_gates": 369,
+   "pass_probability": 0.9999999999999976,
+   "tvd_vs_plain": 5.140800427766451e-16,
+   "decoder_tvd_vs_plain": 1.0272559752762082e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 5.114723083134881e-34
+  },
+  {
+   "circuit": "B CVaR 0.1 p=3",
+   "checks": 1,
+   "qubits": 17,
+   "two_qubit_gates": 313,
+   "pass_probability": 0.9999999999999987,
+   "tvd_vs_plain": 6.626072333208579e-16,
+   "decoder_tvd_vs_plain": 1.0455802103368647e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 4.552779477233043e-34
+  },
+  {
+   "circuit": "B CVaR 0.1 p=3",
+   "checks": 2,
+   "qubits": 19,
+   "two_qubit_gates": 341,
+   "pass_probability": 0.9999999999999982,
+   "tvd_vs_plain": 6.428409787564403e-16,
+   "decoder_tvd_vs_plain": 1.0455802103368647e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 4.41386538734611e-34
+  },
+  {
+   "circuit": "B CVaR 0.1 p=3",
+   "checks": 3,
+   "qubits": 21,
+   "two_qubit_gates": 369,
+   "pass_probability": 0.9999999999999977,
+   "tvd_vs_plain": 6.747070177535892e-16,
+   "decoder_tvd_vs_plain": 1.0455802103368647e-09,
+   "decoder_kept_share": 1.0,
+   "max_pass_after_one_readout_flip": 4.6572291435070724e-34
+  }
+ ],
+ "readout": [],
+ "transpile": [
+  {
+   "circuit": "B LR-QAOA p=1",
+   "two_qubit_gates_before": 133,
+   "two_qubit_gates_after": 133,
+   "pass_probability": 0.999999999999997,
+   "tvd_vs_plain": 3.083762526627475e-16
+  },
+  {
+   "circuit": "B LR-QAOA p=2",
+   "two_qubit_gates_before": 223,
+   "two_qubit_gates_after": 223,
+   "pass_probability": 0.9999999999999973,
+   "tvd_vs_plain": 4.626564548482683e-16
+  },
+  {
+   "circuit": "B LR-QAOA p=3",
+   "two_qubit_gates_before": 313,
+   "two_qubit_gates_after": 313,
+   "pass_probability": 0.9999999999999976,
+   "tvd_vs_plain": 5.551978134163148e-16
+  },
+  {
+   "circuit": "B CVaR 0.1 p=3",
+   "two_qubit_gates_before": 313,
+   "two_qubit_gates_after": 313,
+   "pass_probability": 0.9999999999999978,
+   "tvd_vs_plain": 7.62749837377484e-16
+  }
+ ],
+ "faults": [
+  {
+   "circuit": "B LR-QAOA p=1",
+   "checks": 1,
+   "qubits": 17,
+   "gates": 150,
+   "faults": 2063,
+   "totals": {
+    "detected": 1739,
+    "harmless": 56,
+    "harmful": 268
+   },
+   "faults_with_partial_detection": 0,
+   "by_location": {
+    "state preparation (GHZ + H) | weight 2": {
+     "detected": 102,
+     "harmless": 15,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "state preparation (GHZ + H) | weight 1": {
+     "detected": 122,
+     "harmless": 1,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "initial bit flip | weight 1": {
+     "detected": 17,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "flag (state-preparation check) | weight 1": {
+     "detected": 11,
+     "harmless": 1,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "flag (state-preparation check) | weight 2": {
+     "detected": 17,
+     "harmless": 1,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "logical coupling rzz(i, j) | weight 1": {
+     "detected": 396,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "logical coupling rzz(i, j) | weight 2": {
+     "detected": 396,
+     "harmless": 1,
+     "harmful": 197,
+     "harmful_paulis": {
+      "XX": 65,
+      "YY": 66,
+      "ZZ": 66
+     }
+    },
+    "logical field rzz(i, b) | weight 1": {
+     "detected": 72,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "logical field rzz(i, b) | weight 2": {
+     "detected": 72,
+     "harmless": 0,
+     "harmful": 36,
+     "harmful_paulis": {
+      "ZZ": 12,
+      "XX": 12,
+      "YY": 12
+     }
+    },
+    "logical mixer rxx(t, i) | weight 1": {
+     "detected": 72,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "logical mixer rxx(t, i) | weight 2": {
+     "detected": 72,
+     "harmless": 1,
+     "harmful": 35,
+     "harmful_paulis": {
+      "XX": 12,
+      "YY": 12,
+      "ZZ": 11
+     }
+    },
+    "syndrome check | weight 2": {
+     "detected": 242,
+     "harmless": 10,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "syndrome check | weight 1": {
+     "detected": 148,
+     "harmless": 26,
+     "harmful": 0,
+     "harmful_paulis": {}
+    }
+   },
+   "seconds": 85.8
+  },
+  {
+   "circuit": "B LR-QAOA p=2",
+   "checks": 2,
+   "qubits": 19,
+   "gates": 270,
+   "faults": 3841,
+   "totals": {
+    "detected": 3241,
+    "harmless": 62,
+    "harmful": 538
+   },
+   "faults_with_partial_detection": 0,
+   "by_location": {
+    "state preparation (GHZ + H) | weight 2": {
+     "detected": 102,
+     "harmless": 15,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "state preparation (GHZ + H) | weight 1": {
+     "detected": 122,
+     "harmless": 1,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "initial bit flip | weight 1": {
+     "detected": 19,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "flag (state-preparation check) | weight 1": {
+     "detected": 11,
+     "harmless": 1,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "flag (state-preparation check) | weight 2": {
+     "detected": 17,
+     "harmless": 1,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "logical coupling rzz(i, j) | weight 1": {
+     "detected": 792,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "logical coupling rzz(i, j) | weight 2": {
+     "detected": 792,
+     "harmless": 1,
+     "harmful": 395,
+     "harmful_paulis": {
+      "XX": 131,
+      "YY": 132,
+      "ZZ": 132
+     }
+    },
+    "logical field rzz(i, b) | weight 1": {
+     "detected": 144,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "logical field rzz(i, b) | weight 2": {
+     "detected": 144,
+     "harmless": 0,
+     "harmful": 72,
+     "harmful_paulis": {
+      "XX": 24,
+      "YY": 24,
+      "ZZ": 24
+     }
+    },
+    "logical mixer rxx(t, i) | weight 2": {
+     "detected": 144,
+     "harmless": 1,
+     "harmful": 71,
+     "harmful_paulis": {
+      "YY": 24,
+      "XX": 24,
+      "ZZ": 23
+     }
+    },
+    "logical mixer rxx(t, i) | weight 1": {
+     "detected": 144,
+     "harmless": 0,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "syndrome check | weight 2": {
+     "detected": 492,
+     "harmless": 12,
+     "harmful": 0,
+     "harmful_paulis": {}
+    },
+    "syndrome check | weight 1": {
+     "detected": 318,
+     "harmless": 30,
+     "harmful": 0,
+     "harmful_paulis": {}
+    }
+   },
+   "seconds": 1551.2
+  }
+ ]
+}

@@ -18,10 +18,13 @@ TEMPLATE = '''"""ZollerQu: long/short stock split on 12 qubits, Qollab x IonQ ha
 This effort is supported by Qollab & IonQ.
 
 What this file does (press Run on Qollab):
-  1. builds the fixed circuits chosen offline (angles embedded below; no training or tuning here),
-  2. sends the ONE circuit chosen in the Run dialog to the backend (Qollab's IonQ simulator accepts one circuit per job),
-  3. scores every measured portfolio against the exact optimum (known from enumeration) and prints the results,
-  4. prints the raw counts as JSON at the end, so they can be saved and analysed again later.
+  1. builds the circuit chosen in the Run dialog from angles fixed offline (no training or tuning here),
+     either plain (12 qubits) or protected by the Iceberg error-DETECTION code (12 logical qubits on 14, plus
+     one flag qubit and two fresh ancillas per syndrome check; every measurement at the end, no reset),
+  2. sends that ONE circuit to the backend (Qollab's IonQ simulator accepts one circuit per job),
+  3. with Iceberg: keeps only the shots that pass every check (detected errors are discarded, not corrected),
+  4. scores every kept portfolio against the exact optimum (known from enumeration) and plots the results,
+  5. prints the raw counts as JSON at the end, so they can be saved and analysed again later.
 Without a backend (local run, or no backend selected) it samples the exact noiseless probabilities instead,
 clearly labelled as such.
 
@@ -45,7 +48,11 @@ EXACT = @@EXACT@@
 CIRCUITS = @@CIRCUITS@@
 CIRCUIT_KEYS = @@KEYS@@   # Run-dialog value -> circuit name
 DEFAULT_CIRCUIT = @@DEFAULT@@
+# linear-ramp QAOA for mode B with any of these layer counts ("B_lr"): ramp tuned offline at 12 assets by the lowest
+# expected energy on a grid; p_optimum_noiseless = exact noiseless probability that one shot is the best portfolio
+LR_RAMPS = @@LR_RAMPS@@
 WITHIN = 0.05
+MAX_QUBITS = 29   # IonQ Forte 1 noise model on Qollab
 
 
 def build_circuit(spec):
@@ -198,6 +205,159 @@ def plots(counts, qc, model, mode, shots, source, title):
     plt.show()
 
 
+def lr_spec(layers):
+    """Linear-ramp QAOA for mode B (buy or skip) with `layers` layers and the ramp tuned offline at 12 assets."""
+    allowed = sorted(LR_RAMPS)
+    p = layers if layers in LR_RAMPS else min(allowed, key=lambda a: (abs(a - layers), a))
+    if p != layers:
+        print("No tuned ramp for %d layers; using %d layers (available: %s)." % (layers, p, ", ".join(str(a) for a in allowed)))
+    ramp = LR_RAMPS[p]
+    gammas = [(k / p) * ramp["dgamma"] for k in range(1, p + 1)]
+    betas = [(1.0 - (k - 1) / p) * ramp["dbeta"] for k in range(1, p + 1)]
+    model = next(x["model"] for x in CIRCUITS if x["mode"] == "buy_or_skip")
+    return {"name": "B LR-QAOA p=%d" % p, "mode": "buy_or_skip", "family": "LR-QAOA", "angles": {"gammas": gammas, "betas": betas},
+            "model": model, "p_optimum_noiseless": ramp["p_optimum_noiseless"]}
+
+
+def iceberg_check(qc, code, a1, a2):
+    """One syndrome check with two fresh ancillas: a1 collects S_Z = Z..Z (read in the Z basis), a2 applies S_X = X..X
+    (prepared and read in the X basis). On the first and the second-to-last code qubit a2 acts before a1, on all
+    others after. This keeps both measurements exact (each ancilla meets the other's action on an even number of
+    qubits) and makes a single ancilla fault that spreads to an even number of code qubits (2 .. n-2) flip the other
+    ancilla, so it is detected. Checked by fault injection in stocks/verify_iceberg.py."""
+    n = len(code)
+    qc.h(a2)
+    for r, q in enumerate(code):
+        if r in (0, n - 2):
+            qc.cx(a2, q)
+            qc.cx(q, a1)
+        else:
+            qc.cx(q, a1)
+            qc.cx(a2, q)
+    qc.h(a2)
+
+
+def build_iceberg(spec, checks):
+    """The same QAOA circuit on the Iceberg code [[k+2, k, 2]] (Self, Benedetti and Amaro, Nature Physics 20, 219 (2024)).
+
+    Code qubits: data 0..k-1, top t = k, bottom b = k+1; stabilizers S_X = X^(k+2), S_Z = Z^(k+2); logical operators
+    X_i -> X_t X_i and Z_i -> Z_i Z_b. Logical |+...+> = H on all code qubits applied to a GHZ state, prepared with a
+    CNOT chain and verified by a flag qubit (Z_t Z_b). Every QAOA gate becomes a two-qubit Pauli rotation that keeps
+    the code: rzz(i, j) stays rzz(i, j), rz(i) becomes rzz(i, b), rx(i) becomes rxx(t, i). Syndrome checks follow the
+    last layer and are spread evenly over the earlier layers; all qubits are measured once at the end.
+    Error DETECTION only: a shot with a failed check is discarded, nothing is corrected, and two-qubit errors of the
+    form XX, YY or ZZ on a gate's own pair are not detected (the code has distance 2)."""
+    angles = spec["angles"]
+    if angles.get("alphas") is not None:
+        return None, None, "this circuit has extra RY rotations (counterdiabatic); on the Iceberg code they are weight-3 operators, not supported here"
+    k = len(TICKERS)
+    t, b, flag = k, k + 1, k + 2
+    gammas, betas = angles["gammas"], angles["betas"]
+    field_gammas = angles.get("field_gammas") or gammas
+    p = len(gammas)
+    if p == 0:
+        return None, None, "the p = 0 control has no gates to protect"
+    checks = max(1, min(int(checks), p, (MAX_QUBITS - k - 3) // 2))
+    after = sorted({max(1, min(p - 1, int(round(p * (c + 1) / checks)))) for c in range(checks - 1)}) if p > 1 else []
+    checks = len(after) + 1
+    width = k + 3 + 2 * checks
+    model, scale = spec["model"], spec["model"]["scale"]
+    code = [t] + list(range(k)) + [b]
+    qc = QuantumCircuit(width, name=spec["name"] + " | Iceberg")
+    qc.h(t)
+    for prev, nxt in zip(code[:-1], code[1:]):
+        qc.cx(prev, nxt)
+    qc.cx(t, flag)
+    qc.cx(b, flag)
+    for q in code:
+        qc.h(q)
+    used = 0
+    for layer in range(p):
+        for i, j, coupling in model["pair_terms"]:
+            qc.rzz(2.0 * gammas[layer] * coupling / scale, i, j)
+        for i, h in enumerate(model["fields"]):
+            if h != 0.0:
+                qc.rzz(2.0 * field_gammas[layer] * h / scale, i, b)
+        for i in range(k):
+            qc.rxx(2.0 * betas[layer], t, i)
+        if layer + 1 in after or layer + 1 == p:
+            iceberg_check(qc, code, k + 3 + 2 * used, k + 4 + 2 * used)
+            used += 1
+    qc.measure_all()
+    info = {"k": k, "t": t, "b": b, "flag": flag, "ancillas": [[k + 3 + 2 * c, k + 4 + 2 * c] for c in range(checks)],
+            "checks": checks, "checks_after_layers": after + [p], "qubits": width}
+    return qc, info, None
+
+
+def iceberg_decode(counts, info):
+    """Keep the shots that pass every check; return the logical counts (12-bit keys, qubit 0 rightmost) and a tally.
+
+    Checks: flag qubit = 0 (state preparation), both ancillas of every syndrome check = 0, and the parity of the 14
+    measured code bits is even (S_Z once more). Logical bit i = data bit i XOR bottom bit (logical Z_i = Z_i Z_b)."""
+    k, b = info["k"], info["b"]
+    logical, tally = {}, {"shots": 0, "accepted": 0, "failed_flag": 0, "failed_checks": 0, "failed_parity": 0}
+    for key, count in counts.items():
+        bits = [int(c) for c in key.replace(" ", "")[::-1]]
+        tally["shots"] += count
+        bad_flag = bits[info["flag"]] == 1
+        bad_check = any(bits[a1] == 1 or bits[a2] == 1 for a1, a2 in info["ancillas"])
+        bad_parity = sum(bits[:k + 2]) % 2 == 1
+        tally["failed_flag"] += count * bad_flag
+        tally["failed_checks"] += count * bad_check
+        tally["failed_parity"] += count * bad_parity
+        if not (bad_flag or bad_check or bad_parity):
+            tally["accepted"] += count
+            x = [bits[i] ^ bits[b] for i in range(k)]
+            lkey = "".join(str(x[i]) for i in reversed(range(k)))
+            logical[lkey] = logical.get(lkey, 0) + count
+    return logical, tally
+
+
+def resources(qc):
+    """Qubits, two-qubit gates, depth and two-qubit depth of a circuit (measurements and barriers not counted)."""
+    body = qc.remove_final_measurements(inplace=False)
+    two = sum(1 for inst in body.data if inst.operation.num_qubits == 2)
+    return {"qubits": qc.num_qubits, "two_qubit_gates": two, "depth": body.depth(),
+            "two_qubit_depth": body.depth(lambda inst: inst.operation.num_qubits == 2)}
+
+
+def iceberg_plot(tally, a_kept, spec, title):
+    """Figure for the video: what happened to the shots, and the success rate with and without discarding."""
+    try:
+        import matplotlib.pyplot as plt
+    except Exception as err:
+        print("(matplotlib not available here: %s)" % err)
+        return
+    shots = max(tally["shots"], 1)
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.2))
+    ax = axes[0]
+    labels = ["kept (all checks pass)", "flag failed", "syndrome check failed", "final parity failed"]
+    values = [tally["accepted"], tally["failed_flag"], tally["failed_checks"], tally["failed_parity"]]
+    colors = ["#1baf7a", "#b4b2a9", "#b4b2a9", "#b4b2a9"]
+    y = np.arange(len(labels))
+    ax.barh(y, values, color=colors)
+    for yy, v in zip(y, values):
+        ax.annotate("%d (%.0f %%)" % (v, 100.0 * v / shots), (v, yy), xytext=(4, 0), textcoords="offset points", va="center", fontsize=9)
+    ax.set_yticks(y, labels)
+    ax.invert_yaxis()
+    ax.set_xlim(0, shots * 1.25)
+    ax.set_xlabel("shots (a shot can fail several checks)")
+    ax.set_title("%s: Iceberg error detection" % title, loc="left", fontsize=10)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax = axes[1]
+    names = ["noiseless (exact)", "kept shots", "all shots sent"]
+    hits = a_kept["p_optimum"] * tally["accepted"] if a_kept else 0.0
+    vals = [spec["p_optimum_noiseless"], a_kept["p_optimum"] if a_kept else 0.0, hits / shots]
+    ax.bar(names, [1000 * v for v in vals], color=["#b4b2a9", "#1baf7a", "#2a78d6"])
+    for i, v in enumerate(vals):
+        ax.annotate("%.1f" % (1000 * v), (i, 1000 * v), xytext=(0, 3), textcoords="offset points", ha="center", fontsize=9)
+    ax.set_ylabel("best portfolio per 1,000 shots")
+    ax.set_title("success rate: per kept shot and per shot sent", loc="left", fontsize=10)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    plt.show()
+
+
 def run_backend(circuit, backend, shots, wait_minutes):
     """ONE circuit per job (IonQ accepts only ionq.circuit.v1); prints the status every 10 s; returns counts or None."""
     compiled = transpile(circuit, backend, optimization_level=1)
@@ -226,57 +386,96 @@ def run_backend(circuit, backend, shots, wait_minutes):
         return None
 
 
-def main(circuit: str = "B_cvar_p3", shots: int = 1000, wait_minutes: int = 60, seed: int = 2026):
-    """circuit: control_p0, B_cvar_p3, A_cd_p3, B_lr_p1 or B_lr_p3 (ONE circuit per job on IonQ); shots per run."""
-    print("ZollerQu stock split, 12 qubits. This effort is supported by Qollab & IonQ.")
+def main(circuit: str = "B_lr", layers: int = 3, error_detection: str = "none", checks: int = 1, shots: int = 1000, wait_minutes: int = 60, seed: int = 2026):
+    """circuit: B_lr (any layers), B_cvar_p3, B_lr_p1, B_lr_p3, A_cd_p3 or control_p0; layers: for B_lr (1-6, 8, 10, 12, 16);
+    error_detection: none or iceberg; checks: Iceberg syndrome checks (1 = after the last layer only); ONE circuit per job."""
+    print("ZollerQu portfolio selection, 12 assets. This effort is supported by Qollab & IonQ.")
     print("assets (qubit 0 first):", ", ".join(TICKERS))
     key = circuit.strip()
-    if key not in CIRCUIT_KEYS:
-        print("Unknown circuit %r. Allowed: %s. Using the default %s." % (circuit, ", ".join(CIRCUIT_KEYS), DEFAULT_CIRCUIT))
-        key = DEFAULT_CIRCUIT
-    chosen = CIRCUIT_KEYS[key]
-    print("Circuits selected offline (noiseless numbers from the exact simulation); '>' marks the one sent now:")
-    for k, name in CIRCUIT_KEYS.items():
-        s = next(x for x in CIRCUITS if x["name"] == name)
-        qc = build_circuit(s)
-        two_qubit = sum(1 for inst in qc.data if inst.operation.num_qubits == 2)
-        print("  %s %-10s %-28s mode %-11s layers %d  two-qubit gates %3d  noiseless P(optimum) %.4f" % (
-            ">" if name == chosen else " ", k, name, s["mode"], len(s["angles"]["gammas"]), two_qubit, s["p_optimum_noiseless"]))
-    spec = next(x for x in CIRCUITS if x["name"] == chosen)
-    qc = build_circuit(spec)
+    if key != "B_lr" and key not in CIRCUIT_KEYS:
+        print("Unknown circuit %r. Allowed: B_lr, %s. Using B_lr." % (circuit, ", ".join(CIRCUIT_KEYS)))
+        key = "B_lr"
+    spec = lr_spec(int(layers)) if key == "B_lr" else next(x for x in CIRCUITS if x["name"] == CIRCUIT_KEYS[key])
+    if key != "B_lr" and int(layers) != len(spec["angles"]["gammas"]):
+        print("Note: %s has a fixed number of layers (%d); the 'layers' field is used only with B_lr." % (key, len(spec["angles"]["gammas"])))
+    detection = error_detection.strip().lower()
+    if detection not in ("none", "iceberg"):
+        print("Unknown error_detection %r: use none or iceberg. Using none." % error_detection)
+        detection = "none"
+    plain = build_circuit(spec)
+    ice, info, why = build_iceberg(spec, checks) if detection == "iceberg" else (None, None, None)
+    if detection == "iceberg" and ice is None:
+        print("Iceberg is not available for this circuit:", why)
+        print("Nothing was sent. Choose another circuit or error_detection = none.")
+        return
+    qc = ice if detection == "iceberg" else plain
+    res_plain = resources(plain)
+    print("Circuit: %s | mode %s | layers %d | noiseless P(best per shot) %.4f" % (spec["name"], spec["mode"], len(spec["angles"]["gammas"]), spec["p_optimum_noiseless"]))
+    print("  plain:   %2d qubits, %4d two-qubit gates, depth %4d" % (res_plain["qubits"], res_plain["two_qubit_gates"], res_plain["depth"]))
+    res = res_plain
+    if detection == "iceberg":
+        res = resources(ice)
+        print("  Iceberg: %2d qubits, %4d two-qubit gates, depth %4d (14 code qubits + 1 flag + 2 ancillas x %d checks after layers %s)" % (
+            res["qubits"], res["two_qubit_gates"], res["depth"], info["checks"], info["checks_after_layers"]))
     backend = globals().get("backend")  # Qollab pre-creates `backend` from the Run dialog
-    counts, source = None, None
+    counts, source, compiled_two = None, None, None
     if backend is not None:
-        print("Running on:", getattr(backend, "name", backend), "| one job: %s x %d shots" % (chosen, shots))
+        print("Running on:", getattr(backend, "name", backend), "| one job: %s, %s, %d shots" % (spec["name"], detection, shots))
+        try:
+            compiled_two = sum(1 for inst in transpile(qc, backend, optimization_level=1).data if inst.operation.num_qubits == 2)
+        except Exception:
+            compiled_two = None
         counts = run_backend(qc, backend, shots, wait_minutes)
         source = "backend"
     if counts is None:
         print("No backend result: sampling the exact NOISELESS probabilities locally instead (not a hardware result).")
         counts = local_counts([qc], shots, seed)[0]
         source = "local noiseless sampling"
+    tally = None
+    logical = counts
+    if detection == "iceberg":
+        logical, tally = iceberg_decode(counts, info)
+        print()
+        print("Iceberg error detection: %d of %d shots kept (%.1f %%); failed: flag %d, syndrome checks %d, final parity %d" % (
+            tally["accepted"], tally["shots"], 100.0 * tally["accepted"] / max(tally["shots"], 1), tally["failed_flag"], tally["failed_checks"], tally["failed_parity"]))
     print()
-    print("Results (%s), %d shots; P(optimum) = share of shots that are the exact best portfolio" % (source, shots))
+    print("Results (%s), %d shots sent; P(opt) = share of the %s shots that are the exact best portfolio" % (source, shots, "kept" if tally else ""))
     print("%-28s %-11s %9s %9s %8s  most frequent portfolio" % ("circuit", "scored as", "P(opt)", "<5%", "quality"))
     report = []
     modes = ["long_short", "buy_or_skip"] if spec["mode"] == "both" else [spec["mode"]]
     for mode in modes:
         model = spec["model"] if spec["mode"] != "both" else next(x["model"] for x in CIRCUITS if x["mode"] == mode)
-        a = analyse(counts, model, mode)
+        if not logical:
+            print("no shots kept: nothing to score")
+            report.append({"circuit": spec["name"], "scored_as": mode, "shots": 0})
+            continue
+        a = analyse(logical, model, mode)
         flag = " (= exact optimum)" if a["most_frequent_is_optimum"] else ""
-        print("%-28s %-11s %9.4f %9.3f %8.3f  %s x%d%s" % (chosen, mode, a["p_optimum"], a["p_within_5pct"], a["quality"],
+        print("%-28s %-11s %9.4f %9.3f %8.3f  %s x%d%s" % (spec["name"], mode, a["p_optimum"], a["p_within_5pct"], a["quality"],
                                                           a["most_frequent"], a["most_frequent_count"], flag))
         print("%-28s %-11s %9s %9s %8s  %s" % ("", "", "", "", "", describe(a["most_frequent"], mode)))
-        report.append({"circuit": chosen, "scored_as": mode, **a})
+        if tally:
+            a["p_optimum_per_shot_sent"] = a["p_optimum"] * tally["accepted"] / max(tally["shots"], 1)
+            print("  per shot SENT (discarded shots count as failures): P(opt) %.4f" % a["p_optimum_per_shot_sent"])
+        report.append({"circuit": spec["name"], "scored_as": mode, **a})
     print()
     print("Exact optima for reference:", {m: EXACT[m]["bitstring"] for m in EXACT})
     print()
+    title = "%s, %s" % (spec["name"], "Iceberg" if tally else "no error detection")
     for mode in modes:
+        if not logical:
+            break
         model = spec["model"] if spec["mode"] != "both" else next(x["model"] for x in CIRCUITS if x["mode"] == mode)
-        text_charts(counts, qc, model, mode, shots, source)
-        plots(counts, qc, model, mode, shots, source, "%s, scored as %s" % (chosen, mode))
+        text_charts(logical, plain, model, mode, sum(logical.values()), source + (", kept shots" if tally else ""))
+        plots(logical, plain, model, mode, sum(logical.values()), source + (", kept shots" if tally else ""), "%s, scored as %s" % (title, mode))
+    if tally:
+        iceberg_plot(tally, report[0] if report and report[0].get("shots") else None, spec, spec["name"])
     payload = {"source": source, "shots": shots, "backend": None if backend is None else str(getattr(backend, "name", backend)),
-               "circuit": chosen, "key": key, "counts": counts, "summary": report, "time": time.strftime("%Y-%m-%d %H:%M:%S")}
-    path = "results/ionq_%s_%s.json" % (key, time.strftime("%Y%m%d-%H%M%S"))
+               "circuit": spec["name"], "key": key, "layers": len(spec["angles"]["gammas"]), "error_detection": detection,
+               "resources": res, "resources_plain": res_plain, "transpiled_two_qubit_gates": compiled_two,
+               "iceberg": None if not tally else {**tally, "checks": info["checks"], "checks_after_layers": info["checks_after_layers"]},
+               "noiseless_p_optimum": spec["p_optimum_noiseless"], "counts": counts, "summary": report, "time": time.strftime("%Y-%m-%d %H:%M:%S")}
+    path = "results/ionq_%s_p%d_%s_%s.json" % (key, payload["layers"], detection, time.strftime("%Y%m%d-%H%M%S"))
     try:
         os.makedirs("results", exist_ok=True)
         with open(path, "w") as fh:
@@ -312,11 +511,18 @@ def main():
         prefix = "" if b["mode"] == "both" else ("A_" if b["mode"] == "long_short" else "B_")
         keys[prefix + short[b["family"]] + "_p" + p_value] = b["name"]
     default_key = next(k for k, v in keys.items() if v == selected["fallback"]["name"])
+    ramps = {}
+    for line in (ROOT / "results" / "exp29" / "out_s0_B12.jsonl").read_text().splitlines():
+        record = json.loads(line)
+        best = record["selected"]["by_expectation"]
+        ramps[int(record["job"]["p"])] = {"dgamma": best["dgamma"], "dbeta": best["dbeta"], "p_optimum_noiseless": round(best["p_optimum"], 6)}
+    ramps = dict(sorted(ramps.items()))
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     fmt = lambda obj: pprint.pformat(obj, width=118, compact=True)
     text = TEMPLATE
     for token, value in (("@@COMMIT@@", commit), ("@@TICKERS@@", fmt(selected["qubit_order"]["tickers"])), ("@@ETA@@", repr(selected["eta"])),
-                         ("@@EXACT@@", fmt(exact)), ("@@CIRCUITS@@", fmt(circuits)), ("@@KEYS@@", fmt(keys)), ("@@DEFAULT@@", repr(default_key))):
+                         ("@@EXACT@@", fmt(exact)), ("@@CIRCUITS@@", fmt(circuits)), ("@@KEYS@@", fmt(keys)), ("@@DEFAULT@@", repr(default_key)),
+                         ("@@LR_RAMPS@@", fmt(ramps))):
         text = text.replace(token, value)
     MAIN_PATH.write_text(text)
     print("wrote", MAIN_PATH.relative_to(ROOT), f"({MAIN_PATH.stat().st_size:,} bytes)")
