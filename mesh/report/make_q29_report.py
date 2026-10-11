@@ -271,7 +271,7 @@ handles = [Line2D([], [], marker="o", ls="none", markerfacecolor=COLOUR_A, marke
            Line2D([], [], color=COLOUR_CUT, lw=1.5, ls=(0, (2, 1.2)), label="cut border")]
 fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=6.5, frameon=False)
 fig.tight_layout(rect=(0, 0.05, 1, 1), h_pad=0.4, w_pad=0.2)
-fig.savefig(ROOT / "report" / "fig_q29_split.pdf", dpi=300)
+fig.savefig(ROOT / "report" / "fig_q29_split.pdf", dpi=300, metadata={"CreationDate": None})
 fig.savefig(ROOT / "results" / f"graph_cut_2_main_n{N}_seed{SEED}.png", dpi=160)
 print(f"{len(records)} instances; table, numbers and figure written")
 for k, v in num.items():

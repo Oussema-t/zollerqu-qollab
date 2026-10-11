@@ -89,7 +89,7 @@ if __name__ == "__main__":
     fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=6.8, frameon=False, bbox_to_anchor=(0.5, -0.005))
     fig.tight_layout(rect=(0, 0.05, 1, 1), h_pad=0.6, w_pad=0.3)
     out = ROOT / "report" / "fig_meshes.pdf"
-    fig.savefig(out, dpi=300)
+    fig.savefig(out, dpi=300, metadata={"CreationDate": None})
     fig.savefig(ROOT / "results" / "mesh_objects_all_cases_seed7.png", dpi=160)
     print(f"wrote {out} ({out.stat().st_size / 1e3:.0f} kB) with {len(cases)} cases; "
           f"{sum(len(ns['mesh_cases'][c]['triangles']) for c in cases)} triangles in total")

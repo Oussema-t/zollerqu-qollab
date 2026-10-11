@@ -11,7 +11,7 @@ Every result of the project is saved as a file, so it can be shown again without
 | `lambda_scan_n12_seed7.png`, `ising_difficulty_map.png`, `ising_splits_n12_seed7_*.png` | Balance-weight scan, problem difficulty, exact optimal splits | Task 03 |
 | `hpc_pool_goals_seed7.png`, **`hpc_pool_goals_seed7.json`** | Synthetic CPU/GPU pool and the three researcher goals (fastest / overnight / lowest energy): devices, shares, hours, kWh (modelled) | Task 03b; the JSON feeds the paper's device-choice numbers |
 | `task04_checkpoint_small.json.gz` | **Every QAOA and classical run** at 12 qubits (18 instances, 2,016 QAOA runs, angles, traces, outcomes). The notebook reuses it instead of recomputing | Task 04 |
-| `task04_runs_small.csv`, `task04_summary_small.json` | The same as a flat table (one row per run) and the summary used by the paper | Task 04; `report/make_report_data.py` |
+| `task04_runs_small.csv`, `task04_summary_small.json` | The same as a flat table (one row per run) and the summary used by the paper. `measured_wall_seconds` records the latest notebook run and is the only field that changes on a re-run | Task 04; `report/make_report_data.py` |
 | `task04_*_small.png` | QAOA vs classical, P(optimum), convergence, noise estimate, modelled runtime and electricity, difficulty heatmap | Task 04 |
 | `varqite_checkpoint_small.json.gz`, `varqite_summary_small.json`, `varqite_*_small.png` | Every varQITE training run (angles, energy curves, final distributions) and its plots | Task 04b |
 | `graph_cut_*_n12_seed7.png` | Region graph before and after the cut: QAOA, varQITE and exact optimum (paper Fig. 3) | Task 04c |
@@ -25,7 +25,7 @@ Checkpoint, CSV, summaries, plots, server logs, Mac/Linux mesh fingerprints and 
 | File | What it is |
 |---|---|
 | `<case>_seed<s>_<equal or cpu_gpu>.json` (12 files) | Metrics per instance: exact optimum, every classical baseline (hit rates, best costs, modelled outcome), every QAOA setting (P(optimum), P(within 5 %), mean cost, balance, sampled best, region marginals, most likely split, noise estimate), run times and the machine it ran on |
-| `<…>.raw.npz` (12 files) | **Raw arrays**: the instance (J, h, constant, region work, borders, centroids, cell → region labels, optimal and near-optimal splits), all 1,000 sampled shots and their costs per QAOA setting, all 100 runs of every classical method, per-shot cost distributions over E / E_min for QAOA, uniform and target-share sampling, region marginals, and the 50 most likely splits. Load with `numpy.load(path)` |
+| `<…>.raw.npz` (12 files) | **Raw arrays**: the instance (J, h, constant, region work, borders, centroids, cell → region labels, optimal and near-optimal splits), all 1,000 sampled shots and their costs per QAOA setting, the best cost of each of the 100 runs of every classical method (1 run for the deterministic spectral bisection; the best split itself is kept for the best run, in the JSON), per-shot cost distributions over E / E_min for QAOA, uniform and target-share sampling, region marginals, and the 50 most likely splits. Load with `numpy.load(path)` |
 | `summary_q29.csv` | One row per instance and method (the numbers behind paper Table 3) |
 | `rerun_check.json` | A second run with the same seeds reproduced every metric exactly (largest difference 0) |
 | `first_run/` | The first run's metric files and logs, kept for that comparison |

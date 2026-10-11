@@ -23,13 +23,13 @@ The report is [`report/main.pdf`](report/main.pdf) (6 pages). Figure 1 shows all
 |---|---|
 | `mesh_idea_ZollerQu.ipynb` | The notebook, run top to bottom with outputs (Tasks 01–06; small mode: 12 qubits, seed 7; Tasks 04d and 06 show the saved HPC results) |
 | `results/` | Every result as a file: plots, CSV/JSON summaries, resumable checkpoints. **[`results/README.md`](results/README.md) lists what each file shows and which cell or script shows it again** |
-| `results/hpc_n29/` | 29-qubit results: one JSON (metrics) and one `.raw.npz` per instance (the instance, all shots, every classical repeat, cost distributions, region marginals, most likely splits), `summary_q29.csv`, `rerun_check.json` (a second run reproduced every metric exactly), server logs |
+| `results/hpc_n29/` | 29-qubit results: one JSON (metrics) and one `.raw.npz` per instance (the instance, all shots, the best cost of every classical repeat, cost distributions, region marginals, most likely splits), `summary_q29.csv`, `rerun_check.json` (a second run reproduced every metric exactly), server logs |
 | `results/audit/` | Evidence behind the honesty claims: mutation testing (`mutation_testing/SUMMARY.md`: 30 of 30 injected bugs caught), fairness and physics reviews, validation logs, an independent reproduction |
 | `results/hpc_validation/` | The 29-qubit simulator checked against the notebook's exact simulator at 12, 16 and 20 qubits |
 | `results_large_hpc/` | Large mode (12, 16, 20, 24 qubits; seeds 7, 8, 9) run on a Hetzner `ccx33` node with `scripts/hpc_driver.py` |
 | `data/` | Frozen meshes (`frozen_meshes/*.npz`) and region assignments (`frozen_regions.npz`), so every machine uses bit-identical inputs |
 | `qollab/` | The Qollab project for the single IonQ job: `main.py`, `mesh_ionq.py`, `mesh_batch.json` (12 circuits), `results_ionq/` for the recorded run |
-| `report/` | The LaTeX report (`main.tex`, `main.pdf`), its figures, and the scripts that build every number, table and figure from the result files: `make_report_data.py`, `make_mesh_figure.py` (Fig. 1, the nine objects) and `make_q29_report.py` (29-qubit table, numbers and split figure) |
+| `report/` | The LaTeX report (`main.tex`, `main.pdf`), its figures, and the scripts that build every number, table and figure from the result files: `make_report_data.py` (`numbers.tex`, `table_n12.tex`, `table_scaling.tex`, `table_ionq.tex`, `fig_results.pdf` + `fig_results_preview.png`, `scaling.json`), `make_mesh_figure.py` (`fig_meshes.pdf`, Fig. 1, the nine objects) and `make_q29_report.py` (`numbers_q29.tex` + `q29_numbers.json`, `table_q29.tex`, `fig_q29_split.pdf`, `results/hpc_n29/summary_q29.csv`, `rerun_check.json`). Rebuilding gives byte-identical files |
 | `scripts/run_ionq_batch.py` | Runs the same IonQ batch through the IonQ cloud (Forte 1 noise model) with an API key in `IONQ_API_KEY` |
 | `scripts/run_29_qubits.py` | 29-qubit benchmark: complex64 statevector, exact energies of all 2^29 splits, classical baselines; `test` mode compares with the notebook's simulator |
 | `scripts/choose_29_qubit_settings.py` | Picks the 29-qubit QAOA settings from the n = 20 results only and writes `scripts/q29_choice.json` |
@@ -61,13 +61,13 @@ python3.12 -m venv venv && venv/bin/pip install numpy==2.5.3 scipy==1.18.1 matpl
 venv/bin/jupyter nbconvert --to notebook --execute mesh_idea_ZollerQu.ipynb   # or open it in Jupyter / VS Code
 ```
 
-29-qubit run (about 7 GB of memory per instance; we used two 32 GB Hetzner servers, about 15 minutes):
+29-qubit run (about 7 GB of memory per instance, 6.6 GB resident as seen with `ps` on the server; we used two 32 GB Hetzner servers, about 15 minutes):
 
 ```bash
 python scripts/choose_29_qubit_settings.py            # settings from the n = 20 results
 python scripts/run_29_qubits.py 29 7,8,9 4            # n, seeds, instances in parallel (Linux; on macOS use 1)
 python scripts/run_29_qubits.py 16 7 1 test           # check against the notebook's simulator
-python report/make_q29_report.py && cd report && tectonic main.tex
+python report/make_q29_report.py && cd report && SOURCE_DATE_EPOCH=1791676800 tectonic main.tex   # fixed date: byte-identical PDF
 ```
 
 The checkpoints in `results/` let Task 04 and 04b resume. They are reused only when the settings, the problem data and the code are unchanged. The code check compares Python bytecode, so the checkpoints are reused when the notebook runs in Jupyter, VS Code or nbconvert with Python 3.12. A script that `exec()`s whole cells, or another Python version, recomputes everything (about 17 minutes in small mode); the recomputed results were identical.

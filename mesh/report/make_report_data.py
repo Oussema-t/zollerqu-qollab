@@ -108,7 +108,7 @@ for ax, s, tag in zip(axes[2:], SCEN, ("(c) varQITE, equal", "(d) varQITE, CPU +
 axes[2].set_ylabel("approx. ratio $r$ of $\\langle E\\rangle$")
 handles, labels = axes[2].get_legend_handles_labels()
 fig.legend(handles, labels, loc="outside lower right", ncol=4, frameon=False, handlelength=1.5, columnspacing=0.8)
-fig.savefig(os.path.join(HERE, "fig_results.pdf"))
+fig.savefig(os.path.join(HERE, "fig_results.pdf"), metadata={"CreationDate": None})
 fig.savefig(os.path.join(HERE, "fig_results_preview.png"), dpi=250)
 
 # ---- numbers used in the text ----

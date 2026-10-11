@@ -6,7 +6,7 @@ usage: python scripts/run_29_qubits.py <n> <seeds, comma-separated> <parallel in
 Memory per instance at n = 29: energies float32 (2.1 GB) + statevector complex64 (4.3 GB) + small buffers.
 Nothing here is tuned on the n = 29 instances: the angles and depths come from scripts/q29_choice.json (chosen at n = 20).
 Outputs per instance: <case>_seed<s>_<scenario>.json (metrics) and .raw.npz (everything needed to show the results again:
-the instance itself, all sampled shots, every classical repeat, cost distributions, qubit marginals, most likely splits).
+the instance itself, all sampled shots, the best cost of every classical repeat, cost distributions, qubit marginals, most likely splits).
 """
 import contextlib
 import gc
