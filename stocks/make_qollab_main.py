@@ -386,28 +386,14 @@ def run_backend(circuit, backend, shots, wait_minutes):
         return None
 
 
-def main(circuit: str = "B_lr", layers: int = 3, error_detection: str = "none", checks: int = 1, shots: int = 1000, wait_minutes: int = 60, seed: int = 2026):
-    """circuit: B_lr (any layers), B_cvar_p3, B_lr_p1, B_lr_p3, A_cd_p3 or control_p0; layers: for B_lr (1-6, 8, 10, 12, 16);
-    error_detection: none or iceberg; checks: Iceberg syndrome checks (1 = after the last layer only); ONE circuit per job."""
-    print("ZollerQu portfolio selection, 12 assets. This effort is supported by Qollab & IonQ.")
-    print("assets (qubit 0 first):", ", ".join(TICKERS))
-    key = circuit.strip()
-    if key != "B_lr" and key not in CIRCUIT_KEYS:
-        print("Unknown circuit %r. Allowed: B_lr, %s. Using B_lr." % (circuit, ", ".join(CIRCUIT_KEYS)))
-        key = "B_lr"
-    spec = lr_spec(int(layers)) if key == "B_lr" else next(x for x in CIRCUITS if x["name"] == CIRCUIT_KEYS[key])
-    if key != "B_lr" and int(layers) != len(spec["angles"]["gammas"]):
-        print("Note: %s has a fixed number of layers (%d); the 'layers' field is used only with B_lr." % (key, len(spec["angles"]["gammas"])))
-    detection = error_detection.strip().lower()
-    if detection not in ("none", "iceberg"):
-        print("Unknown error_detection %r: use none or iceberg. Using none." % error_detection)
-        detection = "none"
+def run_one(spec, key, detection, checks, shots, wait_minutes, seed, backend, show_figures):
+    """One job: build the circuit (plain or Iceberg), run it, decode, score, save; returns the saved record."""
     plain = build_circuit(spec)
     ice, info, why = build_iceberg(spec, checks) if detection == "iceberg" else (None, None, None)
     if detection == "iceberg" and ice is None:
         print("Iceberg is not available for this circuit:", why)
         print("Nothing was sent. Choose another circuit or error_detection = none.")
-        return
+        return None
     qc = ice if detection == "iceberg" else plain
     res_plain = resources(plain)
     print("Circuit: %s | mode %s | layers %d | noiseless P(best per shot) %.4f" % (spec["name"], spec["mode"], len(spec["angles"]["gammas"]), spec["p_optimum_noiseless"]))
@@ -417,7 +403,6 @@ def main(circuit: str = "B_lr", layers: int = 3, error_detection: str = "none", 
         res = resources(ice)
         print("  Iceberg: %2d qubits, %4d two-qubit gates, depth %4d (14 code qubits + 1 flag + 2 ancillas x %d checks after layers %s)" % (
             res["qubits"], res["two_qubit_gates"], res["depth"], info["checks"], info["checks_after_layers"]))
-    backend = globals().get("backend")  # Qollab pre-creates `backend` from the Run dialog
     counts, source, compiled_two = None, None, None
     if backend is not None:
         print("Running on:", getattr(backend, "name", backend), "| one job: %s, %s, %d shots" % (spec["name"], detection, shots))
@@ -466,9 +451,10 @@ def main(circuit: str = "B_lr", layers: int = 3, error_detection: str = "none", 
         if not logical:
             break
         model = spec["model"] if spec["mode"] != "both" else next(x["model"] for x in CIRCUITS if x["mode"] == mode)
-        text_charts(logical, plain, model, mode, sum(logical.values()), source + (", kept shots" if tally else ""))
-        plots(logical, plain, model, mode, sum(logical.values()), source + (", kept shots" if tally else ""), "%s, scored as %s" % (title, mode))
-    if tally:
+        if show_figures:
+            text_charts(logical, plain, model, mode, sum(logical.values()), source + (", kept shots" if tally else ""))
+            plots(logical, plain, model, mode, sum(logical.values()), source + (", kept shots" if tally else ""), "%s, scored as %s" % (title, mode))
+    if tally and show_figures:
         iceberg_plot(tally, report[0] if report and report[0].get("shots") else None, spec, spec["name"])
     payload = {"source": source, "shots": shots, "backend": None if backend is None else str(getattr(backend, "name", backend)),
                "circuit": spec["name"], "key": key, "layers": len(spec["angles"]["gammas"]), "error_detection": detection,
@@ -485,6 +471,126 @@ def main(circuit: str = "B_lr", layers: int = 3, error_detection: str = "none", 
         print("Could not save a file here (%s); copy the RAW COUNTS line below instead." % err)
     print("RAW COUNTS (copy this line to save the run):")
     print(json.dumps(payload))
+    return payload
+
+
+
+
+def comparison_plot(payloads):
+    """The figure for the video: plain vs Iceberg against the number of layers (all runs of this session)."""
+    try:
+        import matplotlib.pyplot as plt
+    except Exception as err:
+        print("(matplotlib not available here: %s)" % err)
+        return
+    rows = {}
+    for d in payloads:
+        if d and d["summary"] and d["summary"][0].get("shots"):
+            s = d["summary"][0]
+            kept = d["iceberg"]["accepted"] / max(d["iceberg"]["shots"], 1) if d["iceberg"] else 1.0
+            rows[(d["layers"], d["error_detection"])] = {"kept_p": s["p_optimum"], "sent_p": s["p_optimum"] * kept, "kept": kept,
+                                                         "noiseless": d["noiseless_p_optimum"], "gates": d["resources"]["two_qubit_gates"],
+                                                         "qubits": d["resources"]["qubits"], "source": d["source"]}
+    layers = sorted({p for p, _ in rows})
+    if not layers:
+        return
+    source = "IonQ noise model via Qollab" if any(r["source"] == "backend" for r in rows.values()) else "local NOISELESS sampling (no backend)"
+    fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
+    ax = axes[0]
+    noiseless = [1000 * next(r["noiseless"] for (q, _), r in rows.items() if q == p) for p in layers]
+    ax.plot(layers, noiseless, color="#7a7a7a", ls="--", lw=2, marker="o", label="noiseless (exact)")
+    for det, field, color, marker, label in (("none", "sent_p", "#2a78d6", "o", "plain QAOA"),
+                                             ("iceberg", "kept_p", "#1baf7a", "s", "Iceberg, per kept shot"),
+                                             ("iceberg", "sent_p", "#0d6b4c", "^", "Iceberg, per shot sent")):
+        ps = [p for p in layers if (p, det) in rows]
+        if ps:
+            ax.plot(ps, [1000 * rows[(p, det)][field] for p in ps], color=color, lw=3, marker=marker, ms=10, label=label)
+    ax.set_xlabel("QAOA layers p")
+    ax.set_ylabel("best portfolio per 1,000 shots")
+    ax.set_title("success rate (1 best of 4,096 portfolios)", loc="left")
+    ax.set_xticks(layers)
+    ax.legend(fontsize=9)
+    ax.grid(alpha=0.3)
+    ax = axes[1]
+    ps = [p for p in layers if (p, "iceberg") in rows]
+    if ps:
+        ax.bar([str(p) for p in ps], [100 * rows[(p, "iceberg")]["kept"] for p in ps], color="#1baf7a")
+        for k, p in enumerate(ps):
+            ax.annotate("%.0f %%" % (100 * rows[(p, "iceberg")]["kept"]), (k, 100 * rows[(p, "iceberg")]["kept"]), xytext=(0, 3), textcoords="offset points", ha="center")
+    ax.set_ylim(0, 105)
+    ax.set_xlabel("QAOA layers p")
+    ax.set_ylabel("% of shots kept")
+    ax.set_title("Iceberg: shots that pass every check", loc="left")
+    ax.grid(alpha=0.3, axis="y")
+    ax = axes[2]
+    width = 0.38
+    x = np.arange(len(layers))
+    for shift, det, color, label in ((-width / 2, "none", "#2a78d6", "plain"), (width / 2, "iceberg", "#1baf7a", "Iceberg")):
+        vals = [rows[(p, det)]["gates"] if (p, det) in rows else 0 for p in layers]
+        ax.bar(x + shift, vals, width, color=color, label=label)
+        for xx, (p, v) in zip(x + shift, zip(layers, vals)):
+            if v:
+                ax.annotate("%d q" % rows[(p, det)]["qubits"], (xx, v), xytext=(0, 3), textcoords="offset points", ha="center", fontsize=8)
+    ax.set_xticks(x, [str(p) for p in layers])
+    ax.set_xlabel("QAOA layers p")
+    ax.set_ylabel("two-qubit gates (q = qubits)")
+    ax.set_title("cost of the circuit", loc="left")
+    ax.legend(fontsize=9)
+    ax.grid(alpha=0.3, axis="y")
+    fig.suptitle("12 assets, plain QAOA vs Iceberg error detection: %s" % source)
+    fig.tight_layout()
+    plt.show()
+
+
+def main(layers: str = "1,2,3", error_detection: str = "both", circuit: str = "B_lr", checks: int = 1, shots: int = 1000, wait_minutes: int = 30, seed: int = 2026):
+    """Press Run once: every layer count in `layers` (e.g. 1,2,3) is run without and with Iceberg (error_detection: both,
+    none or iceberg), ONE circuit per job, one job after the other; a comparison figure follows at the end.
+    circuit: B_lr (layers 1-6, 8, 10, 12, 16) or a fixed circuit (B_cvar_p3, B_lr_p1, B_lr_p3, A_cd_p3, control_p0)."""
+    print("ZollerQu portfolio selection, 12 assets. This effort is supported by Qollab & IonQ.")
+    print("assets (qubit 0 first):", ", ".join(TICKERS))
+    key = str(circuit).strip()
+    if key != "B_lr" and key not in CIRCUIT_KEYS:
+        print("Unknown circuit %r. Allowed: B_lr, %s. Using B_lr." % (circuit, ", ".join(CIRCUIT_KEYS)))
+        key = "B_lr"
+    try:
+        layer_list = [int(x) for x in str(layers).replace(";", ",").replace(" ", ",").split(",") if x.strip()]
+    except ValueError:
+        print("Could not read layers %r (use e.g. 1,2,3); using 3." % layers)
+        layer_list = [3]
+    if key != "B_lr":
+        layer_list = [None]
+    detection = str(error_detection).strip().lower()
+    detections = {"both": ["none", "iceberg"], "none": ["none"], "iceberg": ["iceberg"]}.get(detection)
+    if detections is None:
+        print("Unknown error_detection %r: use both, none or iceberg. Using both." % error_detection)
+        detections = ["none", "iceberg"]
+    plan = [(p, d) for p in layer_list for d in detections]
+    backend = globals().get("backend")  # Qollab pre-creates `backend` from the Run dialog
+    print("Plan: %d job(s), one circuit each, %d shots each: %s" % (len(plan), shots, ", ".join(
+        "%s%s" % ("layers %d " % p if p else key + " ", d) for p, d in plan)))
+    payloads = []
+    for n, (p, d) in enumerate(plan, 1):
+        spec = lr_spec(p) if key == "B_lr" else next(x for x in CIRCUITS if x["name"] == CIRCUIT_KEYS[key])
+        print()
+        print("=" * 100)
+        print("Job %d of %d: %s, error detection: %s" % (n, len(plan), spec["name"], d))
+        try:
+            payloads.append(run_one(spec, key, d, checks, shots, wait_minutes, seed, backend, show_figures=(len(plan) == 1)))
+        except Exception as err:   # keep going with the next job
+            print("This job failed:", type(err).__name__, err)
+    done = [x for x in payloads if x]
+    if len(plan) > 1 and done:
+        print()
+        print("=" * 100)
+        print("Summary of all jobs (P(best) = share of shots that are the exact best portfolio)")
+        print("%-7s %-9s %7s %10s %8s %16s %16s %10s" % ("layers", "detection", "qubits", "2q gates", "kept", "P(best) kept", "P(best) per sent", "noiseless"))
+        for x in done:
+            s = x["summary"][0]
+            kept = x["iceberg"]["accepted"] / max(x["iceberg"]["shots"], 1) if x["iceberg"] else 1.0
+            pk = s.get("p_optimum", 0.0)
+            print("%-7d %-9s %7d %10d %7.1f%% %16.4f %16.4f %10.4f" % (x["layers"], x["error_detection"], x["resources"]["qubits"],
+                  x["resources"]["two_qubit_gates"], 100 * kept, pk, pk * kept, x["noiseless_p_optimum"]))
+        comparison_plot(done)
 
 
 if sys.platform != "emscripten":  # Qollab (Pyodide) calls main() itself; locally we call it here
