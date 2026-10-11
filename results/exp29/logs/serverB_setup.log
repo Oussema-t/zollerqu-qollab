@@ -1,0 +1,26 @@
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+ systemctl restart atd.service cron.service multipathd.service packagekit.service polkit.service qemu-guest-agent.service rsyslog.service ssh.service systemd-journald.service systemd-networkd.service systemd-resolved.service systemd-timesyncd.service systemd-udevd.service
+
+Service restarts being deferred:
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart getty@tty1.service
+ systemctl restart serial-getty@ttyS0.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+User sessions running outdated binaries:
+ root @ session #3: bash[1440]
+ root @ user manager service: systemd[1260]
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+SETUP_DONE
+16
+               total        used        free      shared  buff/cache   available
+Mem:              30           0          28           0           1          29
+Model name:                              AMD EPYC-Genoa Processor
+BIOS Model name:                         NotSpecified  CPU @ 2.0GHz

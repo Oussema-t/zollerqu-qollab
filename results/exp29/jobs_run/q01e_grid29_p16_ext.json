@@ -1,0 +1,27 @@
+[
+ {
+  "problem": {
+   "n": 29,
+   "mode": "buy_or_skip",
+   "kind": "dense"
+  },
+  "jobs": [
+   {
+    "id": "s3_grid29_p16_ext",
+    "type": "grid",
+    "p": 16,
+    "factor": "combination: depth 16 + ramp re-tuned at 29",
+    "dgammas": [
+     3.2,
+     3.6,
+     4.0
+    ],
+    "dbetas": [
+     -0.7,
+     -0.6,
+     -0.5
+    ]
+   }
+  ]
+ }
+]

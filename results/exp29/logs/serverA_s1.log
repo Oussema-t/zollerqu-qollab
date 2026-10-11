@@ -1,0 +1,4 @@
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 8 threads, set up in 11 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s1_grid29_p3 p=3: lowest expectation at (1.7, -0.6): quality 0.9748  P(opt) 1.042e-04  hit@1000 0.0990

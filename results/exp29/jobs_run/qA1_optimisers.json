@@ -1,0 +1,56 @@
+[
+ {
+  "problem": {
+   "n": 29,
+   "mode": "buy_or_skip",
+   "kind": "dense"
+  },
+  "jobs": [
+   {
+    "id": "s2_cobyla",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "COBYLA",
+    "start": {
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "name": "ramp tuned at 12"
+    },
+    "objective": "expectation",
+    "seed": 2026,
+    "cap": 40,
+    "factor": "optimiser"
+   },
+   {
+    "id": "s2_neldermead",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "Nelder-Mead",
+    "start": {
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "name": "ramp tuned at 12"
+    },
+    "objective": "expectation",
+    "seed": 2026,
+    "cap": 40,
+    "factor": "optimiser"
+   },
+   {
+    "id": "s2_lbfgsb",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "L-BFGS-B",
+    "start": {
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "name": "ramp tuned at 12"
+    },
+    "objective": "expectation",
+    "seed": 2026,
+    "cap": 40,
+    "factor": "optimiser"
+   }
+  ]
+ }
+]

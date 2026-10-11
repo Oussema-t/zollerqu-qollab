@@ -1,0 +1,43 @@
+[
+ {
+  "problem": {
+   "n": 29,
+   "mode": "buy_or_skip",
+   "kind": "dense"
+  },
+  "jobs": [
+   {
+    "id": "s0_baseline_ramp12",
+    "type": "eval",
+    "factor": "baseline",
+    "points": [
+     {
+      "p": 1,
+      "dgamma": 1.0,
+      "dbeta": -0.7
+     },
+     {
+      "p": 2,
+      "dgamma": 1.4,
+      "dbeta": -0.6
+     },
+     {
+      "p": 3,
+      "dgamma": 1.4,
+      "dbeta": -0.6
+     },
+     {
+      "p": 4,
+      "dgamma": 1.4,
+      "dbeta": -0.5
+     },
+     {
+      "p": 5,
+      "dgamma": 1.3,
+      "dbeta": -0.5
+     }
+    ]
+   }
+  ]
+ }
+]

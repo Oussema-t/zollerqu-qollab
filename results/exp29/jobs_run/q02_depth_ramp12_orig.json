@@ -1,0 +1,49 @@
+[
+ {
+  "problem": {
+   "n": 29,
+   "mode": "buy_or_skip",
+   "kind": "dense"
+  },
+  "jobs": [
+   {
+    "id": "s1_depth_ramp12_orig",
+    "type": "eval",
+    "factor": "depth",
+    "label": "ramp tuned at 12 on the original grid (dgamma up to 1.5)",
+    "points": [
+     {
+      "p": 6,
+      "dgamma": 1.5,
+      "dbeta": -0.9,
+      "label": "ramp tuned at 12 on the original grid (dgamma up to 1.5), p=6"
+     },
+     {
+      "p": 8,
+      "dgamma": 1.5,
+      "dbeta": -0.7,
+      "label": "ramp tuned at 12 on the original grid (dgamma up to 1.5), p=8"
+     },
+     {
+      "p": 10,
+      "dgamma": 1.5,
+      "dbeta": -0.6,
+      "label": "ramp tuned at 12 on the original grid (dgamma up to 1.5), p=10"
+     },
+     {
+      "p": 12,
+      "dgamma": 1.5,
+      "dbeta": -0.5,
+      "label": "ramp tuned at 12 on the original grid (dgamma up to 1.5), p=12"
+     },
+     {
+      "p": 16,
+      "dgamma": 1.5,
+      "dbeta": -0.4,
+      "label": "ramp tuned at 12 on the original grid (dgamma up to 1.5), p=16"
+     }
+    ]
+   }
+  ]
+ }
+]

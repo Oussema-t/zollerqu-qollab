@@ -1,0 +1,89 @@
+=== 17:04:29 start q01_depth_ramp12_wide
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 12 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s1_depth_ramp12_wide p=5: quality 0.9761  P(opt) 1.024e-04  hit@1000 0.0974  (15.51 s)
+    s1_depth_ramp12_wide p=6: quality 0.9804  P(opt) 2.079e-04  hit@1000 0.1877  (16.06 s)
+    s1_depth_ramp12_wide p=8: quality 0.9838  P(opt) 4.657e-04  hit@1000 0.3724  (20.7 s)
+    s1_depth_ramp12_wide p=10: quality 0.9851  P(opt) 6.884e-04  hit@1000 0.4977  (25.88 s)
+    s1_depth_ramp12_wide p=12: quality 0.9871  P(opt) 9.703e-04  hit@1000 0.6212  (31.7 s)
+    s1_depth_ramp12_wide p=16: quality 0.9896  P(opt) 2.293e-03  hit@1000 0.8993  (45.88 s)
+ALL JOBS DONE
+=== 17:07:17 end q01_depth_ramp12_wide
+=== 17:07:18 start q02_depth_ramp12_orig
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 12 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s1_depth_ramp12_orig p=6: quality 0.9723  P(opt) 6.121e-05  hit@1000 0.0594  (18.43 s)
+    s1_depth_ramp12_orig p=8: quality 0.9772  P(opt) 1.122e-04  hit@1000 0.1061  (20.94 s)
+    s1_depth_ramp12_orig p=10: quality 0.9804  P(opt) 1.930e-04  hit@1000 0.1756  (25.69 s)
+    s1_depth_ramp12_orig p=12: quality 0.9827  P(opt) 3.034e-04  hit@1000 0.2617  (32.51 s)
+    s1_depth_ramp12_orig p=16: quality 0.9854  P(opt) 6.027e-04  hit@1000 0.4528  (40.87 s)
+ALL JOBS DONE
+=== 17:09:49 end q02_depth_ramp12_orig
+=== 17:09:49 start q01b_depth_deep
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 12 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s1_depth_ramp12_deep p=16: quality 0.9894  P(opt) 2.091e-03  hit@1000 0.8767  (43.89 s)
+    s1_depth_ramp12_deep p=20: quality 0.9908  P(opt) 3.427e-03  hit@1000 0.9677  (51.33 s)
+    s1_depth_ramp12_deep p=24: quality 0.9926  P(opt) 5.416e-03  hit@1000 0.9956  (60.77 s)
+    s1_depth_ramp12_deep p=32: quality 0.9947  P(opt) 1.025e-02  hit@1000 1.0000  (81.15 s)
+ALL JOBS DONE
+=== 17:13:59 end q01b_depth_deep
+=== 17:13:59 start q01c_grid29_p16
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 11 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s3_grid29_p16 p=16: lowest expectation at (3.2, -0.6) [grid edge]: quality 0.9902  P(opt) 2.944e-03  hit@1000 0.9476
+ALL JOBS DONE
+=== 17:20:14 end q01c_grid29_p16
+=== 17:20:14 start q01d_longshort_depth
+problem {'n': 29, 'mode': 'long_short', 'kind': 'dense'}: 406 pair terms, e_min -0.010168, 1 optimal state(s), 15 threads, set up in 11 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s4_longshort_depth p=3: quality 0.9464  P(opt) 7.741e-07  hit@1000 0.0008  (10.19 s)
+    s4_longshort_depth p=8: quality 0.9703  P(opt) 3.660e-05  hit@1000 0.0359  (19.94 s)
+    s4_longshort_depth p=16: quality 0.9826  P(opt) 4.667e-04  hit@1000 0.3730  (39.61 s)
+ALL JOBS DONE
+=== 17:21:36 end q01d_longshort_depth
+=== 17:21:36 start q01e_grid29_p16_ext
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 12 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s3_grid29_p16_ext p=16: lowest expectation at (3.6, -0.7) [grid edge]: quality 0.9907  P(opt) 3.317e-03  hit@1000 0.9639
+ALL JOBS DONE
+=== 17:27:56 end q01e_grid29_p16_ext
+=== 17:27:56 start q03a_chains
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 12 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s2_spsa_seed2026: 39 evaluations, start hit@1000 0.0248 -> selected 0.0923 (quality 0.9583 -> 0.9740); finished its steps
+    s2_spsa_seed2027: 39 evaluations, start hit@1000 0.0059 -> selected 0.0311 (quality 0.9452 -> 0.9655); finished its steps
+    s2_cobyla_cvar0.1: 40 evaluations, start hit@1000 0.0660 -> selected 0.1535 (quality 0.9733 -> 0.9748); Return from COBYLA because the objective function has been evaluated MAXFUN times.
+    s2_cobyla_shots1000_seed2026: 38 evaluations, start hit@1000 0.0660 -> selected 0.1098 (quality 0.9733 -> 0.9762); Return from COBYLA because the trust region radius reaches its lower bound.
+ALL JOBS DONE
+=== 17:48:24 end q03a_chains
+=== 17:48:24 start q02z_longshort_deep
+problem {'n': 29, 'mode': 'long_short', 'kind': 'dense'}: 406 pair terms, e_min -0.010168, 1 optimal state(s), 15 threads, set up in 12 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s4_longshort_depth_deep p=24: quality 0.9889  P(opt) 3.924e-03  hit@1000 0.9804  (65.41 s)
+    s4_longshort_depth_deep p=32: quality 0.9914  P(opt) 1.111e-02  hit@1000 1.0000  (82.57 s)
+ALL JOBS DONE
+=== 17:51:05 end q02z_longshort_deep
+=== 17:51:05 start q03b_chains
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 11 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s2_cobyla_shots1000_seed2027: 40 evaluations, start hit@1000 0.0660 -> selected 0.1090 (quality 0.9733 -> 0.9754); Return from COBYLA because the objective function has been evaluated MAXFUN times.
+    s2_cobyla_shots10000_seed2026: 40 evaluations, start hit@1000 0.0660 -> selected 0.1048 (quality 0.9733 -> 0.9765); Return from COBYLA because the objective function has been evaluated MAXFUN times.
+ALL JOBS DONE
+=== 18:01:26 end q03b_chains
+=== 18:01:26 start q04_random_seed2
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 12 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s2_cobyla_random_seed2: 40 evaluations, start hit@1000 0.0000 -> selected 0.0769 (quality 0.4928 -> 0.9727); Return from COBYLA because the objective function has been evaluated MAXFUN times.
+ALL JOBS DONE
+=== 18:06:41 end q04_random_seed2

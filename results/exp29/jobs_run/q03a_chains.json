@@ -1,0 +1,71 @@
+[
+ {
+  "problem": {
+   "n": 29,
+   "mode": "buy_or_skip",
+   "kind": "dense"
+  },
+  "jobs": [
+   {
+    "id": "s2_spsa_seed2026",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "SPSA",
+    "start": {
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "name": "ramp tuned at 12"
+    },
+    "objective": "expectation",
+    "seed": 2026,
+    "cap": 40,
+    "factor": "optimiser"
+   },
+   {
+    "id": "s2_spsa_seed2027",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "SPSA",
+    "start": {
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "name": "ramp tuned at 12"
+    },
+    "objective": "expectation",
+    "seed": 2027,
+    "cap": 40,
+    "factor": "optimiser"
+   },
+   {
+    "id": "s2_cobyla_cvar0.1",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "COBYLA",
+    "start": {
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "name": "ramp tuned at 12"
+    },
+    "objective": "cvar_0.1",
+    "seed": 2026,
+    "cap": 40,
+    "factor": "objective"
+   },
+   {
+    "id": "s2_cobyla_shots1000_seed2026",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "COBYLA",
+    "start": {
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "name": "ramp tuned at 12"
+    },
+    "objective": "shots_1000",
+    "seed": 2026,
+    "cap": 40,
+    "factor": "shots"
+   }
+  ]
+ }
+]

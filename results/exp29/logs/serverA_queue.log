@@ -1,0 +1,15 @@
+=== 17:05:52 start qA1_optimisers
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 15 threads, set up in 15 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s2_cobyla: 40 evaluations, start hit@1000 0.0660 -> selected 0.1306 (quality 0.9733 -> 0.9782); Return from COBYLA because the objective function has been evaluated MAXFUN times.
+    s2_neldermead: 40 evaluations, start hit@1000 0.0660 -> selected 0.1149 (quality 0.9733 -> 0.9774); Maximum number of function evaluations has been exceeded.
+    s2_lbfgsb: 40 evaluations, start hit@1000 0.0660 -> selected 0.1189 (quality 0.9733 -> 0.9765); stopped at the evaluation cap
+ALL JOBS DONE
+=== 17:46:08 start qA2_chains
+problem {'n': 29, 'mode': 'buy_or_skip', 'kind': 'dense'}: 406 pair terms, e_min -0.006209, 1 optimal state(s), 8 threads, set up in 11 s
+/root/zq/stocks/fast_sim.py:92: NumbaWarning: Cannot cache compiled function "_summary" as it uses dynamic globals (such as ctypes pointers and large global arrays)
+  @nb.njit(parallel=True, cache=True)
+    s2_cobyla_random_seed1: 40 evaluations, start hit@1000 0.0000 -> selected 0.0711 (quality 0.7999 -> 0.9807); Return from COBYLA because the objective function has been evaluated MAXFUN times.
+ALL JOBS DONE
+=== 17:59:28 end qA2_chains

@@ -1,0 +1,24 @@
+[
+ {
+  "problem": {
+   "n": 29,
+   "mode": "buy_or_skip",
+   "kind": "dense"
+  },
+  "jobs": [
+   {
+    "id": "s2_cobyla_random_seed2",
+    "type": "opt",
+    "p": 3,
+    "optimizer": "COBYLA",
+    "start": {
+     "random_seed": 2
+    },
+    "objective": "expectation",
+    "seed": 2026,
+    "cap": 40,
+    "factor": "initialisation"
+   }
+  ]
+ }
+]

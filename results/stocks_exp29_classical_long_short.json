@@ -1,0 +1,73 @@
+{
+ "n": 29,
+ "mode": "long_short",
+ "repetitions": 200,
+ "e_min": -0.010168202221393585,
+ "e_max": 0.350227952003479,
+ "budgets": {
+  "100": {
+   "random sampling": {
+    "hit_rate": 0.0,
+    "mean_best_quality": 0.9643604144249046
+   },
+   "greedy descent (restarted)": {
+    "hit_rate": 0.0,
+    "mean_best_quality": 0.9582672020050018,
+    "mean_restarts": 1.0
+   },
+   "simulated annealing (one run)": {
+    "hit_rate": 0.0,
+    "mean_best_quality": 0.9708324448559607
+   },
+   "seconds": 0.1
+  },
+  "1000": {
+   "random sampling": {
+    "hit_rate": 0.0,
+    "mean_best_quality": 0.9771744698860758
+   },
+   "greedy descent (restarted)": {
+    "hit_rate": 0.015,
+    "mean_best_quality": 0.9926691596456908,
+    "mean_restarts": 3.925
+   },
+   "simulated annealing (one run)": {
+    "hit_rate": 0.035,
+    "mean_best_quality": 0.9924084040614416
+   },
+   "seconds": 0.7
+  },
+  "10000": {
+   "random sampling": {
+    "hit_rate": 0.0,
+    "mean_best_quality": 0.9846898887163951
+   },
+   "greedy descent (restarted)": {
+    "hit_rate": 0.195,
+    "mean_best_quality": 0.9989144296780467,
+    "mean_restarts": 35.025
+   },
+   "simulated annealing (one run)": {
+    "hit_rate": 0.42,
+    "mean_best_quality": 0.9993000237609951
+   },
+   "seconds": 7.0
+  },
+  "100000": {
+   "random sampling": {
+    "hit_rate": 0.0,
+    "mean_best_quality": 0.9905347410988955
+   },
+   "greedy descent (restarted)": {
+    "hit_rate": 0.895,
+    "mean_best_quality": 0.9999411616485492,
+    "mean_restarts": 346.905
+   },
+   "simulated annealing (one run)": {
+    "hit_rate": 0.98,
+    "mean_best_quality": 0.9999890200417574
+   },
+   "seconds": 71.2
+  }
+ }
+}

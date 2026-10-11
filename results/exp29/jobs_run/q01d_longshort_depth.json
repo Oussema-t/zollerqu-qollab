@@ -1,0 +1,37 @@
+[
+ {
+  "problem": {
+   "n": 29,
+   "mode": "long_short",
+   "kind": "dense"
+  },
+  "jobs": [
+   {
+    "id": "s4_longshort_depth",
+    "type": "eval",
+    "factor": "robustness: long/short mode",
+    "label": "long/short, ramp tuned at 12",
+    "points": [
+     {
+      "p": 3,
+      "dgamma": 0.7,
+      "dbeta": -0.4,
+      "label": "long/short, ramp tuned at 12, p=3"
+     },
+     {
+      "p": 8,
+      "dgamma": 0.8,
+      "dbeta": -0.4,
+      "label": "long/short, ramp tuned at 12, p=8"
+     },
+     {
+      "p": 16,
+      "dgamma": 0.8,
+      "dbeta": -0.3,
+      "label": "long/short, ramp tuned at 12, p=16"
+     }
+    ]
+   }
+  ]
+ }
+]
