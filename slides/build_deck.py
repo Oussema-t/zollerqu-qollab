@@ -118,6 +118,11 @@ def collect():
     put("classical_runs", classical["runs"], f"{CANDIDATES_FILE}: classical_evaluations_to_solution.{MODE}.runs")
     trained = [r for r in cand["rows"] if r["family"] != "control"]
     put("circuits_compared", len(trained), f"{CANDIDATES_FILE}: rows without the control")
+    families = sorted({r["family"] for r in trained})
+    put("families", families, f"{CANDIDATES_FILE}: distinct 'family' values without the control")
+    lr3 = next(r for r in cand["rows"] if r["name"] == "B LR-QAOA p=3")
+    put("p_lr3_12", lr3["p_optimum_noiseless"], f"{CANDIDATES_FILE}: rows['B LR-QAOA p=3'].p_optimum_noiseless")
+    put("cvar_start", row.get("start"), f"{CANDIDATES_FILE}: rows['{CIRCUIT}'].start (the CVaR run started from the tuned ramp)")
     best12 = max(trained, key=lambda r: r["p_optimum_noiseless"])
     if best12["name"] != CIRCUIT or max(trained, key=lambda r: r["crude_noisy_p_optimum"])["name"] != CIRCUIT:
         raise ValueError(f"the circuit sent to IonQ ({CIRCUIT}) is no longer the best 12-qubit candidate ({best12['name']})")
@@ -177,6 +182,13 @@ def collect():
     paper = {r["p"]: r["hit@1000"] for r in rows if r["source"] == "s0_baseline_ramp12" or "original grid" in r["label"]}
     wider = {r["p"]: r["hit@1000"] for r in rows if (r["source"] == "s0_baseline_ramp12" and r["p"] <= 4) or "wide grid" in r["label"]
              or ("deep grid" in r["label"] and r["p"] > 16)}
+    exp = load(EXP29_FILE)
+    sign = tuning["models"][MODE + "|balance_off"]["lr"]["3"]
+    put("p_sign_wrong", sign["recipe_as_written"]["p_optimum"], f"{TUNING_FILE}: models['{MODE}|balance_off'].lr['3'].recipe_as_written.p_optimum")
+    put("p_sign_right", sign["best"]["p_optimum"], f"{TUNING_FILE}: models['{MODE}|balance_off'].lr['3'].best.p_optimum")
+    retune = [r for r in exp["rows"] if r["mode"] == MODE and r["factor"] == "ramp re-tuned at 29"]
+    put("pick_energy_29", next(r["hit@1000"] for r in retune if "lowest expectation" in r["label"]), f"{EXP29_FILE}: ramp re-tuned at 29, lowest expectation, hit@1000")
+    put("pick_cvar_29", next(r["hit@1000"] for r in retune if "CVaR" in r["label"]), f"{EXP29_FILE}: ramp re-tuned at 29, lowest CVaR 0.1, hit@1000")
     put("depth_paper", {str(k): v for k, v in sorted(paper.items())}, f"{EXP29_FILE}: rows, ramp tuned at 12 with strength <= 1.5 (paper grid)")
     put("depth_wider", {str(k): v for k, v in sorted(wider.items())}, f"{EXP29_FILE}: rows, ramp tuned at 12 on the wider grids (strength <= 3.0 up to 16 layers, <= 6.0 above)")
     put("gates_layer_29", next(r["two_qubit_gates"] // r["p"] for r in rows), f"{EXP29_FILE}: two_qubit_gates / p")
@@ -706,8 +718,8 @@ def build_slides(n, figures, tickers, buy, corr):
 
     # 1 ---------------------------------------------------------------- title
     s = Slide(1, "TEAM ZOLLERQU", ["Portfolio Selection", "with QAOA"], title_size=52, hero=True, notes=(
-        "Hi, we are team ZollerQu. Our question is simple: which stocks should a fund buy? "
-        "We turn it into an Ising problem, one qubit per asset, and sample it with QAOA on the IonQ Forte 1 noise model."))
+        "Hi, we are team ZollerQu. Which stocks should a fund buy? "
+        "We turn this into an Ising problem, one qubit per asset, and sample it with QAOA on the IonQ Forte 1 noise model."))
     y = s.text(MX, 3.95, 6.9, ["Which stocks to buy? One qubit per asset,", "sampled on the IonQ Forte 1 noise model."], size=22, color=MUTED)
     s.text(MX, y + 0.4, 6.9, ["Oussama Turki  ·  Tushar Pandey"], size=22, bold=True)
     s.pill(MX, 5.75, 5.6, ATTRIBUTION)
@@ -718,7 +730,7 @@ def build_slides(n, figures, tickers, buy, corr):
     s = Slide(2, "PROBLEM", "Which assets should a fund buy?", source=[
         f"Data: weekly prices of 12 US stocks and funds, {n['train_first'][:4]}-{n['train_last'][:4]} (Kaggle Huge Stock Market Dataset, CC0)"], notes=(
         "Banks and funds build portfolios every day. They want low risk and a good return. "
-        "Risk comes from assets that fall together, so the choices interact. "
+        "Risk comes from assets that fall together. "
         f"Twelve assets give {n['states']:,} portfolios; twenty-nine give over five hundred million."))
     y = s.bullets(MX, 1.85, 5.2, [["Banks and funds build", "portfolios every day"], ["They want low risk", "and a good return"],
                                   ["Risk comes from assets", "that fall together"]], size=22, gap=0.3)
@@ -737,7 +749,7 @@ def build_slides(n, figures, tickers, buy, corr):
         f"Exact best portfolio found by checking all {n['states']:,} portfolios (classical); risk and return from {n['train_first'][:4]}-{n['train_last'][:4]} data"], notes=(
         "Each asset becomes one qubit: zero means buy, one means skip. "
         f"Risk minus return becomes an Ising energy with one coupling per pair of assets: {n['pairs_12']} couplings. "
-        f"For twelve assets we can check every portfolio, so we know the exact best one: Apple plus long-term Treasury bonds."))
+        f"For twelve assets we check every portfolio: the best is Apple plus long-term Treasury bonds."))
     s.text(MX, 1.75, 6.3, ["Score to minimise: risk minus return"], size=MIN_PT, color=MUTED)
     s.image(figures["score"], MX, 2.05, 6.2, 1.45, "Formula: J of x equals x transposed C x over n squared V ref (the risk), minus eta times mu transposed x over n sigma ref (the return).")
     s.text(MX, 3.58, 6.3, ["The same score as an Ising energy"], size=MIN_PT, color=MUTED)
@@ -751,12 +763,10 @@ def build_slides(n, figures, tickers, buy, corr):
     s = Slide(4, "QUANTUM METHOD", "QAOA circuits, trained offline, one IonQ job", source=[
         f"12 qubits: {n['circuits_compared']} circuits + a random-guess control, noiseless simulation · 16-29 qubits: server simulation"], notes=(
         "The circuit is QAOA: Hadamard gates, a cost layer with one ZZ gate per pair, then a mixer. "
-        f"We compared {n['circuits_compared']} circuits from seven families, all trained offline. "
-        "At twelve qubits the best is CVaR-QAOA, which went to IonQ as a single job. "
-        "At twenty-nine qubits we use linear-ramp QAOA, with angles reused from twelve."))
+        "At twelve qubits the best is CVaR-QAOA, sent to IonQ as one job; at twenty-nine we use linear-ramp QAOA with angles from twelve."))
     s.image(figures["circuit"], MX, 1.62, CW, 2.6, "Circuit sketch: four of the twelve qubit lines. Each starts with an H gate, passes a cost layer block (one ZZ gate per pair, 66, and one Z rotation per qubit) and a mixer block (RX on every qubit), repeated three times, then is measured; 1,000 shots give 1,000 portfolios.")
     card_w, gap_w, y0, card_h = (CW - 0.5) / 3, 0.25, 4.4, 1.72
-    cards = [("COMPARED", "7 method families", WHITE, [f"{n['circuits_compared']} circuits, trained offline", "on a classical simulator"]),
+    cards = [("COMPARED", "8 circuit types", WHITE, [f"{n['circuits_compared']} circuits, trained offline", "on a classical simulator"]),
              ("BEST AT 12 QUBITS", "CVaR-QAOA", AMBER, [f"3 layers, {n['gates_circuit']} two-qubit gates,", "sent to IonQ as one job"]),
              ("AT 16, 20, 29 QUBITS", "Linear-ramp QAOA", WHITE, ["Angles reused from 12 qubits,", "no new training"])]
     for k, (label, head, color, body) in enumerate(cards):
@@ -767,12 +777,38 @@ def build_slides(n, figures, tickers, buy, corr):
         s.text(x + 0.2, yy + 0.04, card_w - 0.4, body, size=MIN_PT, color=MUTED)
     slides.append(s)
 
+    # 5 ---------------------------------------------------------------- circuit types and the settings that mattered
+    s = Slide(5, "WHAT WE TRIED", "8 circuit types, 5 settings that mattered", source=[
+        "12 assets: noiseless simulation, 10 Oct 2026 · 29 assets: noiseless server simulation, 11 Oct 2026",
+        "per shot = chance that one shot is the best portfolio · runs = 1,000-shot runs that contain it"], notes=(
+        "We tested eight circuit types, six kinds of QAOA and two imaginary-time methods. "
+        "Five settings made the difference: the mixer sign, a CVaR objective, more layers, a wider ramp range, and choosing angles by CVaR."))
+    s.rect(MX, 1.7, 5.1, 4.1)
+    y = s.text(MX + 0.25, 1.86, 4.7, [f"{n['circuits_compared']} circuits tested"], size=22, bold=True)
+    y = s.text(MX + 0.25, y + 0.12, 4.7, ["6 kinds of QAOA"], size=MIN_PT, bold=True, color=TEAL)
+    y = s.bullets(MX + 0.25, y + 0.06, 4.7, [["Linear-ramp QAOA"], ["Free-angle QAOA, 5 optimisers"], ["CVaR-QAOA (α = 0.1, 0.25)"],
+                                             ["Multi-angle QAOA"], ["Counterdiabatic QAOA"], ["XY-mixer QAOA (keeps balance)"]], size=MIN_PT, gap=0.02)
+    y = s.text(MX + 0.25, y + 0.14, 4.7, ["2 imaginary-time methods"], size=MIN_PT, bold=True, color=TEAL)
+    s.bullets(MX + 0.25, y + 0.06, 4.7, [["VarQITE on the QAOA angles"], ["varQITE ansatz (IonQ + ORNL)"]], size=MIN_PT, gap=0.02)
+    settings = [("Mixer sign (12 assets)", f"as written → opposite sign: {100 * n['p_sign_wrong']:.3f} % → {100 * n['p_sign_right']:.1f} % per shot"),
+                ("Objective (12 assets)", f"mean energy → CVaR 0.1: {100 * n['p_lr3_12']:.1f} % → {100 * n['p_noiseless']:.1f} % per shot"),
+                ("Layers (29 assets)", f"3 → 16: {100 * float(n['depth_wider']['3']):.1f} % → {100 * float(n['depth_wider']['16']):.0f} % of runs (noiseless)"),
+                ("Ramp range (29 assets)", f"up to 1.5 → 3.0: {100 * float(n['depth_paper']['16']):.0f} % → {100 * float(n['depth_wider']['16']):.0f} % of runs at 16 layers"),
+                ("Angle choice (29 assets, 3 layers)", f"by energy → by CVaR: {100 * n['pick_energy_29']:.1f} % → {100 * n['pick_cvar_29']:.1f} % of runs")]
+    y = s.text(6.05, 1.7, 6.68, ["Settings we changed (noiseless)"], size=22, bold=True)
+    y += 0.08
+    for name, effect in settings:
+        s.rect(6.05, y, 6.68, 0.68, fill=CARD, radius=0.08)
+        s.text(6.25, y + 0.04, 6.35, [[(name, {"bold": True})], [(effect, {"color": MUTED, "bold": False})]], size=MIN_PT, lead=1.12)
+        y += 0.74
+    slides.append(s)
+
     # 5 ---------------------------------------------------------------- why IonQ
-    s = Slide(5, "WHY IONQ", f"All-to-all links: {n['gates_ratio_12']:.1f}× fewer two-qubit gates", source=[
+    s = Slide(6, "WHY IONQ", f"All-to-all links: {n['gates_ratio_12']:.1f}× fewer two-qubit gates", source=[
         f"Gate counts from transpiling only (Qiskit {n['qiskit']}, level 1); heavy-hex = median of {n['routing_seeds']} routing seeds",
         "on a generic heavy-hex map. No circuit was run on a heavy-hex device."], notes=(
-        "Why IonQ? Every pair of assets is coupled, and trapped ions link every pair of qubits directly. "
-        f"One layer needs {n['gates_all_12']} two-qubit gates. The same layer routed on a heavy-hex grid needs {n['gates_hh_12']}: "
+        "Every pair of assets is coupled, and trapped ions link every pair of qubits directly. "
+        f"One layer needs {n['gates_all_12']} two-qubit gates; on a heavy-hex grid it needs {n['gates_hh_12']}: "
         f"{n['gates_ratio_12']:.1f} times more, and {n['gates_ratio_29']:.1f} times at twenty-nine qubits."))
     s.image(figures["gates"], MX, 1.65, 7.0, 4.15, f"Column chart of two-qubit gates in one QAOA layer. At 12 qubits: {n['gates_all_12']} on all-to-all against {n['gates_hh_12']} on a heavy-hex grid. At 29 qubits: {n['gates_all_29']} against {n['gates_hh_29']:,}.")
     y = s.stat(8.25, 1.7, 4.45, f"{n['gates_ratio_12']:.1f}×", ["fewer two-qubit gates", f"at 12 qubits ({n['gates_all_12']} vs {n['gates_hh_12']})"])
@@ -781,13 +817,13 @@ def build_slides(n, figures, tickers, buy, corr):
     slides.append(s)
 
     # 6 ---------------------------------------------------------------- main result
-    s = Slide(6, "MAIN RESULT", f"IonQ noise model: {ratio} random guessing", source=[
+    s = Slide(7, "MAIN RESULT", f"IonQ noise model: {ratio} random guessing", source=[
         f"{label_noisy}: 1 job, {shots:,} shots, 11 Oct 2026 · noiseless simulation",
         f"Classical: median of {n['classical_runs']} runs. Sampler medians come from the hit rate per shot. Training not counted."], notes=(
         f"The main result, on the IonQ Forte 1 noise model: {hits} of {shots:,} shots were the exact best portfolio, "
         f"{n['ratio_random']:.0f} times more than random guessing. "
         f"The noiseless simulation gives {per_thousand(n['p_noiseless'])}, so noise costs a factor of {n['noise_factor']:.0f}. "
-        "Greedy search, a classical method, is in the same range as our noisy run."))
+        "Classical greedy search is in the same range."))
     s.rect(MX, 1.7, 4.45, 4.15)
     s.text(MX + 0.3, 1.92, 3.9, [label_noisy.replace(" (Qollab)", "")], size=MIN_PT, color=MUTED)
     y = s.stat(MX + 0.3, 2.28, 3.9, f"{hits} / {shots:,}", ["shots are the exact best", f"of {n['states']:,} portfolios"], size=54, color=AMBER)
@@ -803,7 +839,7 @@ def build_slides(n, figures, tickers, buy, corr):
     # 7 ---------------------------------------------------------------- scaling + honest comparison
     w = {int(k): v for k, v in n["depth_wider"].items()}
     gates16 = 16 * n["gates_layer_29"]
-    s = Slide(7, "SCALING AND HONEST COMPARISON", "29 qubits: more layers help, only without noise", source=[
+    s = Slide(8, "SCALING AND HONEST COMPARISON", "29 qubits: more layers help, only without noise", source=[
         f"Server simulation of all {n['states_29']:,} states, 11 Oct 2026; ramp tuned at 12 assets, no tuning at 29",
         f"Classical: greedy descent and annealing, {n['exp_repetitions']} runs, the same {n['budget']:,} evaluations"], notes=(
         f"At twenty-nine assets the three-layer circuit finds the best portfolio in {100 * w[3]:.0f} percent of runs, classical methods in {100 * n['exp_greedy_1000']:.0f}. "
@@ -822,7 +858,7 @@ def build_slides(n, figures, tickers, buy, corr):
     slides.append(s)
 
     # 8 ---------------------------------------------------------------- demo, limits, next steps
-    s = Slide(8, "DEMO, LIMITS, NEXT STEPS", "Try it on Qollab: one click, one IonQ job", notes=(
+    s = Slide(9, "DEMO, LIMITS, NEXT STEPS", "Try it on Qollab: one click, one IonQ job", notes=(
         "[CUT TO LIVE QOLLAB DEMO] Here is the project on Qollab, with the code in main.py. "
         "We press Run, select the IonQ Forte 1 noise model, and one job returns counts and plots. "
         "[BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. "
@@ -845,7 +881,7 @@ def build_slides(n, figures, tickers, buy, corr):
     slides.append(s)
 
     # 9 ---------------------------------------------------------------- closing
-    s = Slide(9, "TEAM ZOLLERQU", ["Thank you for", "your attention"], title_size=52, hero=True, notes=(
+    s = Slide(10, "TEAM ZOLLERQU", ["Thank you for", "your attention"], title_size=52, hero=True, notes=(
         "Thank you for your attention. This effort is supported by Qollab and IonQ."))
     y = s.text(MX, 3.95, 6.9, ["Oussama Turki  ·  Tushar Pandey"], size=22, bold=True)
     closing = ["Portfolio Selection with QAOA"] + [f"{label}: {url}" for label, url in LINKS.items() if url]

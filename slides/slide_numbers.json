@@ -108,6 +108,29 @@
    "value": 58,
    "source": "qollab/circuit_candidates.json: rows without the control"
   },
+  "families": {
+   "value": [
+    "CVaR 0.1",
+    "CVaR 0.25",
+    "LR-QAOA",
+    "LR-QAOA penalty",
+    "VarQITE angle training",
+    "XY mixer",
+    "counterdiabatic",
+    "multi-angle",
+    "standard",
+    "varQITE"
+   ],
+   "source": "qollab/circuit_candidates.json: distinct 'family' values without the control"
+  },
+  "p_lr3_12": {
+   "value": 0.018105300565952966,
+   "source": "qollab/circuit_candidates.json: rows['B LR-QAOA p=3'].p_optimum_noiseless"
+  },
+  "cvar_start": {
+   "value": "lr_tuned",
+   "source": "qollab/circuit_candidates.json: rows['B CVaR 0.1 p=3'].start (the CVaR run started from the tuned ramp)"
+  },
   "best12_name": {
    "value": "B CVaR 0.1 p=3",
    "source": "qollab/circuit_candidates.json: row with the highest p_optimum_noiseless (also the highest crude noisy estimate)"
@@ -279,6 +302,22 @@
   "n29_repetitions": {
    "value": 200,
    "source": "results/stocks_qaoa_n29.json: repetitions"
+  },
+  "p_sign_wrong": {
+   "value": 3.5642340780341414e-05,
+   "source": "results/stocks_qaoa_tuning_n12.json: models['buy_or_skip|balance_off'].lr['3'].recipe_as_written.p_optimum"
+  },
+  "p_sign_right": {
+   "value": 0.01810530056595294,
+   "source": "results/stocks_qaoa_tuning_n12.json: models['buy_or_skip|balance_off'].lr['3'].best.p_optimum"
+  },
+  "pick_energy_29": {
+   "value": 0.09898891046759795,
+   "source": "results/stocks_exp29_summary.json: ramp re-tuned at 29, lowest expectation, hit@1000"
+  },
+  "pick_cvar_29": {
+   "value": 0.17914263895522134,
+   "source": "results/stocks_exp29_summary.json: ramp re-tuned at 29, lowest CVaR 0.1, hit@1000"
   },
   "depth_paper": {
    "value": {
