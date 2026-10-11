@@ -9,15 +9,13 @@ slide_numbers.json (every number on the slides with the result file and key it w
 Local tool only (not part of the Qollab project): needs python-pptx and pymupdf next to the repo's usual packages
 (`./venv/bin/pip install python-pptx pymupdf`); Arial is read from the macOS system fonts.
 
-Nothing is simulated here: numbers are read from results/ and qollab/ (and, for the appendix, from the mesh
-branch through `git show`). The only arithmetic is rounding, ratios, a Clopper-Pearson interval for the measured
+Nothing is simulated here: numbers are read from results/ and qollab/. The only arithmetic is rounding, ratios, a Clopper-Pearson interval for the measured
 hit count, and the median of a geometric distribution (shots until the first hit of a sampler with hit rate p).
 The PPTX and the PDF are drawn from one layout description, with every line break fixed here, so both match.
 """
 import argparse
 import json
 import math
-import subprocess
 from pathlib import Path
 
 import matplotlib
@@ -57,15 +55,13 @@ DPI = 200
 MIN_PT = 18
 FOOTER = "ZollerQu - Qollab x IonQ Hackathon 2026"
 ATTRIBUTION = "This effort is supported by Qollab & IonQ"
-PENDING = "[pending]"
 
 IONQ_FILE = "results/ionq_B_cvar_p3_20261011-052116.json"
 BUDGET_FILE = "results/stocks_fair_budget_n12.json"
 TUNING_FILE = "results/stocks_qaoa_tuning_n12.json"
 N29_FILE = "results/stocks_qaoa_n29.json"
 CANDIDATES_FILE = "qollab/circuit_candidates.json"
-MESH_FILE = "mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json"
-MESH_SELECTED = "mesh/qollab/selected_circuits.json"
+LINKS = {"Qollab project": None, "Demo video": None}   # set a URL to show that line on the closing slide
 CIRCUIT = "B CVaR 0.1 p=3"
 MODE = "buy_or_skip"
 
@@ -75,15 +71,6 @@ NAMES = {"AAPL": "Apple", "GLD": "gold", "XOM": "oil", "JPM": "bank", "TLT": "US
 
 def load(rel):
     return json.loads((ROOT / rel).read_text())
-
-
-def git_json(branch, rel):
-    """A JSON file from another branch of this repo (read-only); None when it is not available."""
-    for ref in (branch, "origin/" + branch):
-        done = subprocess.run(["git", "-C", str(ROOT), "show", f"{ref}:{rel}"], capture_output=True, text=True)
-        if done.returncode == 0:
-            return json.loads(done.stdout)
-    return None
 
 
 # ---------------------------------------------------------------- numbers (each with its source)
@@ -175,19 +162,6 @@ def collect():
     put("states_29", big["modes"][MODE]["exact_dense"]["states"], f"{N29_FILE}: modes.{MODE}.exact_dense.states")
     put("n29_repetitions", big["repetitions"], f"{N29_FILE}: repetitions")
 
-    mesh, mesh_sel = git_json("mesh", MESH_FILE), git_json("mesh", MESH_SELECTED)
-    if mesh and mesh_sel:
-        m = mesh["summary"][0]
-        spec = next(c for c in mesh_sel["circuits"] if c["name"] == mesh["name"])
-        put("mesh_qubits", mesh_sel["n"], f"mesh branch, {MESH_SELECTED}: n")
-        put("mesh_circuit", "varQITE ZY", f"mesh branch, {MESH_FILE}: name = '{mesh['name']}'")
-        put("mesh_gates", spec["gates"]["two_qubit"], f"mesh branch, {MESH_SELECTED}: circuits['{mesh['name']}'].gates.two_qubit")
-        put("mesh_p_noisy", m["p_opt"], f"mesh branch, {MESH_FILE}: summary[0].p_opt")
-        put("mesh_shots", mesh["shots"], f"mesh branch, {MESH_FILE}: shots")
-        put("mesh_p_random", mesh["comparison"]["random_guessing_p_opt"], f"mesh branch, {MESH_FILE}: comparison.random_guessing_p_opt")
-        put("mesh_ratio", mesh["comparison"]["gain_over_random"], f"mesh branch, {MESH_FILE}: comparison.gain_over_random")
-        put("mesh_p_noiseless", mesh["predictions"]["p_opt"], f"mesh branch, {MESH_FILE}: predictions.p_opt")
-        put("mesh_backend", mesh["backend"], f"mesh branch, {MESH_FILE}: backend")
     return n, src
 
 
@@ -484,8 +458,9 @@ def as_runs(line, size, bold, color):
 
 
 class Slide:
-    def __init__(self, number, kicker, title, notes, source=(), title_size=32):
+    def __init__(self, number, kicker, title, notes, source=(), title_size=32, hero=False):
         self.number, self.kicker, self.title, self.notes, self.source, self.title_size = number, kicker, title, notes, list(source), title_size
+        self.hero = hero                                # title-slide layout (first and last slide)
         self.items, self.alts = [], []
 
     def text(self, x, y, w, lines, size=20, color=WHITE, bold=False, align="l", gap=0.0, lead=1.2, name=None):
@@ -544,7 +519,7 @@ def frame(slide):
     items = []
     keep, slide.items = slide.items, items
     if slide.kicker:
-        slide.text(MX, 0.42 if slide.number > 1 else 1.3, CW, [slide.kicker], size=MIN_PT, bold=True, color=TEAL)
+        slide.text(MX, 1.3 if slide.hero else 0.42, CW, [slide.kicker], size=MIN_PT, bold=True, color=TEAL)
     if slide.source:
         slide.text(MX, 6.63 - 0.3 * len(slide.source), CW, slide.source, size=MIN_PT, color=MUTED)
     slide.text(MX, 6.92, 8.0, [FOOTER], size=MIN_PT, color=MUTED)
@@ -556,8 +531,8 @@ def frame(slide):
 def title_box(slide):
     lines = slide.title if isinstance(slide.title, list) else [slide.title]
     probe = Slide(slide.number, None, None, None)
-    y = 0.8 if slide.number > 1 else 1.72
-    probe.text(MX, y, CW if slide.number > 1 else 6.9, lines, size=slide.title_size, bold=True, lead=1.15)
+    y = 1.72 if slide.hero else 0.8
+    probe.text(MX, y, 6.9 if slide.hero else CW, lines, size=slide.title_size, bold=True, lead=1.15)
     return probe.items[0]
 
 
@@ -709,7 +684,7 @@ def build_slides(n, figures, tickers, buy, corr):
     slides = []
 
     # 1 ---------------------------------------------------------------- title
-    s = Slide(1, "TEAM ZOLLERQU", ["Portfolio Selection", "with QAOA"], title_size=52, notes=(
+    s = Slide(1, "TEAM ZOLLERQU", ["Portfolio Selection", "with QAOA"], title_size=52, hero=True, notes=(
         "Hi, we are team ZollerQu. Our question is simple: which stocks should a fund buy? "
         "We turn it into an Ising problem, one qubit per asset, and sample it with QAOA on the IonQ Forte 1 noise model."))
     y = s.text(MX, 3.95, 6.9, ["Which stocks to buy? One qubit per asset,", "sampled on the IonQ Forte 1 noise model."], size=22, color=MUTED)
@@ -806,7 +781,7 @@ def build_slides(n, figures, tickers, buy, corr):
     s = Slide(7, "SCALING AND HONEST COMPARISON", "Up to 29 qubits, classical heuristics win", source=[
         f"12-20 qubits: server simulation, 10 Oct 2026 · 29 qubits: server simulation of all {n['states_29']:,} states,",
         f"11 Oct 2026 · classical: {n['n29_repetitions']} runs · the same {n['budget']:,} evaluations for every method"], notes=(
-        "Does it scale? In noiseless simulation up to twenty-nine qubits the circuit stays far above random guessing, but classical heuristics win: "
+        "In noiseless simulation up to twenty-nine qubits the circuit stays far above random guessing, but classical heuristics win: "
         f"they find the best portfolio in {100 * n['scale_greedy_29']:.0f} percent of runs, the circuit in {100 * n['scale_qaoa_29']:.0f} percent. "
         f"And our circuit first needed about {round(n['training_circuits'], -2):,} training circuits. We claim no quantum advantage."))
     s.image(figures["scaling"], MX, 1.65, 7.3, 4.2, (
@@ -822,14 +797,17 @@ def build_slides(n, figures, tickers, buy, corr):
 
     # 8 ---------------------------------------------------------------- demo, limits, next steps
     s = Slide(8, "DEMO, LIMITS, NEXT STEPS", "Try it on Qollab: one click, one IonQ job", notes=(
-        "[CUT TO LIVE QOLLAB DEMO] On Qollab, press Run, select the IonQ Forte 1 noise model, and one job returns the counts and the plots. "
+        "[CUT TO LIVE QOLLAB DEMO] Here is the project on Qollab, with the code in main.py. "
+        "We press Run, select the IonQ Forte 1 noise model, and one job returns counts and plots. "
         "[BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. "
-        "Next: the other selected circuits, shorter circuits, and twenty-nine assets. Thank you. This effort is supported by Qollab and IonQ."))
-    s.rect(MX, 1.7, 5.6, 2.9, fill=None, line=AMBER, dash=True, radius=0.12)
-    s.text(MX, 2.55, 5.6, [[(PENDING + " screenshot", {"size": 22, "bold": True, "color": AMBER})], "Qollab → Run → Select QPU →", "IonQ Forte 1 (29q) noise model"],
-           size=MIN_PT, color=MUTED, align="c", gap=0.06)
-    s.text(MX, 4.8, 5.6, [[("Qollab project:  ", {"bold": True}), (PENDING, {"color": AMBER})], [("GitHub:  ", {"bold": True}), (PENDING, {"color": AMBER})],
-                          [("Video:  ", {"bold": True}), (PENDING, {"color": AMBER})]], size=MIN_PT)
+        "Next: the other selected circuits, shorter circuits, and twenty-nine assets."))
+    s.rect(MX, 1.7, 5.6, 4.15)
+    y = s.text(MX + 0.3, 1.95, 5.0, ["Live demo on Qollab"], size=24, bold=True) + 0.32
+    steps = [["Open the project:", "the code is in main.py"], ["Run → Select QPU →", "IonQ Forte 1 (29q) noise model"], ["One job returns the counts,", "the table and the plots"]]
+    for k, lines in enumerate(steps, 1):
+        s.dot(MX + 0.3, y + 0.09, 0.5, TEAL)
+        s.text(MX + 0.3, y + 0.09 + (0.5 - 0.3) / 2 - 0.01, 0.5, [str(k)], size=MIN_PT, bold=True, align="c")
+        y = s.text(MX + 1.05, y, 4.4, lines, size=20) + 0.4
     y = s.text(6.75, 1.7, 5.98, ["Honest limits"], size=22, bold=True)
     y = s.bullets(6.75, y + 0.16, 5.98, [[f"A noisy simulator: one job of {shots:,} shots"],
                                          [f"Noise cuts the hits from {per_thousand(n['p_noiseless'])} to {hits} per 1,000"],
@@ -838,35 +816,16 @@ def build_slides(n, figures, tickers, buy, corr):
     s.bullets(6.75, y + 0.16, 5.98, [[f"Run the other {n['selected_other']} selected circuits"],
                                      [f"Shorter circuits: {n['gates_all_12']} instead of {n['gates_circuit']} gates"],
                                      ["29 assets on the IonQ Forte 1 noise model"]], size=MIN_PT, gap=0.14)
-    s.pill(MX, 5.98, 5.6, ATTRIBUTION)
     slides.append(s)
 
-    # 9 ---------------------------------------------------------------- appendix
-    have_mesh = "mesh_p_noisy" in n
-    s = Slide(9, "APPENDIX", "One engine, two problems", source=[
-        f"{label_noisy}: one 1,000-shot job per project, 11 Oct 2026 · noiseless: simulation",
-        "Stocks: results/ionq_B_cvar_p3_*.json · Mesh: mesh/qollab/results_ionq/*.json on the mesh branch"], notes=(
-        "Backup slide, not spoken. The same pipeline (graph, Ising energy, circuits trained offline, one IonQ job, grading against the exact optimum) "
-        "was used for both ZollerQu projects."))
-    mesh = (lambda key, form: form(n[key])) if have_mesh else (lambda key, form: PENDING)
-    rows = [("", "Stocks: portfolio selection", "Mesh: split for 2 devices"),
-            ("Qubits", str(n["qubits"]), mesh("mesh_qubits", str)),
-            ("Circuit sent to IonQ", f"CVaR-QAOA, {n['gates_circuit']} gates", mesh("mesh_gates", lambda g: f"{n['mesh_circuit']}, {g} gates")),
-            ("Best answer, noise model", f"{hits} / 1,000 shots", mesh("mesh_p_noisy", lambda p: f"{per_thousand(p)} / 1,000 shots")),
-            ("Random guessing", f"{per_thousand(n['p_random'])} / 1,000", mesh("mesh_p_random", lambda p: f"{per_thousand(p)} / 1,000")),
-            ("Gain over random guessing", ratio, mesh("mesh_ratio", lambda r: f"{r:.0f}×")),
-            ("Noiseless simulation", f"{per_thousand(n['p_noiseless'])} / 1,000", mesh("mesh_p_noiseless", lambda p: f"{per_thousand(p)} / 1,000"))]
-    widths, row_h, y0, row_gap = (4.4, 3.87, 3.86), 0.46, 1.72, 0.05
-    for k, row in enumerate(rows):
-        yy = y0 + k * (row_h + row_gap)
-        s.rect(MX, yy, CW, row_h, fill=TINT if k == 0 else CARD, radius=0.08)
-        x = MX
-        for c, (cell, width) in enumerate(zip(row, widths)):
-            highlight = k == 3 and c > 0
-            s.text(x + 0.22, yy + (row_h - 0.3) / 2 - 0.01, width - 0.3, [cell], size=MIN_PT, bold=(k == 0 or c > 0),
-                   color=AMBER if highlight else (WHITE if (k == 0 or c > 0) else MUTED))
-            x += width
-    s.text(MX, y0 + len(rows) * (row_h + row_gap) + 0.13, CW, [ATTRIBUTION], size=MIN_PT, color=WHITE)
+    # 9 ---------------------------------------------------------------- closing
+    s = Slide(9, "TEAM ZOLLERQU", ["Thank you for", "your attention"], title_size=52, hero=True, notes=(
+        "Thank you for your attention. This effort is supported by Qollab and IonQ."))
+    y = s.text(MX, 3.95, 6.9, ["Oussama Turki  ·  Tushar Pandey"], size=22, bold=True)
+    closing = ["Portfolio Selection with QAOA"] + [f"{label}: {url}" for label, url in LINKS.items() if url]
+    s.text(MX, y + 0.2, 6.9, closing, size=20, color=MUTED, gap=0.04)
+    s.pill(MX, 5.75, 5.6, ATTRIBUTION)
+    s.image(figures["hero"], 7.55, 1.0, 5.2, 5.2, "The network picture of the 12 assets from the title slide: 12 dots on a circle, every pair joined by a line.")
     slides.append(s)
     return slides, {"buy": buy, "pair_correlation": float(pair)}
 
@@ -882,27 +841,25 @@ def clock(minutes):
 
 
 def write_notes(slides, figure_sources, pending, unverified):
-    main = [s for s in slides if s.number <= 8]
-    total = sum(word_count(s.notes) for s in main)
+    total = sum(word_count(s.notes) for s in slides)
     lines = ["# Speaker notes: Portfolio Selection with QAOA (ZollerQu, stocks project)", "",
-             f"Spoken script for slides 1-8: **{total} words** (about {clock(total / 135)}-{clock(total / 130)} at 130-135 words per minute; target 330-380 words). "
-             "Slide 9 is a backup slide and is not spoken.", "",
+             f"Spoken script for all {len(slides)} slides: **{total} words** (about {clock(total / 135)}-{clock(total / 130)} at 130-135 words per minute; target 330-380 words).", "",
              "Wording rules used: \"noisy simulator\" / \"noise model\" for the IonQ run, no advantage or speed-up claim, no wall-clock comparison.", ""]
     for s in slides:
         title = " ".join(s.title) if isinstance(s.title, list) else s.title
         lines += [f"## Slide {s.number}: {title}", ""]
         if s.number == 8:
             lines += ["**Cut to the live Qollab demo at the marker below, then come back to the slide.**", ""]
-        lines += [f"**Script ({word_count(s.notes)} words):** {s.notes}" if s.number <= 8 else f"**Note:** {s.notes}", ""]
+        lines += [f"**Script ({word_count(s.notes)} words):** {s.notes}", ""]
         for path, alt in s.alts:
             lines += [f"**Alt text** (`{path}`): {alt}", ""]
         if s.source:
             lines += ["**Source line on the slide:** " + " / ".join(s.source), ""]
     lines += ["## Figures and the result files behind them", "", "| Figure | Used on | Result files |", "|---|---|---|"]
     lines += [f"| `{path}` | slide {slide} | {source} |" for path, slide, source in figure_sources]
-    lines += ["", "## Placeholders still open", ""] + [f"- {p}" for p in pending]
+    lines += ["", "## Open points", ""] + [f"- {p}" for p in pending]
     lines += ["", "## Not verified from the files", ""] + [f"- {u}" for u in unverified]
-    lines += ["", "Rebuild everything with `./venv/bin/python slides/build_deck.py` (reads `results/`, `qollab/` and the mesh branch; nothing is simulated)."]
+    lines += ["", "Rebuild everything with `./venv/bin/python slides/build_deck.py` (reads `results/` and `qollab/`; nothing is simulated)."]
     (OUT / "speaker_notes.md").write_text("\n".join(lines) + "\n")
     return total
 
@@ -947,11 +904,11 @@ def main():
         (figures["main"], 6, f"{IONQ_FILE} (IonQ run), {CANDIDATES_FILE} (noiseless rate, classical medians), {BUDGET_FILE} (random rate)"),
         (figures["scaling"], 7, f"{TUNING_FILE} (12, 16, 20 qubits), {N29_FILE} (29 qubits), {BUDGET_FILE} (classical and random at 12)"),
     ]
-    pending = ["Slide 8: screenshot of Qollab -> Run -> Select QPU -> IonQ Forte 1 (29q) noise model",
-               "Slide 8: link to the public Qollab project", "Slide 8: GitHub link (the repository is private; add it only if you decide to publish it)",
-               "Slide 8: link to the demo video"]
-    if "mesh_p_noisy" not in n:
-        pending.append("Slide 9: mesh project numbers (mesh branch result file not found)")
+    missing = [label for label, url in LINKS.items() if not url]
+    pending = ["No placeholder is left on the slides. Slide 8 is shown together with a live Qollab session (no screenshot)."]
+    if missing:
+        pending.append(f"Links are not on the slides ({', '.join(missing)}): set LINKS in slides/build_deck.py to print them on the closing slide. "
+                       "The GitHub repository is private and is not linked.")
     unverified = [
         f"The stocks run file records the backend only as '{n['backend']}'. That the IonQ Forte 1 noise model was the simulator selected in the Qollab "
         "Run dialog is taken from the team, not from the file (the measured rate is far below the noiseless one, so a noise model was active).",
@@ -964,7 +921,7 @@ def main():
     record = {"note": "every number shown on the slides, with the file and key it was read from (or the formula)", "pair_of_best_portfolio": extra,
               "numbers": {key: {"value": n[key], "source": sources[key]} for key in n}}
     (OUT / "slide_numbers.json").write_text(json.dumps(record, indent=1, default=float) + "\n")
-    print(f"slides: {len(slides)} | spoken words (slides 1-8): {total} | best portfolio: buy {', '.join(buy)} (correlation {extra['pair_correlation']:+.2f})")
+    print(f"slides: {len(slides)} | spoken words: {total} | best portfolio: buy {', '.join(buy)} (correlation {extra['pair_correlation']:+.2f})")
     for s in slides:
         print(f"  {s.number}: {' '.join(s.title) if isinstance(s.title, list) else s.title}  [{word_count(s.notes)} words]")
 

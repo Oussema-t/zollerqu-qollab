@@ -1,6 +1,6 @@
 # Speaker notes: Portfolio Selection with QAOA (ZollerQu, stocks project)
 
-Spoken script for slides 1-8: **366 words** (about 2:43-2:49 at 130-135 words per minute; target 330-380 words). Slide 9 is a backup slide and is not spoken.
+Spoken script for all 9 slides: **374 words** (about 2:46-2:53 at 130-135 words per minute; target 330-380 words).
 
 Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advantage or speed-up claim, no wall-clock comparison.
 
@@ -54,7 +54,7 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 7: Up to 29 qubits, classical heuristics win
 
-**Script (50 words):** Does it scale? In noiseless simulation up to twenty-nine qubits the circuit stays far above random guessing, but classical heuristics win: they find the best portfolio in 61 percent of runs, the circuit in 7 percent. And our circuit first needed about 4,900 training circuits. We claim no quantum advantage.
+**Script (47 words):** In noiseless simulation up to twenty-nine qubits the circuit stays far above random guessing, but classical heuristics win: they find the best portfolio in 61 percent of runs, the circuit in 7 percent. And our circuit first needed about 4,900 training circuits. We claim no quantum advantage.
 
 **Alt text** (`slides/figures/scaling.png`): Line chart: share of runs that find the best portfolio within 1,000 evaluations, against the number of assets. QAOA in noiseless simulation: 100 % at 12, 89 % at 16, 66 % at 20 and 6.6 % at 29 qubits. Classical methods: 100 % at 12 and 61 % at 29. Random guessing: 22 % at 12 and about 0 % from 20 on.
 
@@ -64,13 +64,13 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 **Cut to the live Qollab demo at the marker below, then come back to the slide.**
 
-**Script (51 words):** [CUT TO LIVE QOLLAB DEMO] On Qollab, press Run, select the IonQ Forte 1 noise model, and one job returns the counts and the plots. [BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. Next: the other selected circuits, shorter circuits, and twenty-nine assets. Thank you. This effort is supported by Qollab and IonQ.
+**Script (49 words):** [CUT TO LIVE QOLLAB DEMO] Here is the project on Qollab, with the code in main.py. We press Run, select the IonQ Forte 1 noise model, and one job returns counts and plots. [BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. Next: the other selected circuits, shorter circuits, and twenty-nine assets.
 
-## Slide 9: One engine, two problems
+## Slide 9: Thank you for your attention
 
-**Note:** Backup slide, not spoken. The same pipeline (graph, Ising energy, circuits trained offline, one IonQ job, grading against the exact optimum) was used for both ZollerQu projects.
+**Script (13 words):** Thank you for your attention. This effort is supported by Qollab and IonQ.
 
-**Source line on the slide:** IonQ Forte 1 noise model (Qollab): one 1,000-shot job per project, 11 Oct 2026 · noiseless: simulation / Stocks: results/ionq_B_cvar_p3_*.json · Mesh: mesh/qollab/results_ionq/*.json on the mesh branch
+**Alt text** (`slides/figures/hero_graph.png`): The network picture of the 12 assets from the title slide: 12 dots on a circle, every pair joined by a line.
 
 ## Figures and the result files behind them
 
@@ -85,12 +85,10 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 | `slides/figures/main_result.png` | slide 6 | results/ionq_B_cvar_p3_20261011-052116.json (IonQ run), qollab/circuit_candidates.json (noiseless rate, classical medians), results/stocks_fair_budget_n12.json (random rate) |
 | `slides/figures/scaling.png` | slide 7 | results/stocks_qaoa_tuning_n12.json (12, 16, 20 qubits), results/stocks_qaoa_n29.json (29 qubits), results/stocks_fair_budget_n12.json (classical and random at 12) |
 
-## Placeholders still open
+## Open points
 
-- Slide 8: screenshot of Qollab -> Run -> Select QPU -> IonQ Forte 1 (29q) noise model
-- Slide 8: link to the public Qollab project
-- Slide 8: GitHub link (the repository is private; add it only if you decide to publish it)
-- Slide 8: link to the demo video
+- No placeholder is left on the slides. Slide 8 is shown together with a live Qollab session (no screenshot).
+- Links are not on the slides (Qollab project, Demo video): set LINKS in slides/build_deck.py to print them on the closing slide. The GitHub repository is private and is not linked.
 
 ## Not verified from the files
 
@@ -100,4 +98,4 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 - The medians for the three samplers on slide 6 are computed from the per-shot hit rate (geometric distribution), not measured by repeating runs.
 - The PPTX was rendered with macOS Quick Look (slide by slide) and compared with the PDF; it was not opened in PowerPoint itself.
 
-Rebuild everything with `./venv/bin/python slides/build_deck.py` (reads `results/`, `qollab/` and the mesh branch; nothing is simulated).
+Rebuild everything with `./venv/bin/python slides/build_deck.py` (reads `results/` and `qollab/`; nothing is simulated).

@@ -263,42 +263,6 @@
   "n29_repetitions": {
    "value": 200,
    "source": "results/stocks_qaoa_n29.json: repetitions"
-  },
-  "mesh_qubits": {
-   "value": 12,
-   "source": "mesh branch, mesh/qollab/selected_circuits.json: n"
-  },
-  "mesh_circuit": {
-   "value": "varQITE ZY",
-   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: name = 'varQITE ZY (paper, all pairs)'"
-  },
-  "mesh_gates": {
-   "value": 66,
-   "source": "mesh branch, mesh/qollab/selected_circuits.json: circuits['varQITE ZY (paper, all pairs)'].gates.two_qubit"
-  },
-  "mesh_p_noisy": {
-   "value": 0.278,
-   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: summary[0].p_opt"
-  },
-  "mesh_shots": {
-   "value": 1000,
-   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: shots"
-  },
-  "mesh_p_random": {
-   "value": 0.00048828125,
-   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: comparison.random_guessing_p_opt"
-  },
-  "mesh_ratio": {
-   "value": 569.344,
-   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: comparison.gain_over_random"
-  },
-  "mesh_p_noiseless": {
-   "value": 0.7501245422257501,
-   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: predictions.p_opt"
-  },
-  "mesh_backend": {
-   "value": "ionq_simulator on Qollab (IonQ Forte 1 noise model selected in Select QPU)",
-   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: backend"
   }
  }
 }
