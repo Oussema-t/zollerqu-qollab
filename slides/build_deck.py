@@ -221,8 +221,8 @@ def collect():
     put("ice_gates_p3", p3["two_qubit_gates"], f"{ICE_VERIFY_FILE}: equivalence['B LR-QAOA p=3', 1 check].two_qubit_gates")
     put("plain_gates_p3", n["gates_circuit"], "198 two-qubit gates of a plain 3-layer circuit (same as the IonQ circuit)")
     sweep = load(ICE_SWEEP_FILE)["runs"]
-    put("ice_jobs", sum(1 for run in sweep for r in run["rows"] if r["error_detection"] == "iceberg"), f"{ICE_SWEEP_FILE}: runs[].rows (Iceberg jobs)")
-    put("ice_all_kept", all(r["kept_share"] == 1.0 for run in sweep for r in run["rows"] if r["error_detection"] == "iceberg"), f"{ICE_SWEEP_FILE}: kept_share == 1")
+    put("ice_jobs", sum(1 for run in sweep for r in run["rows"] if r["error_detection"] == "iceberg" and r["source"] == "IonQ backend"),
+        f"{ICE_SWEEP_FILE}: runs[].rows (Iceberg jobs that reached IonQ)")
     # the local noise prediction (ICE_STUDY_FILE) is not shown: its first result was not understood in time to be trusted
     return n, src
 
@@ -908,25 +908,26 @@ def build_slides(n, figures, tickers, buy, corr):
 
     # 9 ---------------------------------------------------------------- Iceberg error detection
     s = Slide(9, "ERROR DETECTION", "Iceberg code: verified, but it costs gates", source=[
-        f"Faults: exact simulation of every single fault (1, 2 layers) · Qollab IonQ simulator: {n['ice_jobs'] * 2} jobs, 11 Oct 2026",
+        "Faults: exact simulation of every single fault (1, 2 layers), 11 Oct 2026",
         "Detection, not correction: shots that fail a check are discarded"], notes=(
         f"We also protected the circuit with the Iceberg error-detection code: twelve logical qubits on {n['ice_qubits']}. "
         "Every state-preparation, check and readout fault is caught, and four in five gate faults. "
-        "On Qollab's IonQ simulator every shot passed; the price is more gates."))
+        "The price is more gates; how it does under the IonQ noise model is our next run."))
     s.image(figures["iceberg"], MX, 1.65, 7.3, 4.2, (
         f"Bar chart: share of single faults that are caught or harmless, from injecting every single fault ({n['ice_faults_total']:,}) in exact simulation. "
         f"Start state and flag {100 * n['ice_start_ok']:.0f} %, syndrome checks {100 * n['ice_checks_ok']:.0f} %, readout bit flips {100 * n['ice_readout_ok']:.0f} %, "
         f"QAOA gates {100 * n['ice_gates_ok']:.0f} %; the rest are XX, YY and ZZ errors on a gate's own pair, which a distance-2 code cannot see."))
     y = s.stat(8.3, 1.7, 4.43, f"{n['ice_qubits']} qubits", ["12 logical on 14, + 1 flag", "+ 2 helpers per check"], size=44)
     y = s.stat(8.3, y + 0.2, 4.43, f"+{100 * (n['ice_gates_p3'] / n['plain_gates_p3'] - 1):.0f} %", [f"two-qubit gates at 3 layers", f"({n['ice_gates_p3']} vs {n['plain_gates_p3']})"], size=44)
-    lines = [["IonQ simulator via Qollab:", "every check passed, results", "match the noiseless ones"]]
+    lines = [["Under the IonQ noise model:", "not run yet (Qollab runs", "one IonQ job at a time)"]] if n["ice_jobs"] == 0 else \
+        [[f"{n['ice_jobs']} Iceberg job(s) on IonQ,", "see the notebook, section 5.1"]]
     if n.get("ice_pred_kept_p3") is not None:
         lines.append([f"With noise (local model): {100 * n['ice_pred_kept_p3']:.0f} %", "of shots kept at 3 layers"])
     s.bullets(8.3, y + 0.22, 4.43, lines, size=MIN_PT, gap=0.12, color=WHITE)
     slides.append(s)
 
     # 10 ---------------------------------------------------------------- demo, limits, next steps
-    s = Slide(10, "DEMO, LIMITS, NEXT STEPS", "Try it on Qollab: one click runs it all", notes=(
+    s = Slide(10, "DEMO, LIMITS, NEXT STEPS", "Try it on Qollab: one click, one IonQ job", notes=(
         "[CUT TO LIVE QOLLAB DEMO] Here is our Qollab project; the code is in main.py. "
         "We press Run, choose the IonQ Forte 1 noise model, and get counts and plots. "
         "[BACK TO SLIDE] Limits: a noisy simulator and strong classical baselines. "

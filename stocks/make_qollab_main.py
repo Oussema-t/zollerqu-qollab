@@ -52,6 +52,7 @@ DEFAULT_CIRCUIT = @@DEFAULT@@
 # expected energy on a grid; p_optimum_noiseless = exact noiseless probability that one shot is the best portfolio
 LR_RAMPS = @@LR_RAMPS@@
 WITHIN = 0.05
+BUSY_MINUTES = 5   # how long to keep resubmitting while IonQ reports that another job is still running
 MAX_QUBITS = 29   # IonQ Forte 1 noise model on Qollab
 
 
@@ -359,12 +360,22 @@ def iceberg_plot(tally, a_kept, spec, title):
 
 
 def submit_and_wait(compiled, backend, shots, wait_minutes, options):
-    """Submit one job (with extra run options), print its status every 10 s, return the counts or None."""
-    try:
-        job = backend.run(compiled, shots=shots, **options)
-    except Exception as err:  # qiskit-ionq can hide the real error behind an AttributeError
-        print("Backend run failed:", type(err).__name__, err)
-        return None
+    """Submit one job (with extra run options), print its status every 10 s, return the counts or None.
+
+    Qollab runs one IonQ job at a time: while 'Another job is already running', wait 30 s and submit again
+    (for up to BUSY_MINUTES); after that the job counts as not run."""
+    asked = time.time()
+    while True:
+        try:
+            job = backend.run(compiled, shots=shots, **options)
+            break
+        except Exception as err:  # qiskit-ionq can hide the real error behind an AttributeError
+            if "already running" in str(err).lower() and time.time() - asked < 60 * BUSY_MINUTES:
+                print("  IonQ: another job is still running; submitting again in 30 s (%.0f s waited so far)" % (time.time() - asked))
+                time.sleep(30)
+                continue
+            print("Backend run failed:", type(err).__name__, err)
+            return None
     print("Job submitted:", getattr(job, "job_id", lambda: "?")(), "| options:", options or "none")
     started = time.time()
     while time.time() - started < 60 * wait_minutes:
@@ -441,8 +452,12 @@ def run_one(spec, key, detection, checks, shots, wait_minutes, seed, backend, sh
             request = None   # the dialog already set a noise model: do not override it
         counts = run_backend(qc, backend, shots, wait_minutes, request)
         source = "backend"
+    if counts is None and backend is not None:
+        print("NOT RUN: the backend returned no result for this job, and nothing is substituted for it.")
+        print("Run it on its own with another Run press: layers = %d, error_detection = %s." % (len(spec["angles"]["gammas"]), detection))
+        return None
     if counts is None:
-        print("No backend result: sampling the exact NOISELESS probabilities locally instead (not a hardware result).")
+        print("No backend selected: sampling the exact NOISELESS probabilities locally instead (not an IonQ result).")
         counts = local_counts([qc], shots, seed)[0]
         source = "local noiseless sampling"
     tally = None
@@ -576,9 +591,11 @@ def comparison_plot(payloads):
     plt.show()
 
 
-def main(layers: str = "1,2,3", error_detection: str = "both", noise_model: str = "forte-1", circuit: str = "B_lr", checks: int = 1, shots: int = 1000, wait_minutes: int = 30, seed: int = 2026):
-    """Press Run once: every layer count in `layers` (e.g. 1,2,3) is run without and with Iceberg (error_detection: both,
-    none or iceberg), ONE circuit per job, one job after the other; a comparison figure follows at the end.
+def main(layers: str = "1", error_detection: str = "iceberg", noise_model: str = "forte-1", circuit: str = "B_lr", checks: int = 1, shots: int = 1000, wait_minutes: int = 30, seed: int = 2026):
+    """Press Run: every layer count in `layers` (e.g. 1 or 1,2,3) is run without and/or with Iceberg (error_detection:
+    none, iceberg or both), ONE circuit per job, one job after the other; with several jobs a comparison figure follows.
+    Qollab runs one IonQ job at a time and has refused the second job of a Run, so the default is a single job:
+    press Run once per setting. A refused job is reported as NOT RUN; it is never replaced by noiseless samples.
     noise_model: requested only when the backend reports no noise model or 'ideal' (forte-1 = IonQ Forte 1); a noise model chosen in
     Select QPU (e.g. aria-2 or forte-1) is always kept.
     circuit: B_lr (layers 1-6, 8, 10, 12, 16) or a fixed circuit (B_cvar_p3, B_lr_p1, B_lr_p3, A_cd_p3, control_p0)."""
@@ -604,6 +621,9 @@ def main(layers: str = "1,2,3", error_detection: str = "both", noise_model: str 
     backend = globals().get("backend")  # Qollab pre-creates `backend` from the Run dialog
     print("Plan: %d job(s), one circuit each, %d shots each: %s" % (len(plan), shots, ", ".join(
         "%s%s" % ("layers %d " % p if p else key + " ", d) for p, d in plan)))
+    if backend is not None and len(plan) > 1:
+        print("Note: Qollab runs one IonQ job at a time. A job that is refused is retried for %d minutes, then reported as" % BUSY_MINUTES)
+        print("NOT RUN (never replaced by noiseless samples). If that happens, run each setting with its own Run press.")
     payloads = []
     for n, (p, d) in enumerate(plan, 1):
         spec = lr_spec(p) if key == "B_lr" else next(x for x in CIRCUITS if x["name"] == CIRCUIT_KEYS[key])
@@ -619,14 +639,17 @@ def main(layers: str = "1,2,3", error_detection: str = "both", noise_model: str 
         print()
         print("=" * 100)
         print("Summary of all jobs (P(best) = share of shots that are the exact best portfolio)")
-        print("%-7s %-9s %7s %10s %8s %16s %16s %10s" % ("layers", "detection", "qubits", "2q gates", "kept", "P(best) kept", "P(best) per sent", "noiseless"))
+        print("%-7s %-9s %-7s %7s %10s %8s %16s %16s %10s" % ("layers", "detection", "source", "qubits", "2q gates", "kept", "P(best) kept", "P(best) per sent", "noiseless"))
         for x in done:
             s = x["summary"][0]
             kept = x["iceberg"]["accepted"] / max(x["iceberg"]["shots"], 1) if x["iceberg"] else 1.0
             pk = s.get("p_optimum", 0.0)
-            print("%-7d %-9s %7d %10d %7.1f%% %16.4f %16.4f %10.4f" % (x["layers"], x["error_detection"], x["resources"]["qubits"],
-                  x["resources"]["two_qubit_gates"], 100 * kept, pk, pk * kept, x["noiseless_p_optimum"]))
-        ice = [x for x in done if x["iceberg"]]
+            print("%-7d %-9s %-7s %7d %10d %7.1f%% %16.4f %16.4f %10.4f" % (x["layers"], x["error_detection"], "IonQ" if x["source"] == "backend" else "local",
+                  x["resources"]["qubits"], x["resources"]["two_qubit_gates"], 100 * kept, pk, pk * kept, x["noiseless_p_optimum"]))
+        missing = len(plan) - len(done)
+        if missing:
+            print("%d job(s) NOT RUN (see above); they are left out, not replaced." % missing)
+        ice = [x for x in done if x["iceberg"] and x["source"] == "backend"]
         if ice and all(x["iceberg"]["accepted"] == x["iceberg"]["shots"] for x in ice) and sum(x["iceberg"]["shots"] for x in ice) >= 1000:
             print()
             print("WARNING: Iceberg kept every shot of every job. On a noisy simulator some shots must fail the checks, so this")

@@ -421,12 +421,8 @@
    "source": "198 two-qubit gates of a plain 3-layer circuit (same as the IonQ circuit)"
   },
   "ice_jobs": {
-   "value": 9,
-   "source": "results/qollab_iceberg_sweeps_20261011.json: runs[].rows (Iceberg jobs)"
-  },
-  "ice_all_kept": {
-   "value": true,
-   "source": "results/qollab_iceberg_sweeps_20261011.json: kept_share == 1"
+   "value": 0,
+   "source": "results/qollab_iceberg_sweeps_20261011.json: runs[].rows (Iceberg jobs that reached IonQ)"
   }
  }
 }

@@ -1,7 +1,7 @@
 {
  "note": "Qollab one-click sweeps of qollab/main.py (B_lr, layers 1,2,3, without and with Iceberg, 1,000 shots per job), 11 Oct 2026. Only the console summary tables were pasted back by the user; the per-shot counts of these jobs were not saved.",
  "qpu_selected_in_qollab": "IonQ Forte 1 (29q) noise model (confirmed by the user's screenshot of the Select QPU dialog)",
- "finding": "No errors acted in any job: Iceberg kept 100 % of the shots in all 6 jobs (impossible with a noise model at 133-313 two-qubit gates), and the plain success rates match the noiseless ones within sampling error. The selected noise model was therefore not applied to these jobs; they validate the encoding and decoding end to end on Qollab's IonQ simulator, not the effect of error detection. The single-job run of B CVaR p=3 earlier the same day did show noise (7 vs 58 per 1,000). A fourth sweep with the Aria 2 noise model selected (backend reported 'aria-2') gave the same result: every Iceberg shot kept and the same success rates as before, so no noise acted there either.",
+ "finding": "CORRECTED 11 Oct 2026, 16:20 ET. Of the 24 jobs in these four sweeps, only 4 reached IonQ, all plain (no Iceberg): sweep 2 layers 1 (5 per 1,000 vs 11.4 noiseless), sweep 3 layers 1 (11), sweep 4 layers 1 (10), sweep 5 layers 2 (1 per 1,000 vs 15.5 noiseless). The other 20 jobs were refused by the backend (sweep 5 console: IonQRetriableError 'Another job is already running'; Qollab runs one IonQ job at a time) and the code then sampled the exact noiseless distribution locally with seed 2026; their summary values equal that local sample exactly (stocks: 14/16/24 plain, 14/18/26 Iceberg per 1,000 at layers 1/2/3). The earlier reading 'the noise model was not applied' was wrong: the 100 % kept shares are local noiseless samples, not IonQ results. No Iceberg job has run on IonQ yet. qollab/main.py now resubmits while IonQ is busy, never substitutes noiseless samples when a backend is selected, and defaults to one job per Run.",
  "runs": [
   {
    "run": "sweep 2 (noise model selected in the dialog)",
@@ -13,7 +13,8 @@
      "two_qubit_gates": 66,
      "kept_share": 1.0,
      "p_optimum_kept": 0.005,
-     "noiseless_p_optimum": 0.0114
+     "noiseless_p_optimum": 0.0114,
+     "source": "IonQ backend"
     },
     {
      "layers": 1,
@@ -22,7 +23,8 @@
      "two_qubit_gates": 133,
      "kept_share": 1.0,
      "p_optimum_kept": 0.014,
-     "noiseless_p_optimum": 0.0114
+     "noiseless_p_optimum": 0.0114,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 2,
@@ -31,7 +33,8 @@
      "two_qubit_gates": 132,
      "kept_share": 1.0,
      "p_optimum_kept": 0.016,
-     "noiseless_p_optimum": 0.0155
+     "noiseless_p_optimum": 0.0155,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 2,
@@ -40,7 +43,8 @@
      "two_qubit_gates": 223,
      "kept_share": 1.0,
      "p_optimum_kept": 0.018,
-     "noiseless_p_optimum": 0.0155
+     "noiseless_p_optimum": 0.0155,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 3,
@@ -49,7 +53,8 @@
      "two_qubit_gates": 198,
      "kept_share": 1.0,
      "p_optimum_kept": 0.024,
-     "noiseless_p_optimum": 0.0181
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 3,
@@ -58,7 +63,8 @@
      "two_qubit_gates": 313,
      "kept_share": 1.0,
      "p_optimum_kept": 0.026,
-     "noiseless_p_optimum": 0.0181
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     }
    ]
   },
@@ -72,7 +78,8 @@
      "two_qubit_gates": 66,
      "kept_share": 1.0,
      "p_optimum_kept": 0.011,
-     "noiseless_p_optimum": 0.0114
+     "noiseless_p_optimum": 0.0114,
+     "source": "IonQ backend"
     },
     {
      "layers": 1,
@@ -81,7 +88,8 @@
      "two_qubit_gates": 133,
      "kept_share": 1.0,
      "p_optimum_kept": 0.014,
-     "noiseless_p_optimum": 0.0114
+     "noiseless_p_optimum": 0.0114,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 2,
@@ -90,7 +98,8 @@
      "two_qubit_gates": 132,
      "kept_share": 1.0,
      "p_optimum_kept": 0.016,
-     "noiseless_p_optimum": 0.0155
+     "noiseless_p_optimum": 0.0155,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 2,
@@ -99,7 +108,8 @@
      "two_qubit_gates": 223,
      "kept_share": 1.0,
      "p_optimum_kept": 0.018,
-     "noiseless_p_optimum": 0.0155
+     "noiseless_p_optimum": 0.0155,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 3,
@@ -108,7 +118,8 @@
      "two_qubit_gates": 198,
      "kept_share": 1.0,
      "p_optimum_kept": 0.024,
-     "noiseless_p_optimum": 0.0181
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 3,
@@ -117,7 +128,8 @@
      "two_qubit_gates": 313,
      "kept_share": 1.0,
      "p_optimum_kept": 0.026,
-     "noiseless_p_optimum": 0.0181
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     }
    ]
   },
@@ -131,7 +143,8 @@
      "two_qubit_gates": 66,
      "kept_share": 1.0,
      "p_optimum_kept": 0.01,
-     "noiseless_p_optimum": 0.0114
+     "noiseless_p_optimum": 0.0114,
+     "source": "IonQ backend"
     },
     {
      "layers": 1,
@@ -140,7 +153,8 @@
      "two_qubit_gates": 133,
      "kept_share": 1.0,
      "p_optimum_kept": 0.014,
-     "noiseless_p_optimum": 0.0114
+     "noiseless_p_optimum": 0.0114,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 2,
@@ -149,7 +163,8 @@
      "two_qubit_gates": 132,
      "kept_share": 1.0,
      "p_optimum_kept": 0.016,
-     "noiseless_p_optimum": 0.0155
+     "noiseless_p_optimum": 0.0155,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 2,
@@ -158,7 +173,8 @@
      "two_qubit_gates": 223,
      "kept_share": 1.0,
      "p_optimum_kept": 0.018,
-     "noiseless_p_optimum": 0.0155
+     "noiseless_p_optimum": 0.0155,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 3,
@@ -167,7 +183,8 @@
      "two_qubit_gates": 198,
      "kept_share": 1.0,
      "p_optimum_kept": 0.024,
-     "noiseless_p_optimum": 0.0181
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     },
     {
      "layers": 3,
@@ -176,9 +193,83 @@
      "two_qubit_gates": 313,
      "kept_share": 1.0,
      "p_optimum_kept": 0.026,
-     "noiseless_p_optimum": 0.0181
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
+    }
+   ]
+  },
+  {
+   "run": "sweep 5 (IonQ Forte 1 (29q) noise model selected; backend reported 'forte-1'; the dialog's model kept, no option sent; console showed IonQRetriableError('Another job is already running') for the first job)",
+   "rows": [
+    {
+     "layers": 1,
+     "error_detection": "none",
+     "qubits": 12,
+     "two_qubit_gates": 66,
+     "kept_share": 1.0,
+     "p_optimum_kept": 0.014,
+     "noiseless_p_optimum": 0.0114,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
+    },
+    {
+     "layers": 1,
+     "error_detection": "iceberg",
+     "qubits": 17,
+     "two_qubit_gates": 133,
+     "kept_share": 1.0,
+     "p_optimum_kept": 0.014,
+     "noiseless_p_optimum": 0.0114,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
+    },
+    {
+     "layers": 2,
+     "error_detection": "none",
+     "qubits": 12,
+     "two_qubit_gates": 132,
+     "kept_share": 1.0,
+     "p_optimum_kept": 0.001,
+     "noiseless_p_optimum": 0.0155,
+     "source": "IonQ backend"
+    },
+    {
+     "layers": 2,
+     "error_detection": "iceberg",
+     "qubits": 17,
+     "two_qubit_gates": 223,
+     "kept_share": 1.0,
+     "p_optimum_kept": 0.018,
+     "noiseless_p_optimum": 0.0155,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
+    },
+    {
+     "layers": 3,
+     "error_detection": "none",
+     "qubits": 12,
+     "two_qubit_gates": 198,
+     "kept_share": 1.0,
+     "p_optimum_kept": 0.024,
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
+    },
+    {
+     "layers": 3,
+     "error_detection": "iceberg",
+     "qubits": 17,
+     "two_qubit_gates": 313,
+     "kept_share": 1.0,
+     "p_optimum_kept": 0.026,
+     "noiseless_p_optimum": 0.0181,
+     "source": "local noiseless fallback (identical to seed-2026 local sample)"
     }
    ]
   }
- ]
+ ],
+ "local_seed2026_fallback_values": {
+  "1 none": 0.014,
+  "1 iceberg": 0.014,
+  "2 none": 0.016,
+  "2 iceberg": 0.018,
+  "3 none": 0.024,
+  "3 iceberg": 0.026
+ }
 }

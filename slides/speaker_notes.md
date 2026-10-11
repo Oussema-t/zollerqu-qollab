@@ -1,6 +1,6 @@
 # Speaker notes: Portfolio Selection with QAOA (ZollerQu, stocks project)
 
-Spoken script for all 11 slides: **380 words** (about 2:49-2:55 at 130-135 words per minute; target 330-380 words).
+Spoken script for all 11 slides: **385 words** (about 2:51-2:58 at 130-135 words per minute; target 330-380 words).
 
 Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advantage or speed-up claim, no wall-clock comparison.
 
@@ -70,13 +70,13 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 9: Iceberg code: verified, but it costs gates
 
-**Script (41 words):** We also protected the circuit with the Iceberg error-detection code: twelve logical qubits on 17. Every state-preparation, check and readout fault is caught, and four in five gate faults. On Qollab's IonQ simulator every shot passed; the price is more gates.
+**Script (46 words):** We also protected the circuit with the Iceberg error-detection code: twelve logical qubits on 17. Every state-preparation, check and readout fault is caught, and four in five gate faults. The price is more gates; how it does under the IonQ noise model is our next run.
 
 **Alt text** (`slides/figures/iceberg.png`): Bar chart: share of single faults that are caught or harmless, from injecting every single fault (5,904) in exact simulation. Start state and flag 100 %, syndrome checks 100 %, readout bit flips 100 %, QAOA gates 80 %; the rest are XX, YY and ZZ errors on a gate's own pair, which a distance-2 code cannot see.
 
-**Source line on the slide:** Faults: exact simulation of every single fault (1, 2 layers) · Qollab IonQ simulator: 18 jobs, 11 Oct 2026 / Detection, not correction: shots that fail a check are discarded
+**Source line on the slide:** Faults: exact simulation of every single fault (1, 2 layers), 11 Oct 2026 / Detection, not correction: shots that fail a check are discarded
 
-## Slide 10: Try it on Qollab: one click runs it all
+## Slide 10: Try it on Qollab: one click, one IonQ job
 
 **Script (41 words):** [CUT TO LIVE QOLLAB DEMO] Here is our Qollab project; the code is in main.py. We press Run, choose the IonQ Forte 1 noise model, and get counts and plots. [BACK TO SLIDE] Limits: a noisy simulator and strong classical baselines. Next: Iceberg under real noise, and shorter circuits.
 
