@@ -1,0 +1,123 @@
+{
+ "budget": 1000,
+ "repetitions": 200,
+ "eta": 1.0,
+ "n": 12,
+ "definition": "one candidate evaluation = the energy of one portfolio: a measured shot, a random sample, one greedy neighbour, or one annealing proposal; every method gets exactly `budget` of them",
+ "modes": {
+  "long_short": {
+   "e_min": 0.015353381303312166,
+   "e_max": 0.3677854585972921,
+   "rows": {
+    "random sampling": {
+     "hit_rate": 0.245,
+     "mean_best_quality": 0.9938001702591092,
+     "repetitions": 200,
+     "offline_tuning_circuits": 0
+    },
+    "greedy descent (restarted)": {
+     "hit_rate": 0.815,
+     "mean_best_quality": 0.998878633918341,
+     "repetitions": 200,
+     "mean_restarts": 19.195,
+     "offline_tuning_circuits": 0
+    },
+    "simulated annealing (one run)": {
+     "hit_rate": 0.465,
+     "mean_best_quality": 0.9956984734392482,
+     "repetitions": 200,
+     "offline_tuning_circuits": 0
+    },
+    "p = 0 control (uniform)": {
+     "hit_rate": 0.25,
+     "mean_best_quality": 0.9938060343690904,
+     "repetitions": 200,
+     "hit_rate_exact": 0.2166458858594944,
+     "p_optimum_per_shot": 0.000244140625,
+     "offline_tuning_circuits": 0
+    },
+    "LR-QAOA p=5": {
+     "hit_rate": 1.0,
+     "mean_best_quality": 1.0,
+     "repetitions": 200,
+     "hit_rate_exact": 0.9993538865392894,
+     "p_optimum_per_shot": 0.007317630242464755,
+     "offline_tuning_circuits": 300
+    },
+    "free-angle QAOA p=3": {
+     "hit_rate": 0.985,
+     "mean_best_quality": 0.9999161823828987,
+     "repetitions": 200,
+     "hit_rate_exact": 0.985804179587747,
+     "p_optimum_per_shot": 0.004245768824701296,
+     "offline_tuning_circuits": 10685
+    },
+    "CVaR-QAOA (0.1) p=3": {
+     "hit_rate": 1.0,
+     "mean_best_quality": 1.0,
+     "repetitions": 200,
+     "hit_rate_exact": 0.998627935548141,
+     "p_optimum_per_shot": 0.006569762892881055,
+     "offline_tuning_circuits": 3047
+    }
+   }
+  },
+  "buy_or_skip": {
+   "e_min": -0.004325111842402765,
+   "e_max": 0.28186172415028343,
+   "rows": {
+    "random sampling": {
+     "hit_rate": 0.23,
+     "mean_best_quality": 0.9968596337035316,
+     "repetitions": 200,
+     "offline_tuning_circuits": 0
+    },
+    "greedy descent (restarted)": {
+     "hit_rate": 1.0,
+     "mean_best_quality": 1.0,
+     "repetitions": 200,
+     "mean_restarts": 12.33,
+     "offline_tuning_circuits": 0
+    },
+    "simulated annealing (one run)": {
+     "hit_rate": 1.0,
+     "mean_best_quality": 1.0,
+     "repetitions": 200,
+     "offline_tuning_circuits": 0
+    },
+    "p = 0 control (uniform)": {
+     "hit_rate": 0.18,
+     "mean_best_quality": 0.996393148200051,
+     "repetitions": 200,
+     "hit_rate_exact": 0.2166458858594944,
+     "p_optimum_per_shot": 0.000244140625,
+     "offline_tuning_circuits": 0
+    },
+    "LR-QAOA p=4": {
+     "hit_rate": 1.0,
+     "mean_best_quality": 1.0,
+     "repetitions": 200,
+     "hit_rate_exact": 0.9999999992161448,
+     "p_optimum_per_shot": 0.020748521701710487,
+     "offline_tuning_circuits": 300
+    },
+    "free-angle QAOA p=2": {
+     "hit_rate": 1.0,
+     "mean_best_quality": 1.0,
+     "repetitions": 200,
+     "hit_rate_exact": 0.9999951962171972,
+     "p_optimum_per_shot": 0.012171428450607109,
+     "offline_tuning_circuits": 6489
+    },
+    "CVaR-QAOA (0.1) p=3": {
+     "hit_rate": 1.0,
+     "mean_best_quality": 1.0,
+     "repetitions": 200,
+     "hit_rate_exact": 1.0,
+     "p_optimum_per_shot": 0.05768940876157691,
+     "offline_tuning_circuits": 4860
+    }
+   }
+  }
+ }
+}

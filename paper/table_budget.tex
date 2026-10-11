@@ -1,0 +1,15 @@
+\begin{tabular}{@{}lrcccccc@{}}\toprule
+ & & \multicolumn{3}{c}{Mode A: long/short} & \multicolumn{3}{c}{Mode B: buy or skip}\\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+Method (best $p$ A\,/\,B) & tuning & hit@1000 & $P_{\mathrm{opt}}$/shot & quality & hit@1000 & $P_{\mathrm{opt}}$/shot & quality\\\midrule
+uniform random sampling & 0 & 0.217 & 0.0002 & 0.807 & 0.217 & 0.0002 & 0.714\\
+greedy descent, restarted & 0 & 0.815 & -- & -- & 1.000 & -- & --\\
+simulated annealing, one 1000-step run & 0 & 0.465 & -- & -- & 1.000 & -- & --\\\midrule
+LR-QAOA (5\,/\,4) & 300\,/\,300 & 0.999 & 0.0073 & 0.950 & 1.000 & 0.0207 & 0.973\\
+free-angle QAOA (3\,/\,2) & 10\,685\,/\,6\,489 & 0.986 & 0.0042 & 0.935 & 1.000 & 0.0122 & 0.976\\
+CVaR-QAOA ($\alpha{=}0.1$) (3\,/\,3) & 3\,047\,/\,4\,860 & 0.999 & 0.0066 & 0.918 & 1.000 & 0.0577 & 0.948\\
+multi-angle QAOA (3\,/\,2) & 5\,730\,/\,3\,626 & 0.995 & 0.0054 & 0.945 & 1.000 & 0.0141 & 0.986\\
+counterdiabatic QAOA (3\,/\,3) & 5\,154\,/\,5\,210 & 0.999 & 0.0067 & 0.938 & ${<}10^{-3}$ & ${<}10^{-4}$ & 0.985\\
+VarQITE angle training (3\,/\,3) & 3\,000\,/\,3\,000 & 0.986 & 0.0042 & 0.935 & 1.000 & 0.0258 & 0.978\\
+varQITE Pauli-update~\cite{varqite} & 38\,792\,/\,46\,891 & ${<}10^{-3}$ & ${<}10^{-4}$ & 0.880 & ${<}10^{-3}$ & ${<}10^{-4}$ & 0.871\\
+\bottomrule\end{tabular}

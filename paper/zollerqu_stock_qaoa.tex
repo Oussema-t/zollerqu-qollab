@@ -1,5 +1,5 @@
 \documentclass[10pt,twocolumn]{article}
-\usepackage[a4paper,margin=1.45cm,top=1.2cm,bottom=1.3cm]{geometry}
+\usepackage[a4paper,margin=1.7cm,top=1.5cm,bottom=1.6cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{microtype}
@@ -7,94 +7,133 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{caption}
-\usepackage{titlesec}
 \usepackage[hidelinks]{hyperref}
-\captionsetup{font=small,labelfont=bf,skip=3pt}
-\titlespacing*{\section}{0pt}{7pt}{3pt}
-\titlespacing*{\subsection}{0pt}{5pt}{2pt}
-\titleformat*{\section}{\normalsize\bfseries}
-\titleformat*{\subsection}{\small\bfseries}
-\setlength{\columnsep}{0.65cm}
-\setlength{\parskip}{0pt}
-\setlength{\abovecaptionskip}{3pt}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\setlength{\columnsep}{0.7cm}
 \renewcommand{\arraystretch}{1.08}
 
-\title{\vspace{-1.1cm}\large\bfseries Quantum sampling for a long/short stock split:\\an honest benchmark of QAOA variants on 12--29 qubits}
-\author{\normalsize Team ZollerQu (Oussema-t, Tushar Pandey)\\\small Qollab $\times$ IonQ Hackathon, 9--11 October 2026 \quad---\quad This effort is supported by Qollab \& IonQ.}
+\title{\vspace{-0.9cm}\LARGE\bfseries Quantum sampling for a long/short stock split:\\\Large a same-budget benchmark of QAOA variants on 12--29 qubits}
+\author{Team ZollerQu (Oussema-t, Tushar Pandey)\\\small Qollab $\times$ IonQ Hackathon, 9--11 October 2026\\\small This effort is supported by Qollab \& IonQ.}
 \date{}
 
 \begin{document}
 \maketitle
-\vspace{-0.9cm}
 
 \begin{abstract}\noindent
-We encode the choice of a low-risk long/short (or buy/skip) stock portfolio as an Ising problem with one qubit per asset, solve it exactly and with classical heuristics at 12 assets, and benchmark seven quantum circuit families (linear-ramp QAOA, free-angle QAOA with five optimisers, CVaR, multi-angle, counterdiabatic, two imaginary-time methods and a constraint-preserving XY mixer) on an exact statevector simulator against the same answer key. Tuned circuits sample the optimal portfolio 30--236 times more often than uniform guessing and, in long/short mode, return it as their single most likely answer; they do not beat greedy descent or simulated annealing. We report a sign error in the linear-ramp recipe as commonly written, measure the all-to-all connectivity advantage (66 vs.\ 285 two-qubit gates per layer at 12 qubits, 244 vs.\ 1\,576 at 29), and show that angles tuned at 12 qubits transfer to 16 and 20. All optimised portfolios reduced out-of-sample risk; none beat the market's return. No quantum advantage is claimed; no hardware run is reported here.
+We encode the choice of a low-risk long/short (or buy/skip) stock portfolio as an Ising problem with one qubit per asset, enumerate the exact optimum at 12 assets, and benchmark seven circuit families (linear-ramp QAOA, free-angle QAOA with five optimisers, CVaR, multi-angle, counterdiabatic, two imaginary-time methods and a constraint-preserving XY mixer) on an exact statevector simulator against classical heuristics \emph{under the same budget}: 1\,000 measured shots versus 1\,000 evaluated candidate portfolios. Tuned circuits find the optimum in 99--100\,\% of runs, restarted greedy descent in 82 and 100\,\% (modes A and B), a 1\,000-step annealing run in 47 and 100\,\%, random sampling in 22\,\%. The circuits, however, first cost 300--10\,700 offline simulated circuits to tune, a price the heuristics do not pay, and at 12 qubits 1\,000 greedy evaluations already cover a quarter of the search space. Two findings are robust: the linear-ramp recipe as commonly written has the wrong sign for the $R_x(+2\beta)$ mixer and steers towards the worst portfolios, and angles tuned at 12 qubits transfer to 16 and 20 qubits without loss. We also measure the all-to-all connectivity advantage (66 vs.\ 285 two-qubit gates per layer at 12 qubits, 244 vs.\ 1\,576 at 29). All optimised portfolios reduced out-of-sample risk; none beat the market's return. No quantum advantage is claimed and no hardware run is reported.
 \end{abstract}
 
 \section{Problem and data}
 Each asset $i$ gets a spin $s_i\in\{+1,-1\}$. Mode~A (long/short): $+1$ = buy, $-1$ = short, weights $s_i/n$. Mode~B (buy/skip): $x_i=(1+s_i)/2\in\{0,1\}$, weight $x_i/n$, the rest in cash. With training-window mean weekly log returns $\mu$ and sample covariance $C$, the score to minimise is
 \begin{equation}
-J = \frac{w^{\mathsf T} C\, w}{V_{\mathrm{ref}}} - \eta\,\frac{\mu^{\mathsf T} w}{\sigma_{\mathrm{ref}}},\qquad V_{\mathrm{ref}}=\overline{\operatorname{diag} C},
+J = \frac{w^{\mathsf T} C\, w}{V_{\mathrm{ref}}} - \eta\,\frac{\mu^{\mathsf T} w}{\sigma_{\mathrm{ref}}},\qquad V_{\mathrm{ref}}=\overline{\operatorname{diag} C},\; \sigma_{\mathrm{ref}}=\sqrt{V_{\mathrm{ref}}},
 \end{equation}
-with $\eta\in\{0.25,0.5,1,2\}$ ($\eta=1$ default) and an optional balance constraint (equal numbers on each side). $J$ is an Ising energy $\sum_{i<j}J_{ij}s_is_j+\sum_i h_i s_i+c$ exactly (verified to $10^{-16}$); thinning the 29-asset couplings to the strongest 60\,\% by $|\rho_{ij}|$ gives a surrogate within 0.013 of the true score (rank correlation 0.975).
+with $\eta\in\{0.25,0.5,1,2\}$ ($\eta=1$ default) and an optional balance constraint (equal numbers on each side). $J$ is an Ising energy $\sum_{i<j}J_{ij}s_is_j+\sum_i h_i s_i+c$ exactly (verified to $10^{-16}$ on random states); thinning the 29-asset couplings to the strongest 60\,\% by $|\rho_{ij}|$ gives a surrogate within 0.013 of the true score (rank correlation 0.975), and every candidate is re-scored on the dense objective.
 
-\textbf{Data.} Kaggle ``Huge Stock Market Dataset'' (CC0): 29 named US assets in 10 groups (tech, gold \& silver, energy, banks, bonds, healthcare, staples, utilities, real estate, copper) plus SPY as a reference, weekly closes 2006-05-26 to 2017-11-10 (599 weeks). Chronological split: 418 training weeks (to 2014-05-30, containing the 2008 crash) and 180 held-out weeks. Nothing was tuned on the test weeks. The 12-asset instance is one asset per group in a fixed round-robin: AAPL, GLD, XOM, JPM, TLT, JNJ, PG, XLU, VNQ, FCX, MSFT, SLV. Bonds are the only group negatively correlated with the rest (mean $\rho\approx-0.22$; TLT--XLK $-0.45$); gold is near zero.
+\textbf{Data.} Kaggle ``Huge Stock Market Dataset'' (CC0): 29 named US assets in 10 groups (tech, gold \& silver, energy, banks, bonds, healthcare, consumer staples, utilities, real estate, copper) plus SPY as a market reference, weekly closes 2006-05-26 to 2017-11-10 (599 weeks, 598 weekly log returns). Chronological split: 418 training weeks (to 2014-05-30, containing the 2008 crash) and 180 held-out weeks; nothing was chosen with test data. The 12-asset instance takes one asset per group in a fixed round-robin: AAPL, GLD, XOM, JPM, TLT, JNJ, PG, XLU, VNQ, FCX, MSFT, SLV. Bonds are the only group negatively correlated with the rest (mean $\rho\approx-0.22$; TLT--XLK $-0.45$); gold is near zero ($+0.10$ to $+0.14$). An earlier thinning rule by $|C_{ij}|$ was dropped because it removed every bond link.
 
 \section{Methods}
-\textbf{Answer key and classical baselines.} At 12 assets all $2^{12}=4\,096$ portfolios are enumerated (one optimum per setting). Baselines, written in NumPy: uniform random sampling, greedy single-flip/swap descent and simulated annealing, three seeds each; balance is a verified penalty $\lambda(\sum_i s_i)^2$ at 12 assets and a hard constraint at 29.
+\textbf{Answer key and classical baselines.} At 12 assets all $2^{12}=4\,096$ portfolios are enumerated (exactly one optimum per setting). Baselines, written in NumPy: uniform random sampling, greedy single-flip (or swap) descent with restarts, and simulated annealing. Balance is enforced by a penalty $\lambda(\sum_i s_i)^2$ at 12 assets, with $\lambda$ verified by enumeration so that no unbalanced state beats the best balanced one, and by a hard constraint in the solvers at 29.
 
-\textbf{Circuit.} $H^{\otimes n}$, then per layer $k$: $R_{zz}(2\gamma_k J_{ij}/\text{scale})$ on every kept link, $R_z(2\gamma_k h_i/\text{scale})$ on every asset, $R_x(2\beta_k)$ on every qubit, scale $=\max(|J|,|h|)$. Linear-ramp QAOA (LR-QAOA)~\cite{lrqaoa} uses $\gamma_k=\tfrac{k}{p}\Delta\gamma$, $\beta_k=(1-\tfrac{k-1}{p})\Delta\beta$ and was grid-tuned ($15\times20$ points, $p=1..5$) by lowest expected energy, never by the optimum's probability. Free-angle QAOA ($2p$ angles) was tuned by COBYLA, Nelder--Mead, Powell, L-BFGS-B and our own SPSA from the same five starts with a cap of $200p$ circuit evaluations. Extras at the same budget: CVaR objective ($\alpha=0.1,0.25$), multi-angle ($3p$), first-order counterdiabatic $R_y$ layer (DC-QAOA, cf.~\cite{kipu}), VarQITE angle training (McLachlan), varQITE with the Pauli-term update rule of IonQ/ORNL~\cite{varqite} (ansatz A: $R_y$+CX per link; ansatz B: $R_{zz}$ per link + $R_x$ layer; implemented from the description, no code reused), and an XY mixer with a Dicke start for the balance constraint. An independent NumPy statevector simulator (1.7\,ms per $p=2$ circuit) agrees with Qiskit~2.5.2 \texttt{Statevector} to $3\times10^{-16}$. The full run (118 unit tests) took 121\,s on 8 cores.
+\textbf{Circuit.} $H^{\otimes n}$, then per layer $k$: $R_{zz}(2\gamma_k J_{ij}/\text{scale})$ on every kept link, $R_z(2\gamma_k h_i/\text{scale})$ on every asset, $R_x(2\beta_k)$ on every qubit, with one common scale $=\max(|J_{ij}|,|h_i|)$; the constant is a global phase. Linear-ramp QAOA (LR-QAOA)~\cite{lrqaoa} uses $\gamma_k=\tfrac{k}{p}\Delta\gamma$, $\beta_k=(1-\tfrac{k-1}{p})\Delta\beta$ and was grid-tuned (300 points per $p$, $p=1..5$) by lowest expected energy, never by the optimum's probability, because the optimum is unknown in a real problem. Free-angle QAOA ($2p$ angles) was tuned by COBYLA, Nelder--Mead, Powell, L-BFGS-B and our own SPSA from the same five starts (the default ramp, the tuned ramp, three fixed-seed random points) with a cap of $200p$ circuit evaluations each. Extras at the same cap: a CVaR objective ($\alpha=0.1,0.25$), multi-angle QAOA ($3p$: separate angles for links and fields), a first-order counterdiabatic $R_y$ layer (DC-QAOA, cf.~\cite{kipu}), VarQITE angle training (McLachlan, central differences), varQITE with the Pauli-term update rule of IonQ/ORNL~\cite{varqite} (ansatz A: $R_y$ + CX per link, 66 parameters; ansatz B: $R_{zz}$ per link + $R_x$ layer; implemented from the method description, no code reused), and an XY mixer with a Dicke initial state for the balance constraint. An independent NumPy statevector simulator (1.7\,ms per $p=2$ circuit at 12 qubits) agrees with Qiskit~2.5.2 \texttt{Statevector} to $3\times10^{-16}$ for all variants; the $R_{zz}/R_z$ sign convention is unit-tested against the explicit diagonal unitary. 122 unit tests pass; the full benchmark ran in 121\,s on 8 cores.
 
-\textbf{Sign of the ramp.} With the mixer $R_x(+2\beta)$, lowering the energy requires $\gamma$ and $\beta$ of \emph{opposite} sign. The recipe as commonly written ($\Delta\gamma=0.6,\Delta\beta=0.3$) drives the state towards the \emph{highest} energies: quality 0.45 at $p=5$ against 0.81 for uniform sampling (mode~A). All ramps below have $\Delta\beta<0$.
+\textbf{Same-budget protocol.} One \emph{candidate evaluation} is the energy of one portfolio: a measured shot, a random sample, one neighbour examined by greedy descent, or one annealing proposal. Every method gets exactly $B=1\,000$ of them; hit@1000 is the probability that the optimum is found within the budget (exact $1-(1-P_{\mathrm{opt}})^{1000}$ for circuits and confirmed by 200 sampled repetitions; 200 repetitions for the heuristics). Greedy restarts from random states until the budget is used (19 and 12 restarts on average in modes A and B); annealing runs one geometric schedule of 1\,000 proposals. The circuits' offline tuning cost is listed separately.
 
-\section{Results (12 qubits, $\eta=1$, exact statevector)}
-Metrics: $P_{\mathrm{opt}}$ = probability that one shot is the optimal portfolio (uniform: $1/4096=0.00024$); quality $=(E_{\max}-\langle E\rangle)/(E_{\max}-E_{\min})$ of the sampled distribution.
-
-\begin{table}[h]\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
-\caption{Main benchmark. Classical rows give the hit rate of the optimum per try (random: 1\,000 tries; greedy and annealing: 30 restarts, three seeds).}
-\begin{tabular}{@{}lcccc@{}}\toprule
- & \multicolumn{2}{c}{Mode A} & \multicolumn{2}{c}{Mode B}\\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Method & $P_{\mathrm{opt}}$ & quality & $P_{\mathrm{opt}}$ & quality\\\midrule
-$p=0$ control (uniform) & 0.0002 & 0.807 & 0.0002 & 0.714\\
-LR-QAOA, best $p$ (5 / 4) & \textbf{0.0073} & 0.950 & \textbf{0.0207} & 0.973\\
-free-angle QAOA, best $p$ (3 / 2) & 0.0042 & 0.935 & 0.0122 & 0.976\\
-CVaR $\alpha{=}0.1$, $p=3$ & 0.0066 & 0.918 & \textbf{0.0577} & 0.948\\
-multi-angle, $p=3$ & 0.0054 & 0.945 & 0.0057 & 0.987\\
-counterdiabatic, $p=3$ & 0.0067 & 0.938 & 0.0000 & 0.985\\
-VarQITE (McLachlan), $p=3$ & 0.0042 & 0.935 & 0.0258 & 0.978\\
-varQITE Pauli-update~\cite{varqite} & ${<}10^{-5}$ & 0.880 & ${<}10^{-5}$ & 0.871\\\midrule
-random guessing (per try) & 0.000 & -- & 0.000 & --\\
-greedy descent (per try) & 0.067 & -- & 1.000 & --\\
-simulated annealing (per try) & 0.256 & -- & 1.000 & --\\\bottomrule
-\end{tabular}
-\end{table}
+\section{Same-budget benchmark}
+\begin{table*}[t]\centering\footnotesize\setlength{\tabcolsep}{4.5pt}
+\caption{Same-budget benchmark at 12 assets, $\eta=1$, balance off. hit@1000: probability of finding the optimal portfolio within 1\,000 candidate evaluations. $P_{\mathrm{opt}}$: probability that a single shot is the optimum (uniform: $1/4096=0.00024$). Quality $=(E_{\max}-\langle E\rangle)/(E_{\max}-E_{\min})$ of the sampled distribution (1 = always the optimum). Tuning: offline simulated circuits used to choose the angles (all optimisers and starts at that $p$). Best $p$ is given as A\,/\,B.}
+\input{table_budget.tex}
+\end{table*}
 
 \begin{figure*}[t]\centering
-\includegraphics[width=\textwidth]{figures/ladder.pdf}
-\caption{Every method on one scale: probability that a single shot (or classical try) is the optimal portfolio, log axis. Grey: uniform control; blue: LR-QAOA; orange: free-angle QAOA; green: the extras. Brown lines: classical hit rate per try, dotted = greedy (0.07 in A, 1.00 in B), dash-dot = simulated annealing (0.26 in A, 1.00 in B).}
-\label{fig:ladder}
+\includegraphics[width=0.95\textwidth]{figures/budget.pdf}
+\caption{hit@1000 for every method under the same budget of 1\,000 candidate evaluations. Brown: classical heuristics (measured over 200 repetitions); grey: uniform sampling; blue, orange, green: circuits (exact). The bracketed numbers are the offline tuning circuits.}
+\label{fig:budget}
 \end{figure*}
 
-Tuned circuits beat uniform sampling by $30\times$ (A) and $85\times$ (B); the CVaR objective reaches $236\times$ in mode~B at the price of a lower mean quality. In 1\,000 shots the optimum appears at least once with probability 0.999 (A) and 1.000 (B). In mode~A the circuit's single most likely portfolio \emph{is} the optimum (rank 1 of 4\,096; long AAPL, MSFT, GLD, SLV, JPM, TLT, PG, XLU; short XOM, JNJ, VNQ, FCX; Fig.~\ref{fig:cut}); in mode~B it is ``buy TLT only'', one asset from the optimum ``buy AAPL+TLT'' (rank 6). No circuit approaches greedy or annealing, which hit the optimum in most tries: on this problem the circuit is a better-than-random sampler, not a better optimiser. The optimiser matters less than the start: from the tuned ramp all five reach about the same quality (mean over starts 0.86--0.97), random starts often stall; L-BFGS-B needs the fewest evaluations (24--98). The counterdiabatic layer in mode~B concentrates on near-optimal states but never on the optimum. varQITE learns slowly at the published learning rates; its IonQ-native ansatz~B is a stationary point at $\theta=0$ (all parameter-shift derivatives vanish) and needs a random start. Exact imaginary time on a diagonal cost is classical Boltzmann sampling; as a reference it overtakes the best LR-QAOA at $\tau=80$ (A) / 160 (B).
+Table~1 and Fig.~\ref{fig:budget} give the fair comparison. With 1\,000 evaluations each, the tuned circuits reach the optimum in 99--100\,\% of runs in both modes; restarted greedy reaches 82\,\% (A) and 100\,\% (B), the 1\,000-step annealer 47\,\% and 100\,\%, uniform sampling 22\,\%. Three caveats keep this honest: (i) the circuits were first tuned with 300 (LR-QAOA) to 10\,685 (free-angle, all optimisers and starts) simulated circuits, which the heuristics never needed; (ii) at 12 qubits 1\,000 greedy evaluations already cover a quarter of the 4\,096 states, and the annealer's schedule was not tuned for such a short run; (iii) all distributions are exact and noiseless. Mode~B is easy for every method because its optimum (``buy AAPL and TLT'', everything else in cash) is reached by few flips from most states; mode~A, a genuine hedge, separates the methods.
 
-\begin{figure}[t]\centering
+\section{Per-shot results and the two findings}
+Per shot, the tuned circuits are $30\times$ (A) and $85\times$ (B) more likely than uniform sampling to return the optimum (Table~1); the CVaR objective reaches $236\times$ in mode~B at a lower mean quality. In mode~A the circuit's single most likely portfolio \emph{is} the optimum (rank 1 of 4\,096: long AAPL, MSFT, GLD, SLV, JPM, TLT, PG, XLU; short XOM, JNJ, VNQ, FCX; Fig.~\ref{fig:cut}); in mode~B it is ``buy TLT only'', one asset from the optimum (rank 6).
+
+\begin{figure}[!htb]\centering
 \includegraphics[width=\columnwidth]{figures/cut.pdf}
-\caption{Mode A, 12 assets. (a) Training correlations: teal = move together, brown = move opposite, width $\propto|\rho|$. (b) The most likely LR-QAOA portfolio: 27 of 52 ``together'' links are cut (hedged), 5 of 14 ``opposite'' links.}
+\caption{Mode A, 12 assets. (a) Training correlations: teal = move together, brown = move opposite, width $\propto|\rho|$. (b) The most likely LR-QAOA portfolio: 27 of 52 ``together'' links are cut (hedged) and only 5 of 14 ``opposite'' links.}
 \label{fig:cut}
 \end{figure}
 
-\textbf{Balance.} The penalty coupling $2\lambda$ is $12\times$ (A) / $5\times$ (B) the largest objective term, so penalised circuits mostly learn the constraint. At $p=2$ the probability of the best \emph{balanced} portfolio per shot is 0.0011 with the penalty (97\,\% balanced shots), 0.0019 (A) / 0.0009 (B) with post-selection of the unconstrained circuit (30\,\% / 1\,\% balanced), and \textbf{0.0192} (A) / \textbf{0.0068} (B) with the XY mixer (100\,\% balanced, 12 XX+YY gates per layer; Dicke preparation not gate-optimised).
+\textbf{Finding 1: the sign of the ramp.} With the mixer $R_x(+2\beta)$ and $H^{\otimes n}$ as the initial state, lowering the energy requires $\gamma$ and $\beta$ of \emph{opposite} sign. The recipe as commonly written ($\Delta\gamma=0.6$, $\Delta\beta=0.3$) drives the state towards the \emph{highest} energies: quality 0.45 at $p=5$ against 0.81 for uniform sampling in mode~A, 0.33 against 0.71 in mode~B, and the probability of the worst portfolio grows with $p$. Fig.~\ref{fig:grid} shows the grid: the good region lies entirely in the half-plane $\Delta\beta<0$. All tuned ramps have $\Delta\beta<0$: A (0.3,$-$0.3), (0.5,$-$0.3), (0.7,$-$0.4), (0.7,$-$0.4), (0.7,$-$0.4) for $p=1..5$; B (1.0,$-$0.7), (1.4,$-$0.6), (1.4,$-$0.6), (1.4,$-$0.5), (1.3,$-$0.5).
 
-\textbf{Gate counts and transfer.} One layer needs 66 two-qubit gates (depth 15) at 12 qubits and 244 (depth 29) at 29 qubits on all-to-all connectivity, where $R_{zz}$ is native on IonQ Forte; routed on a heavy-hex grid (Qiskit transpiler, level 1, five seeds) the same layers need 285 and 1\,576 (4.3$\times$ and 6.5$\times$). The 29-qubit circuits were built and counted only. The ramp tuned at 12 assets keeps its quality at 16 (0.905 vs.\ 0.910 re-tuned) and 20 assets (0.919; 0.882 when thinned to 60\,\%), which justifies using it untuned at 29.
+\begin{figure*}[!tb]\centering
+\includegraphics[width=0.9\textwidth]{figures/grid.pdf}
+\caption{LR-QAOA grid search, expected energy of the sampled portfolios (darker = lower = better) over $\Delta\gamma$ and $\Delta\beta$ for $p=1,3,5$. White star: chosen ramp; red cross: the recipe as commonly written (0.6, 0.3), which lies in the bright upper half where the circuit samples worse-than-random portfolios.}
+\label{fig:grid}
+\end{figure*}
 
-\textbf{Out-of-sample finance (Task 3, classical optimum).} Over the 180 held-out weeks, all 32 settings (2 modes $\times$ 4 $\eta$ $\times$ balance on/off) had lower weekly volatility than SPY (0.00--0.91\,\% vs.\ 1.57\,\%) and than random portfolios of the same kind; 14 of 32 earned more than a random portfolio; none beat SPY's return ($+0.165$ vs.\ $+0.214$\,\% per week). Costs, borrow fees and slippage are not modelled; the universe has survivorship bias.
+\textbf{Finding 2: angle transfer.} The ramp tuned at 12 assets keeps its quality at 16 and 20 assets (Table~\ref{tab:transfer}), within 0.005 of a fresh grid search at 16, and still beats uniform sampling at 20 assets thinned to 60\,\% of the links as the 29-asset model is. This justifies running the 29-qubit circuits with the 12-asset ramp, untuned; beyond about 20 qubits offline tuning is impossible and would have to be paid in hardware shots.
+
+\begin{table}[!htb]\centering\small\setlength{\tabcolsep}{4pt}
+\caption{Transfer of the 12-asset ramp: quality of the sampled distribution at $p=1/2/3$ with the 12-asset angles (``own'': a fresh grid search at that size).}
+\label{tab:transfer}
+\begin{tabular}{@{}llccc@{}}\toprule
+assets (links) & mode & $p=1$ & $p=2$ & $p=3$\\\midrule
+12 (all) & A & 0.895 & 0.916 & 0.931\\
+16 (all) & A & 0.889 & 0.905 & 0.922\\
+16 (all), own & A & 0.890 & 0.910 & 0.926\\
+20 (all) & A & 0.906 & 0.919 & 0.937\\
+20 (60\,\%) & A & 0.864 & 0.882 & 0.900\\\midrule
+12 (all) & B & 0.955 & 0.969 & 0.972\\
+16 (all) & B & 0.949 & 0.960 & 0.963\\
+16 (all), own & B & 0.949 & 0.960 & 0.963\\
+20 (all) & B & 0.959 & 0.968 & 0.969\\
+20 (60\,\%) & B & 0.950 & 0.963 & 0.966\\\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Optimisers and extras.} The optimiser matters less than the start: from the tuned ramp all five reach about the same quality (mean over starts and $p$: A 0.857--0.895, B 0.950--0.969), random starts often stall, and L-BFGS-B needs the fewest evaluations (24--98). CVaR raises $P_{\mathrm{opt}}$ at the cost of mean quality; multi-angle gains little; the counterdiabatic layer in mode~B concentrates on near-optimal states (quality 0.985) but never on the optimum. VarQITE angle training matches standard QAOA from the same starts. varQITE with the Pauli-term update (Fig.~\ref{fig:varqite}) lowers the energy steadily but slowly at the published learning rates (0.05--0.4) and reaches quality 0.880 (A) / 0.871 (B) after 60 steps and 7\,980 simulated circuits per run with 66 two-qubit gates, below LR-QAOA at one layer; its IonQ-native ansatz~B is a stationary point at $\theta=0$ (every parameter-shift derivative vanishes) and needs a random start. Exact imaginary-time evolution of a diagonal cost is classical Boltzmann sampling; as a reference curve it overtakes the best LR-QAOA at $\tau=80$ (A) / 160 (B).
+
+\begin{figure*}[!tb]\centering
+\includegraphics[width=0.82\textwidth]{figures/varqite.pdf}
+\caption{varQITE (Pauli-term update rule~\cite{varqite}) training curves on the exact statevector: expected energy per step for both ans\"atze (solid: A, dashed: B) and three learning rates (blue 0.1, orange 0.4, green 0.8); dotted: the exact optimum. Ansatz A learns, ansatz B barely moves from its small random start.}
+\label{fig:varqite}
+\end{figure*}
+
+\section{Balance constraint in the circuit}
+\begin{table}[!htb]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{Equal buys and sells at 12 assets, $p=2$: share of balanced shots and probability per shot of the best balanced portfolio.}
+\label{tab:balance}
+\begin{tabular}{@{}lcccc@{}}\toprule
+ & \multicolumn{2}{c}{Mode A} & \multicolumn{2}{c}{Mode B}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+method & balanced & $P_{\mathrm{best}}$ & balanced & $P_{\mathrm{best}}$\\\midrule
+uniform, post-selected & 23\,\% & 0.0002 & 23\,\% & 0.0002\\
+penalty in the model & 97\,\% & 0.0011 & 97\,\% & 0.0011\\
+post-selection & 31\,\% & 0.0019 & 1\,\% & 0.0009\\
+XY mixer + Dicke start & 100\,\% & \textbf{0.0192} & 100\,\% & \textbf{0.0068}\\\bottomrule
+\end{tabular}
+\end{table}
+The penalty coupling $2\lambda$ is $12\times$ (A) / $5\times$ (B) the largest objective term, so penalised circuits mostly learn the constraint and their grids run into the small-$\Delta\gamma$ edge. The XY mixer (12 XX+YY gates per layer on a ring, Dicke state prepared generically, not gate-optimised) keeps every shot balanced and is $10\times$ more likely than the penalty to return the best balanced portfolio (Table~\ref{tab:balance}). At 29 qubits post-selection of the unconstrained circuit is the practical choice.
+
+\section{Gate counts}
+\begin{table}[!htb]\centering\small\setlength{\tabcolsep}{4pt}
+\caption{One QAOA layer, measured with the Qiskit transpiler (optimisation level 1, five routing seeds). All-to-all: trapped ions, where $R_{zz}$ is native on IonQ Forte. Heavy-hex: a superconducting layout with SWAP routing (median, min--max).}
+\label{tab:gates}
+\begin{tabular}{@{}rrrrr@{}}\toprule
+qubits & links & 2q gates & 2q depth & heavy-hex 2q gates\\\midrule
+12 & 66 & 66 & 15 & 285 (276--288)\\
+29 & 244 & 244 & 29 & 1\,576 (1\,510--1\,597)\\\bottomrule
+\end{tabular}
+\end{table}
+On all-to-all connectivity one layer costs one native two-qubit gate per link; routed on a heavy-hex grid the same layer costs $4.3\times$ (12 qubits) and $6.5\times$ (29 qubits) more (Table~\ref{tab:gates}). The 29-qubit circuits (732 two-qubit gates at $p=3$) were built and counted only, never simulated.
+
+\section{Out-of-sample finance}
+Over the 180 held-out weeks (simple returns, equal weights, no costs), the classically optimal portfolios of all 32 settings (2 modes $\times$ 4 $\eta$ $\times$ balance on/off) had lower weekly volatility than SPY (0.00--0.91\,\% vs.\ 1.57\,\%) and than 1\,000 random portfolios of the same kind; 14 of 32 earned more than a random portfolio; none beat SPY's return ($+0.165$ vs.\ $+0.214$\,\% per week in a strongly rising market). The method reduces risk; it does not raise return. Trading costs, borrow fees and slippage are not modelled, and the universe has survivorship bias.
 
 \section{Limitations and outlook}
-Everything above is an exact classical simulation; the IonQ noise-model run (one batched job with the $p=0$ control, LR-QAOA, CVaR and XY circuits; 12 qubits live, 29 recorded) is the next step and will decide how much of the $30$--$236\times$ gain survives 66--244 two-qubit gates per layer. Deferred: warm starts, variational real-time evolution, recursive QAOA. Code, tests and all run records (including every unhelpful variant) are in the team repository.
+Everything above is an exact classical simulation; the IonQ noise-model run (one batched job with the $p=0$ control, LR-QAOA, CVaR and XY circuits; 12 qubits live, 29 recorded) is the next step and will show how much survives 66--244 two-qubit gates per layer. The same-budget comparison favours the circuits only after their offline tuning, which is impossible beyond about 20 qubits; the angle transfer is the way around it and is itself measured only up to 20. Deferred: warm starts, variational real-time evolution, recursive QAOA. Code, 122 tests, the saved angles and all run records (including every unhelpful variant) are in the team repository.
 
-\begin{thebibliography}{9}\small
-\bibitem{lrqaoa} Linear-ramp QAOA schedule, \emph{npj Quantum Information} (2025). [Full reference to be completed.]
+\begin{thebibliography}{9}\footnotesize
+\bibitem{lrqaoa} J.~A. Monta\~nez-Barrera and K. Michielsen, Toward a linear-ramp QAOA protocol: evidence of a scaling advantage in solving some combinatorial optimization problems, \emph{npj Quantum Information} \textbf{11}, 131 (2025), doi:10.1038/s41534-025-01082-1.
 \bibitem{varqite} IonQ and ORNL, variational quantum imaginary-time evolution with a Pauli-term update rule, arXiv:2404.16135.
 \bibitem{kipu} IonQ and Kipu Quantum, portfolio optimisation on IonQ hardware, arXiv:2602.23976.
 \end{thebibliography}

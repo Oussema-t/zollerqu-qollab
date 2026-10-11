@@ -110,9 +110,12 @@ Warm start, variational real-time evolution, recursive QAOA, any optimiser loop 
 No run on IonQ yet. README, credits, video and the Qollab main.py are still to do.
 
 ## 5. Honest conclusions
-1. The quantum circuits are a demonstrably better-than-random sampler (30-236x on the exact optimum) and they
-   produce the correct portfolio in mode A as their most likely answer.
-2. They do not beat greedy or simulated annealing, which find the optimum in most tries. No advantage claim.
+1. Under the SAME budget of 1,000 evaluations the tuned circuits find the optimum in 99-100 % of runs, restarted
+   greedy in 82 % (A) / 100 % (B), a 1,000-step annealer in 47 % / 100 %, random sampling in 22 %; but the circuits
+   first cost 300-10,700 offline simulated circuits to tune. Per shot they are 30-236x better than uniform, and in
+   mode A their most likely portfolio is the optimum.
+2. No quantum advantage is claimed: the tuning is impossible beyond ~20 qubits without hardware shots, and greedy
+   with 1,000 evaluations at 12 qubits already covers a quarter of the search space.
 3. The published ramp recipe has a sign problem for this convention; this is a reproducible finding.
 4. The XY mixer is the right way to enforce "equal buys and sells"; penalties are not.
 5. varQITE (Pauli-update) underperforms at this budget; reported, not hidden.
