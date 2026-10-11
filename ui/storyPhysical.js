@@ -352,7 +352,7 @@ export function buildPhysical(o) {
       pillText.setAttribute('x', x);
       pillRect.setAttribute('x', x - w / 2); pillRect.setAttribute('width', w);
     }
-    return { d, phase: cur ? cur.name : null };
+    return { d, phase: cur ? cur.name : null, t: seq[d] ? seq[d].t : null };
   }
 
   return {

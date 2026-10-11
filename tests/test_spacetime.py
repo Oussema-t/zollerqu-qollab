@@ -1,4 +1,5 @@
 import json
+import re
 
 import pytest
 
@@ -111,3 +112,33 @@ def test_bridge_spacetime_round_trip():
     L = json.loads(bridge.spacetime(4))
     assert L["T"] > 0 and L["ops"] and L["phases"] and L["blocks"]
     assert bridge.spacetime(4) == bridge.spacetime(4)   # cached
+
+
+def test_layer_text_one_caption_per_layer_lesson_four():
+    L = pick(enc_layouts(), 4, "enc_X")
+    text = L["layer_text"]
+    layers = {op["t"] for op in L["ops"]}
+    assert set(text) == {str(t) for t in layers}
+    assert all(text[str(t)].strip() for t in layers)
+    t_layer = next(op["t"] for op in L["ops"] if op["phase"] == "prepare A" and op["gate"] == "t")
+    assert "T" in text[str(t_layer)] and "q0 of A" in text[str(t_layer)]
+    for t in {op["t"] for op in L["ops"] if op["phase"] == "encode B"}:
+        named = set(re.findall(r"q\d of ([ABC])", text[str(t)]))
+        assert named == {"B"}, text[str(t)]
+    tv = next(op["t"] for op in L["ops"] if op["phase"] == "transversal CNOT B→C")
+    assert "B" in text[str(tv)] and "C" in text[str(tv)]
+    for s in text.values():
+        assert set(ch for ch in s if ord(ch) > 127) <= {"→", "⟩", "†"}, s
+
+
+def test_layer_text_encoder_and_readout_wording():
+    L = pick(enc_layouts(), 4, "enc_Y")
+    text = L["layer_text"]
+    enc = sorted({op["t"] for op in L["ops"] if op["phase"] == "encode C"})
+    assert text[str(enc[0])] == ("CNOT q0 → q1 of C spreads q0's value along the top row, where logical X lives. "
+                                 "H on q4, q5, q6, q7 of C makes them the sources of the X checks.")
+    assert "q4 → q0" in text[str(enc[2])] and "checks" in text[str(enc[2])]
+    rot = [op["t"] for op in L["ops"] if op["phase"] == "readout rotation C (Y)"]
+    assert all("logical Y" in text[str(t)] for t in rot)
+    meas = next(op["t"] for op in L["ops"] if op["phase"] == "measure")
+    assert text[str(meas)] == "Every qubit is measured; checks and the logical value are parities of these bits."

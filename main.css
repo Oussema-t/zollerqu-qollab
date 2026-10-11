@@ -68,6 +68,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .story .stepline { margin: 2px 0 0; color: var(--muted); font-size: 0.85rem; }
 .story .stepline b { color: var(--fg); font-weight: 600; }
 .story .caption { font-size: 1.25rem; line-height: 1.4; margin: 2px 0 0; color: var(--fg); }
+.story .layer-line { margin: 4px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.4; }
 /* Room for two caption lines (plus the disclosure line when there is one), so the text below does not jump. */
 .story .capbox { min-height: calc(2 * 1.75rem + 2px); }
 .story .capbox.phys { min-height: calc(2 * 1.75rem + 2px + 0.9rem * 1.5 + 2px); }

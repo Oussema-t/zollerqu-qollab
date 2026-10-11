@@ -142,3 +142,32 @@ Tushar's definition of the four lessons (his words, Oct 11):
 
 ### Out of scope
 Any change to lessons 1 and 2, the code, the encoder, the checks, the bridge contract, or the Qollab drafts.
+
+## Amendment (Oct 11 afternoon): one caption per gate layer on the physical level
+
+Tushar: "at each step there should be a caption describing what is happening"; chosen option: per gate layer on the physical level of the story.
+
+Today the physical level shows one caption per phase (`ui/storyText.js:43-75`, `phaseText`), e.g. one sentence for all 16 encoder gates, while layers advance every 0.9 s (`ui/story.js:9`).
+
+### Data (Python, tested): `qec/spacetime.py`
+- `layout()` (`qec/spacetime.py:36-96`) gains a key `"layer_text": {str(t): caption}` for every layer t that holds at least one op. Built from the ops of that layer (`op["t"]`, `op["gate"]`, `op["q"]`, `op["phase"]`), so it always matches what is drawn.
+- Caption = what + why, in plain words, qubits named "q<local> of <patch>":
+  - prepare (`phase` starts with "prepare"): h on local 0: "H on q0 of A puts it in |+⟩." t: "T on q0 of A adds a pi/4 phase to |1⟩: q0 now holds the T state." ry and others: gate and qubit only.
+  - encode (`phase` starts with "encode"), per op, grouped by kind within the layer:
+    - cx from local 0 to 1 or 2: "CNOT q0 → q1 (q2) of B copies q0's value along the top row, where logical X lives."
+    - h on locals 4-7: "H on q4, q5, q6, q7 of B makes them the sources that build the checks."
+    - cx from local 4, 5, 6 or 7: "CNOT q4 → q0 of B spreads the source over its plaquette, so the plaquette's check starts out satisfied."
+  - transversal: "Nine CNOTs at once, qi of B → qi of C for every i: one logical CNOT."
+  - readout rotation X: "H on all nine qubits of A so the measurement reads X." Y: "S† then H on q0, H on q1 and q2 of C, so the measurement reads logical Y."
+  - measure: "Every qubit is measured; checks and the logical value are parities of these bits."
+  - inject: existing inject wording (`ui/storyText.js:55-60`).
+  - A layer holding ops of several kinds joins their sentences with a space, in op order.
+- Tests first (`tests/test_spacetime.py`): for lesson 4 enc_X, every layer index with ops has a non-empty caption; the prepare-A T layer mentions "T" and "q0 of A"; every encode layer of B names only qubits of B; the transversal layer for B→C mentions "B" and "C"; captions are ASCII except the arrows/kets already used in the UI.
+
+### Display: `ui/story.js`
+- Physical level only: under the existing caption, a new small line `.layer-line` shows "Layer k of n in <phase>: <layer_text>", where k and n count the layers of the current phase, and the text comes from `layout.layer_text[seq[d].t]` (`ui/storyPhysical.js` `render` already returns `d`; also return `t`). Virtual layers (no ops) show nothing.
+- `LAYER_SECONDS` 0.9 → 2.5 so each caption can be read at 1x; the speed selector keeps working.
+- `main.css`: style `.layer-line` like the step line but readable (normal size, muted colour).
+
+### Out of scope
+Logical-level captions, lessons' circuits, the take.

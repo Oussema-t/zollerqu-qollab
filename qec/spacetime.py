@@ -35,6 +35,86 @@ def _caught(pauli, i, basis):
     return [k for k, s in enumerate(syndrome) if s], table.get(syndrome)
 
 
+GATE = {"h": "H", "t": "T", "tdg": "T†", "s": "S", "sdg": "S†", "ry": "Ry", "x": "X", "y": "Y", "z": "Z", "cx": "CNOT"}
+
+
+def _qname(q):
+    b, i = divmod(q, 9)
+    return f"q{i}", c.BLOCK_NAMES[b]
+
+
+def _gates_on(ops):
+    """'S† on q0, H on q1 and q2 of C': gates in op order, qubits grouped per gate."""
+    by = {}
+    for op in ops:
+        by.setdefault(GATE.get(op["gate"], op["gate"]), []).append(_qname(op["q"][0])[0])
+    parts = [f"{g} on {', '.join(qs[:-1]) + ' and ' + qs[-1] if len(qs) > 1 else qs[0]}" for g, qs in by.items()]
+    return f"{', '.join(parts)} of {_qname(ops[0]['q'][0])[1]}"
+
+
+def _kind(op):
+    """Group key of one op for the layer caption."""
+    role, gate, local = op["role"], op["gate"], op["q"][0] % 9
+    if role == "encode":
+        if gate == "cx" and local == 0:
+            return "top row"
+        if gate == "h" and local in (4, 5, 6, 7):
+            return "sources"
+        if gate == "cx" and local in (4, 5, 6, 7):
+            return "fan"
+    if role == "prepare" and local == 0 and gate in ("h", "t"):
+        return f"prepare {gate}"
+    if role in ("transversal", "readout", "measure", "inject"):
+        return role
+    return "other"
+
+
+def _sentence(kind, ops):
+    q, P = _qname(ops[0]["q"][0])
+    if kind == "prepare h":
+        return f"H on {q} of {P} puts it in |+⟩."
+    if kind == "prepare t":
+        return f"T on {q} of {P} adds a pi/4 phase to |1⟩: {q} now holds the T state."
+    if kind == "top row":
+        return " ".join(f"CNOT q0 → {_qname(o['q'][1])[0]} of {P} spreads q0's value along the top row, where logical X lives."
+                        for o in ops)
+    if kind == "sources":
+        return f"H on {', '.join(_qname(o['q'][0])[0] for o in ops)} of {P} makes them the sources of the X checks."
+    if kind == "fan":
+        pairs = ", ".join(f"{_qname(o['q'][0])[0]} → {_qname(o['q'][1])[0]}" for o in ops)
+        if len(ops) == 1:
+            return f"CNOT {pairs} of {P} entangles the source with that qubit; once the whole fan-out is done, all eight checks start out satisfied."
+        return f"CNOT {pairs} of {P} entangle each source with its target; once the whole fan-out is done, all eight checks start out satisfied."
+    if kind == "transversal":
+        G = _qname(ops[0]["q"][1])[1]
+        n = {9: "Nine"}.get(len(ops), str(len(ops)))
+        return f"{n} CNOTs at once, qi of {P} → qi of {G} for every i: one logical CNOT."
+    if kind == "readout":
+        if ops[0]["phase"].endswith("(Y)"):
+            return f"{_gates_on(ops)}, so the measurement reads logical Y."
+        if len(ops) == 9 and all(o["gate"] == "h" for o in ops):
+            return f"H on all nine qubits of {P} so the measurement reads X."
+        return f"{_gates_on(ops)} so the measurement reads X."
+    if kind == "measure":
+        return "Every qubit is measured; checks and the logical value are parities of these bits."
+    if kind == "inject":
+        p = ops[0]["gate"].upper()
+        if p == "Z":
+            return f"A Z error on {q}, put there on purpose. It cannot change a Z measurement, so this readout will not see it."
+        return f"{'A' if p == 'Y' else 'An'} {p} error on {q}, put there on purpose. The qubit stays outlined red from here on."
+    return " ".join(f"{GATE.get(o['gate'], o['gate'])} on {' → '.join(_qname(x)[0] for x in o['q'])} of {_qname(o['q'][0])[1]}."
+                    for o in ops)
+
+
+def _layer_text(ops):
+    """One caption per layer that holds ops: one sentence per kind of op, in op order."""
+    layers = {}
+    for op in ops:
+        groups = layers.setdefault(op["t"], {})
+        groups.setdefault(_kind(op), []).append(op)
+    return {str(t): " ".join(_sentence(k, g) for k, g in groups.items()) for t, groups in sorted(layers.items())}
+
+
 def layout(qc, meta):
     n = meta["nblocks"]
     marks = sorted(qc.metadata.get("phases", []))
@@ -92,5 +172,5 @@ def layout(qc, meta):
     return {
         "lesson": meta["lesson"], "name": meta["name"], "bases": meta["bases"], "T": T,
         "pitch": PITCH, "qubits": _qubits(n), "blocks": blocks, "phases": phases, "ops": ops,
-        "inject": inject, "sheets": sheets,
+        "inject": inject, "sheets": sheets, "layer_text": _layer_text(ops),
     }

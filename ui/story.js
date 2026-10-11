@@ -6,7 +6,7 @@ import { ringCut } from './patches.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const DWELL = 7;             // logical level: seconds per step at 1x
-const LAYER_SECONDS = 0.9;   // physical level: seconds per layer at 1x
+const LAYER_SECONDS = 2.5;   // physical level: seconds per layer at 1x
 const W = 1100;              // picture width in user units
 const TABLES = {             // syndrome (recipe order) -> local qubit the decoder flips
   Z: { '0010': 0, '1010': 1, '1000': 2, '0100': 3, '1100': 4, '0101': 7, '0001': 8 },
@@ -96,6 +96,7 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
     <p class="stepline"></p>
     <div class="capbox">
       <p class="caption" aria-live="polite"></p>
+      <p class="layer-line" hidden></p>
       <details class="why" hidden><summary></summary><p></p></details>
     </div>
   </div>
@@ -470,6 +471,7 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
   }
   const scrub = $('.scrub'), playBtn = $('.play'), caption = $('.caption'), stepline = $('.stepline');
   const why = $('.why'), whySum = $('.why summary'), whyText = $('.why p'), qlegend = $('.qlegend'), capbox = $('.capbox');
+  const layerLine = $('.layer-line');
   const track = $('.track'), stripFill = $('.track .fill');
   // Step strip: one real button per step (aria-current on the current one); the hidden range keeps the keyboard and screen-reader path.
   const dots = TITLES.map((title, k) => {
@@ -505,6 +507,15 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
     why.hidden = !more;
     const [sum, txt] = more || ['', ''];
     if (whyText.textContent !== txt) { why.open = false; whySum.textContent = sum; whyText.textContent = txt; }
+  }
+
+  // Physical level: "Layer k of n in <phase>: <caption>" for a real layer; nothing for a virtual one or the logical level.
+  function setLayerLine(phase, t) {
+    const p = t === null || t === undefined ? null : layout.phases.find((x) => x.name === phase);
+    const cap = p && layout.layer_text ? layout.layer_text[String(t)] : '';
+    const str = cap ? `Layer ${t - p.t0 + 1} of ${p.t1 - p.t0 + 1} in ${phase}: ${cap}` : '';
+    if (layerLine.textContent !== str) layerLine.textContent = str;
+    layerLine.hidden = !str;
   }
 
   function render() {
@@ -546,11 +557,13 @@ export function openStory(root, { lesson, rows, layout, settings, onClose }) {
       (labels[s] || []).forEach((str, i) => setParts(stateLabels[i], parts(str)));
       logResults.setAttribute('opacity', s === N - 1 ? 1 : 0);
       setNarr(s, '', steps[s].caption, steps[s].more || null);
+      setLayerLine(null, null);
       renderState(s, null);
     } else {
-      const { phase } = phys.render(s, f);
+      const { phase, t } = phys.render(s, f);
       phyResults.setAttribute('opacity', s === N - 1 ? 1 : 0);
       setNarr(s, phase || '', phase ? phaseText(lesson, phase, ctx) : steps[s].caption, phase ? phaseMore(lesson, phase) : null);
+      setLayerLine(phase, t);
       renderState(s, phase);
     }
   }
