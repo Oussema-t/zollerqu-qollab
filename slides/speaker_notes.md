@@ -1,24 +1,24 @@
 # Speaker notes: Portfolio Selection with QAOA (ZollerQu, stocks project)
 
-Spoken script for all 11 slides: **266 words** (about 1:58-2:03 at 130-135 words per minute; target 330-380 words).
+Spoken script for all 11 slides: **281 words** (about 2:05-2:10 at 130-135 words per minute; target 330-380 words).
 
 Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advantage or speed-up claim, no wall-clock comparison.
 
 ## Slide 1: Portfolio Selection with QAOA
 
-**Script (15 words):** Hi, we are team ZollerQu. We pick stocks with QAOA on the IonQ noise model.
+**Script (18 words):** Hi, we're team ZollerQu. Which stocks should you buy? We answer that with QAOA, on IonQ's noise model.
 
 **Alt text** (`slides/figures/hero_graph.png`): Network picture of the 12 assets: 12 dots on a circle, every pair joined by a line; thicker lines mean the two assets move more strongly together.
 
 ## Slide 2: Which assets should a fund buy?
 
-**Script (25 words):** Funds want low risk and good return. Risk comes from assets that fall together. Twelve assets give four thousand portfolios, twenty-nine give half a billion.
+**Script (28 words):** Every fund wants low risk and good returns, but some assets fall together. And the choices explode: four thousand portfolios for twelve assets, half a billion for twenty-nine.
 
 **Source line on the slide:** Data: weekly prices of 12 US stocks and funds, 2006-2014 (Kaggle Huge Stock Market Dataset, CC0)
 
 ## Slide 3: One qubit per asset, one Ising energy
 
-**Script (25 words):** Each asset is one qubit: zero means buy, one means skip. Risk minus return becomes an Ising energy. The exact best: Apple plus US bonds.
+**Script (28 words):** Each asset gets one qubit: zero means buy, one means skip. Risk minus return becomes an Ising energy, and the lowest energy wins: here, Apple plus US bonds.
 
 **Alt text** (`slides/figures/formula_score.png`): Formula: J of x equals x transposed C x over n squared V ref (the risk), minus eta times mu transposed x over n sigma ref (the return).
 
@@ -30,7 +30,7 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 4: QAOA circuits, trained offline, one IonQ job
 
-**Script (21 words):** We trained fifty-eight circuits offline. Best at twelve qubits: CVaR-QAOA, three layers. At twenty-nine qubits: linear-ramp QAOA, with the angles reused.
+**Script (24 words):** We trained fifty-eight circuits offline. At twelve qubits, CVaR-QAOA with three layers won. At twenty-nine, we use linear-ramp QAOA with angles tuned at twelve.
 
 **Alt text** (`slides/figures/circuit_sketch.png`): Circuit sketch: four of the twelve qubit lines. Each starts with an H gate, passes a cost layer block (one ZZ gate per pair, 66, and one Z rotation per qubit) and a mixer block (RX on every qubit), repeated three times, then is measured; 1,000 shots give 1,000 portfolios.
 
@@ -38,13 +38,13 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 5: 8 circuit types, 5 settings that mattered
 
-**Script (16 words):** We compared eight circuit types. The mixer sign, the CVaR objective and more layers mattered most.
+**Script (18 words):** Out of eight circuit types, three things mattered most: the mixer sign, the CVaR objective, and more layers.
 
 **Source line on the slide:** 12 assets: noiseless simulation, 10 Oct 2026 · 29 assets: noiseless server simulation, 11 Oct 2026 / per shot = chance that one shot is the best portfolio · runs = 1,000-shot runs that contain it
 
 ## Slide 6: All-to-all links: 4.3× fewer two-qubit gates
 
-**Script (21 words):** Trapped ions connect every pair of qubits, so one layer needs sixty-six two-qubit gates. A heavy-hex chip needs two hundred eighty-five.
+**Script (25 words):** Why IonQ? Trapped ions connect any two qubits directly, so one layer needs just sixty-six two-qubit gates, versus two hundred eighty-five on a heavy-hex chip.
 
 **Alt text** (`slides/figures/gate_counts.png`): Column chart of two-qubit gates in one QAOA layer. At 12 qubits: 66 on all-to-all against 285 on a heavy-hex grid. At 29 qubits: 244 against 1,576.
 
@@ -52,7 +52,7 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 7: IonQ noise model: 29× random guessing
 
-**Script (27 words):** Main result: on the IonQ noise model, seven in a thousand shots were the exact best portfolio, twenty-nine times better than random. Without noise it is fifty-eight.
+**Script (29 words):** Our main result: on the IonQ noise model, seven in a thousand shots hit the exact best portfolio. That's twenty-nine times more often than random. Without noise, it's fifty-eight.
 
 **Alt text** (`slides/figures/main_result.png`): Dot chart on a log scale: evaluations until the best portfolio is first found, median, fewer is better. Noiseless simulation of the same circuit 12; greedy descent 73; IonQ Forte 1 noise model 99 with a 95 % interval from 48 to 246; simulated annealing 1,516; random guessing 2,839.
 
@@ -62,7 +62,7 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 **Cut to the live Qollab demo at the marker below, then come back to the slide.**
 
-**Script (31 words):** With twenty-nine assets, three layers find the best in seven percent of runs, classical search in sixty-one. Sixteen layers reach ninety percent, but only without noise. No quantum advantage is claimed.
+**Script (31 words):** At twenty-nine assets, three layers find the best in seven percent of runs; classical search gets sixty-one. Sixteen layers reach ninety percent, but only without noise. So no quantum advantage here.
 
 **Alt text** (`slides/figures/depth29.png`): Line chart for 29 assets: share of 1,000-shot runs that contain the exact best portfolio, against the number of layers, in noiseless simulation. With the ramp tuned on a wider grid: 6.6 % at 3 layers, 62 % at 12, 90 % at 16, 99.6 % at 24 and 100 % at 32. With the ramp as in the paper: 45 % at 16 layers. Classical methods with 1,000 evaluations: 61 %.
 
@@ -70,7 +70,7 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 9: Iceberg catches errors, but doubles the gates
 
-**Script (30 words):** We also tried Iceberg error detection. On the IonQ noise model it flagged three in four shots. The kept shots were not clearly better, because the code doubles the gates.
+**Script (28 words):** We also tried Iceberg error detection. It caught errors in three out of four shots, but the kept shots weren't clearly better, because the code doubles the gates.
 
 **Alt text** (`slides/figures/iceberg.png`): Bar chart: share of single faults that are caught or harmless, from injecting every single fault (5,904) in exact simulation. Start state and flag 100 %, syndrome checks 100 %, readout bit flips 100 %, QAOA gates 80 %; the rest are XX, YY and ZZ errors on a gate's own pair, which a distance-2 code cannot see.
 
@@ -78,11 +78,11 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 10: Try it on Qollab: one click, one IonQ job
 
-**Script (42 words):** [SWITCH TO QOLLAB] This is our project. The code is in main.py. We press Run, pick the IonQ Forte 1 noise model, and get results and plots. [BACK TO SLIDES] Classical methods still match us. Next: more Iceberg layers and shorter circuits.
+**Script (39 words):** [SWITCH TO QOLLAB] Here's our project; the code is in main.py. We press Run, pick the Forte 1 noise model, and get results and plots. [BACK TO SLIDES] Honestly, classical methods still keep up. Next: Iceberg on deeper circuits.
 
 ## Slide 11: Thank you for your attention
 
-**Script (13 words):** Thank you for your attention. This effort is supported by Qollab and IonQ.
+**Script (13 words):** Thank you for your attention! This effort is supported by Qollab and IonQ.
 
 **Alt text** (`slides/figures/hero_graph.png`): The network picture of the 12 assets from the title slide: 12 dots on a circle, every pair joined by a line.
 
