@@ -1,0 +1,2713 @@
+{
+ "basis_gates": [
+  "rzz",
+  "cx",
+  "rz",
+  "rx",
+  "ry",
+  "h",
+  "sx",
+  "x"
+ ],
+ "two_qubit_error_assumed": 0.995,
+ "within": 0.05,
+ "eta": 1.0,
+ "classical_evaluations_to_solution": {
+  "long_short": {
+   "greedy_median": 544.5,
+   "annealing_median": 2040.0,
+   "greedy_unsolved": 0,
+   "annealing_unsolved": 0,
+   "runs": 50
+  },
+  "buy_or_skip": {
+   "greedy_median": 73.0,
+   "annealing_median": 1516.0,
+   "greedy_unsolved": 0,
+   "annealing_unsolved": 0,
+   "runs": 50
+  }
+ },
+ "rows": [
+  {
+   "name": "control p=0 (H only)",
+   "mode": "both",
+   "family": "control",
+   "balance": false,
+   "p_optimum_noiseless": 0.000244140625,
+   "p_within_5pct_noiseless": 0.06494140625,
+   "two_qubit_gates": 0,
+   "depth": 2,
+   "two_qubit_depth": 0,
+   "ops": {
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.000244140625,
+   "crude_noisy_p_within_5pct": 0.06494140625,
+   "shots_to_solution_noiseless": 4096.0,
+   "shots_to_solution_crude_noisy": 4096.0,
+   "angles": {
+    "gammas": [],
+    "betas": []
+   },
+   "aer_p_optimum": 0.00025,
+   "aer_p_within_5pct": 0.0665,
+   "shots": 4000
+  },
+  {
+   "name": "A LR-QAOA p=1",
+   "mode": "long_short",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.0010872624888723186,
+   "p_within_5pct_noiseless": 0.21202400843724767,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0007810120492666822,
+   "crude_noisy_p_within_5pct": 0.15230296917082126,
+   "shots_to_solution_noiseless": 919.7411022955229,
+   "shots_to_solution_crude_noisy": 1280.3899772595478,
+   "angles": {
+    "gammas": [
+     0.3
+    ],
+    "betas": [
+     -0.3
+    ]
+   },
+   "dgamma": 0.3,
+   "dbeta": -0.3
+  },
+  {
+   "name": "A LR-QAOA p=2",
+   "mode": "long_short",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.00203287125321815,
+   "p_within_5pct_noiseless": 0.3077329845864823,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0010489542163952005,
+   "crude_noisy_p_within_5pct": 0.1587891073745387,
+   "shots_to_solution_noiseless": 491.9150676251354,
+   "shots_to_solution_crude_noisy": 953.3304546280057,
+   "angles": {
+    "gammas": [
+     0.25,
+     0.5
+    ],
+    "betas": [
+     -0.3,
+     -0.15
+    ]
+   },
+   "dgamma": 0.5,
+   "dbeta": -0.3
+  },
+  {
+   "name": "A LR-QAOA p=3",
+   "mode": "long_short",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.004367741531094261,
+   "p_within_5pct_noiseless": 0.47350250445456665,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0016189257019906202,
+   "crude_noisy_p_within_5pct": 0.17550612117525566,
+   "shots_to_solution_noiseless": 228.95127673671374,
+   "shots_to_solution_crude_noisy": 617.6935722068077,
+   "angles": {
+    "gammas": [
+     0.2333333333333333,
+     0.4666666666666666,
+     0.7
+    ],
+    "betas": [
+     -0.4,
+     -0.2666666666666667,
+     -0.13333333333333336
+    ]
+   },
+   "dgamma": 0.7,
+   "dbeta": -0.4
+  },
+  {
+   "name": "A LR-QAOA p=4",
+   "mode": "long_short",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.005844958709654978,
+   "p_within_5pct_noiseless": 0.5602495984925722,
+   "two_qubit_gates": 264,
+   "depth": 70,
+   "two_qubit_depth": 60,
+   "ops": {
+    "rzz": 264,
+    "rz": 48,
+    "rx": 48,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0015562335163434463,
+   "crude_noisy_p_within_5pct": 0.1491677265832329,
+   "shots_to_solution_noiseless": 171.08760723119445,
+   "shots_to_solution_crude_noisy": 642.577087241777,
+   "angles": {
+    "gammas": [
+     0.175,
+     0.35,
+     0.5249999999999999,
+     0.7
+    ],
+    "betas": [
+     -0.4,
+     -0.30000000000000004,
+     -0.2,
+     -0.1
+    ]
+   },
+   "dgamma": 0.7,
+   "dbeta": -0.4
+  },
+  {
+   "name": "A LR-QAOA p=5",
+   "mode": "long_short",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.007317630242464755,
+   "p_within_5pct_noiseless": 0.6264367792937382,
+   "two_qubit_gates": 330,
+   "depth": 87,
+   "two_qubit_depth": 75,
+   "ops": {
+    "rzz": 330,
+    "rz": 60,
+    "rx": 60,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.001399545773422203,
+   "crude_noisy_p_within_5pct": 0.11981022786435105,
+   "shots_to_solution_noiseless": 136.65626259672499,
+   "shots_to_solution_crude_noisy": 714.5175377542499,
+   "angles": {
+    "gammas": [
+     0.13999999999999999,
+     0.27999999999999997,
+     0.42,
+     0.5599999999999999,
+     0.7
+    ],
+    "betas": [
+     -0.4,
+     -0.32000000000000006,
+     -0.24,
+     -0.16000000000000003,
+     -0.07999999999999999
+    ]
+   },
+   "dgamma": 0.7,
+   "dbeta": -0.4
+  },
+  {
+   "name": "A free-angle QAOA p=1",
+   "mode": "long_short",
+   "family": "standard",
+   "balance": false,
+   "p_optimum_noiseless": 0.0010481404988898183,
+   "p_within_5pct_noiseless": 0.2083566284832866,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0007529095938979572,
+   "crude_noisy_p_within_5pct": 0.14966858422459411,
+   "shots_to_solution_noiseless": 954.0705669318108,
+   "shots_to_solution_crude_noisy": 1328.1807113425243,
+   "angles": {
+    "gammas": [
+     0.3042180572365532
+    ],
+    "betas": [
+     -0.2691483009348666
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A free-angle QAOA p=2",
+   "mode": "long_short",
+   "family": "standard",
+   "balance": false,
+   "p_optimum_noiseless": 0.0022932864808518296,
+   "p_within_5pct_noiseless": 0.33105968570989563,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.001183327532269204,
+   "crude_noisy_p_within_5pct": 0.17082560081172013,
+   "shots_to_solution_noiseless": 436.05542017958226,
+   "shots_to_solution_crude_noisy": 845.0745653507727,
+   "angles": {
+    "gammas": [
+     0.22435654430144217,
+     0.6319752493597586
+    ],
+    "betas": [
+     -0.339028226864833,
+     -0.16359734447990845
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A free-angle QAOA p=3",
+   "mode": "long_short",
+   "family": "standard",
+   "balance": false,
+   "p_optimum_noiseless": 0.004245768824701296,
+   "p_within_5pct_noiseless": 0.4691308571834648,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.001573715895523099,
+   "crude_noisy_p_within_5pct": 0.17388574779078692,
+   "shots_to_solution_noiseless": 235.52860301346087,
+   "shots_to_solution_crude_noisy": 635.4387109164978,
+   "angles": {
+    "gammas": [
+     0.21258321382849124,
+     0.455188475822919,
+     0.6086001006677199
+    ],
+    "betas": [
+     -0.4177580972761176,
+     -0.2337843723335618,
+     -0.153474668972077
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A CVaR 0.1 p=1",
+   "mode": "long_short",
+   "family": "CVaR 0.1",
+   "balance": false,
+   "p_optimum_noiseless": 0.0012781459710663832,
+   "p_within_5pct_noiseless": 0.22465473219524174,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0009181291678331206,
+   "crude_noisy_p_within_5pct": 0.16137598286062838,
+   "shots_to_solution_noiseless": 782.3832509253068,
+   "shots_to_solution_crude_noisy": 1089.1713661162764,
+   "angles": {
+    "gammas": [
+     0.4528605320912865
+    ],
+    "betas": [
+     -0.28281334029832494
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default"
+  },
+  {
+   "name": "A CVaR 0.1 p=2",
+   "mode": "long_short",
+   "family": "CVaR 0.1",
+   "balance": false,
+   "p_optimum_noiseless": 0.0034233365136908064,
+   "p_within_5pct_noiseless": 0.3556638561905501,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0017664292632851113,
+   "crude_noisy_p_within_5pct": 0.18352126381828401,
+   "shots_to_solution_noiseless": 292.1126789612245,
+   "shots_to_solution_crude_noisy": 566.1138098110157,
+   "angles": {
+    "gammas": [
+     0.35180205354296745,
+     0.8415312301082036
+    ],
+    "betas": [
+     -0.3705493440118604,
+     -0.24745342501145978
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default"
+  },
+  {
+   "name": "A CVaR 0.1 p=3",
+   "mode": "long_short",
+   "family": "CVaR 0.1",
+   "balance": false,
+   "p_optimum_noiseless": 0.006569762892881055,
+   "p_within_5pct_noiseless": 0.5025427542166748,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0024351161641665954,
+   "crude_noisy_p_within_5pct": 0.1862700380410793,
+   "shots_to_solution_noiseless": 152.21249477414054,
+   "shots_to_solution_crude_noisy": 410.65802720842447,
+   "angles": {
+    "gammas": [
+     0.30889984095531237,
+     0.6495879236300474,
+     1.0030539599579948
+    ],
+    "betas": [
+     -0.41732284100162015,
+     -0.29153050677671427,
+     -0.19373108043167792
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A CVaR 0.25 p=1",
+   "mode": "long_short",
+   "family": "CVaR 0.25",
+   "balance": false,
+   "p_optimum_noiseless": 0.0012617763874468429,
+   "p_within_5pct_noiseless": 0.2259574206760689,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0009063704231149067,
+   "crude_noisy_p_within_5pct": 0.1623117416220864,
+   "shots_to_solution_noiseless": 792.5334551738304,
+   "shots_to_solution_crude_noisy": 1103.3016683877638,
+   "angles": {
+    "gammas": [
+     0.4265556131470094
+    ],
+    "betas": [
+     -0.28391777406063384
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default"
+  },
+  {
+   "name": "A CVaR 0.25 p=2",
+   "mode": "long_short",
+   "family": "CVaR 0.25",
+   "balance": false,
+   "p_optimum_noiseless": 0.0033264339392380204,
+   "p_within_5pct_noiseless": 0.36351062659387484,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.001716427885238721,
+   "crude_noisy_p_within_5pct": 0.18757016897478254,
+   "shots_to_solution_noiseless": 300.62223337856756,
+   "shots_to_solution_crude_noisy": 582.6053098997048,
+   "angles": {
+    "gammas": [
+     0.3311228068220857,
+     0.7978053333943513
+    ],
+    "betas": [
+     -0.38715707203709593,
+     -0.24509504591302936
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A CVaR 0.25 p=3",
+   "mode": "long_short",
+   "family": "CVaR 0.25",
+   "balance": false,
+   "p_optimum_noiseless": 0.006483555028379683,
+   "p_within_5pct_noiseless": 0.5089171736203165,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0024031627789762337,
+   "crude_noisy_p_within_5pct": 0.18863274914345488,
+   "shots_to_solution_noiseless": 154.23637119185705,
+   "shots_to_solution_crude_noisy": 416.1182957510718,
+   "angles": {
+    "gammas": [
+     0.30171268261748757,
+     0.6319101104039101,
+     0.980168064958755
+    ],
+    "betas": [
+     -0.42061221049538183,
+     -0.296963632289109,
+     -0.18813011438731814
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A multi-angle p=1",
+   "mode": "long_short",
+   "family": "multi-angle",
+   "balance": false,
+   "p_optimum_noiseless": 0.0012868789090794896,
+   "p_within_5pct_noiseless": 0.23117449613633634,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0009244022894422449,
+   "crude_noisy_p_within_5pct": 0.16605931761050155,
+   "shots_to_solution_noiseless": 777.0738901263869,
+   "shots_to_solution_crude_noisy": 1081.7800987959133,
+   "angles": {
+    "gammas": [
+     -0.28918263599201105
+    ],
+    "betas": [
+     0.2785189315756525
+    ],
+    "field_gammas": [
+     -0.6255060818112316
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default"
+  },
+  {
+   "name": "A multi-angle p=2",
+   "mode": "long_short",
+   "family": "multi-angle",
+   "balance": false,
+   "p_optimum_noiseless": 0.003301210699428036,
+   "p_within_5pct_noiseless": 0.4176406455984988,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0017034127846965957,
+   "crude_noisy_p_within_5pct": 0.2155010630629186,
+   "shots_to_solution_noiseless": 302.9191684654539,
+   "shots_to_solution_crude_noisy": 587.0567656788578,
+   "angles": {
+    "gammas": [
+     0.18280952768153216,
+     0.5126691404828397
+    ],
+    "betas": [
+     -0.43277848235904354,
+     -0.23728707437673074
+    ],
+    "field_gammas": [
+     0.7155952477864367,
+     0.8330979547413421
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default"
+  },
+  {
+   "name": "A multi-angle p=3",
+   "mode": "long_short",
+   "family": "multi-angle",
+   "balance": false,
+   "p_optimum_noiseless": 0.005365533302741262,
+   "p_within_5pct_noiseless": 0.5866918558868557,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.001988762317288089,
+   "crude_noisy_p_within_5pct": 0.21746033227516767,
+   "shots_to_solution_noiseless": 186.37476343481046,
+   "shots_to_solution_crude_noisy": 502.82529556554425,
+   "angles": {
+    "gammas": [
+     0.12856096000860875,
+     0.3310424576203789,
+     0.5563486014259527
+    ],
+    "betas": [
+     -0.6113396119945116,
+     -0.3768993755697419,
+     -0.16394932136877347
+    ],
+    "field_gammas": [
+     0.7447652831052806,
+     0.8412792125837166,
+     1.5969472458706222
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A counterdiabatic p=1",
+   "mode": "long_short",
+   "family": "counterdiabatic",
+   "balance": false,
+   "p_optimum_noiseless": 0.0011460779306763666,
+   "p_within_5pct_noiseless": 0.2129730761601677,
+   "two_qubit_gates": 66,
+   "depth": 20,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "ry": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0008232608798867361,
+   "crude_noisy_p_within_5pct": 0.15298471192821134,
+   "shots_to_solution_noiseless": 872.5410142134422,
+   "shots_to_solution_crude_noisy": 1214.6817909501294,
+   "angles": {
+    "gammas": [
+     0.3012987299768231
+    ],
+    "betas": [
+     -0.269294439640963
+    ],
+    "alphas": [
+     -0.014570526302493466
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default"
+  },
+  {
+   "name": "A counterdiabatic p=2",
+   "mode": "long_short",
+   "family": "counterdiabatic",
+   "balance": false,
+   "p_optimum_noiseless": 0.0026289846099637865,
+   "p_within_5pct_noiseless": 0.3383441512850833,
+   "two_qubit_gates": 132,
+   "depth": 38,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "ry": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.001356546553105139,
+   "crude_noisy_p_within_5pct": 0.17458435871002903,
+   "shots_to_solution_noiseless": 380.37499200642895,
+   "shots_to_solution_crude_noisy": 737.1660026786379,
+   "angles": {
+    "gammas": [
+     0.22057444635993848,
+     0.6259220054366536
+    ],
+    "betas": [
+     -0.34218708634148015,
+     -0.16706334747242405
+    ],
+    "alphas": [
+     -0.021008209546596116,
+     -0.016772645332388408
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A counterdiabatic p=3",
+   "mode": "long_short",
+   "family": "counterdiabatic",
+   "balance": false,
+   "p_optimum_noiseless": 0.006685135020808946,
+   "p_within_5pct_noiseless": 0.5193876638863819,
+   "two_qubit_gates": 198,
+   "depth": 56,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "ry": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0024778794325207598,
+   "crude_noisy_p_within_5pct": 0.19251368982721578,
+   "shots_to_solution_noiseless": 149.585609996998,
+   "shots_to_solution_crude_noisy": 403.5708868137683,
+   "angles": {
+    "gammas": [
+     0.19356709733729027,
+     0.41646431194925504,
+     0.5412027785629862
+    ],
+    "betas": [
+     -0.4360967201620585,
+     -0.2703671108909293,
+     -0.15356725160271525
+    ],
+    "alphas": [
+     -0.08720411801577363,
+     -0.0527882871470016,
+     -0.08781094619341308
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned",
+   "aer_p_optimum": 0.004,
+   "aer_p_within_5pct": 0.37075,
+   "shots": 4000
+  },
+  {
+   "name": "A VarQITE angle training p=1",
+   "mode": "long_short",
+   "family": "VarQITE angle training",
+   "balance": false,
+   "p_optimum_noiseless": 0.001048140565769097,
+   "p_within_5pct_noiseless": 0.20835663698989926,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0007529096419392748,
+   "crude_noisy_p_within_5pct": 0.14966859033513968,
+   "shots_to_solution_noiseless": 954.0705060549079,
+   "shots_to_solution_crude_noisy": 1328.1806265945709,
+   "angles": {
+    "gammas": [
+     0.30421808176819265
+    ],
+    "betas": [
+     -0.2691483058377841
+    ]
+   },
+   "optimizer": "VarQITE",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A VarQITE angle training p=2",
+   "mode": "long_short",
+   "family": "VarQITE angle training",
+   "balance": false,
+   "p_optimum_noiseless": 0.0022932482538283445,
+   "p_within_5pct_noiseless": 0.331057715224668,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0011833078072633035,
+   "crude_noisy_p_within_5pct": 0.17082458404846737,
+   "shots_to_solution_noiseless": 436.0626889524943,
+   "shots_to_solution_crude_noisy": 845.0886522186912,
+   "angles": {
+    "gammas": [
+     0.22435222533568827,
+     0.6319569498448343
+    ],
+    "betas": [
+     -0.3390321766243257,
+     -0.16359803866170944
+    ]
+   },
+   "optimizer": "VarQITE",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A VarQITE angle training p=3",
+   "mode": "long_short",
+   "family": "VarQITE angle training",
+   "balance": false,
+   "p_optimum_noiseless": 0.004246757213717631,
+   "p_within_5pct_noiseless": 0.46915491622826355,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0015740822469591255,
+   "crude_noisy_p_within_5pct": 0.17389466539859696,
+   "shots_to_solution_noiseless": 235.4737861561423,
+   "shots_to_solution_crude_noisy": 635.2908190990906,
+   "angles": {
+    "gammas": [
+     0.21258651105712442,
+     0.4553496533167073,
+     0.6087968462866944
+    ],
+    "betas": [
+     -0.41769327238599524,
+     -0.2337439369829833,
+     -0.15345530266243915
+    ]
+   },
+   "optimizer": "VarQITE",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "A varQITE Pauli-update ansatz A (lr 0.8)",
+   "mode": "long_short",
+   "family": "varQITE",
+   "balance": false,
+   "p_optimum_noiseless": 2.6970994572517214e-10,
+   "p_within_5pct_noiseless": 0.19268911048247267,
+   "two_qubit_gates": 66,
+   "depth": 34,
+   "two_qubit_depth": 21,
+   "ops": {
+    "ry": 66,
+    "cx": 66,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 1.9374044407335328e-10,
+   "crude_noisy_p_within_5pct": 0.13841415351814187,
+   "shots_to_solution_noiseless": 3707686779.2594333,
+   "shots_to_solution_crude_noisy": 5161544894.68076,
+   "angles": {
+    "theta": [
+     -0.08407284036640383,
+     -0.47307124928838373,
+     0.2794141380510018,
+     -0.23221019253433964,
+     0.004408799326547705,
+     0.6073671903518172,
+     -0.7617880199012479,
+     -0.37352407766050066,
+     0.6868681471113347,
+     0.28084119932953405,
+     -2.0524291153746756,
+     -0.15654260920230284,
+     0.1441692527965039,
+     0.005960410317271101,
+     -0.0012764040681538863,
+     0.08795988102150999,
+     0.37917162975012564,
+     -0.04311433794780302,
+     0.555420527879465,
+     -0.6588914659102154,
+     -1.301715066902853,
+     0.24656148398321412,
+     0.47366791048617407,
+     0.184941205650564,
+     0.6268439269362778,
+     -0.06465015411492045,
+     0.047278328677894756,
+     0.4511692265438214,
+     0.5582400070664473,
+     0.2650933748223144,
+     -0.07466494850325854,
+     -0.17572340196374156,
+     -0.9159053550682261,
+     -1.0539998776885964,
+     -0.7420044586294112,
+     -0.8106212820116484,
+     -0.050063362209831805,
+     0.20366785132470422,
+     0.00831696620637416,
+     0.6077805523051292,
+     -0.8029334201038812,
+     0.9056740978836281,
+     0.18661879467461823,
+     -0.35569429766497773,
+     -0.22527863679474922,
+     0.37661445068802357,
+     0.12297547696235614,
+     -0.0036886945860172037,
+     0.3122643299390589,
+     0.06865274418321751,
+     -0.023103960300155643,
+     0.14327583115281675,
+     0.05827103162370225,
+     0.141305539134668,
+     -0.09894700226575981,
+     0.06606981361033802,
+     0.607228830199382,
+     0.13543018679524949,
+     -0.34750975621058205,
+     -0.39873394216656033,
+     0.5189310147690439,
+     0.5050864503205209,
+     0.02584234944267075,
+     -0.10639993944670219,
+     0.7997724007827154,
+     -0.7223723994756882
+    ]
+   },
+   "ansatz": "A",
+   "lr": 0.8
+  },
+  {
+   "name": "A varQITE Pauli-update ansatz B (lr 0.8)",
+   "mode": "long_short",
+   "family": "varQITE",
+   "balance": false,
+   "p_optimum_noiseless": 0.00032232577657022494,
+   "p_within_5pct_noiseless": 0.08282944852384759,
+   "two_qubit_gates": 66,
+   "depth": 24,
+   "two_qubit_depth": 21,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.00023153591507758616,
+   "crude_noisy_p_within_5pct": 0.05949878524581037,
+   "shots_to_solution_noiseless": 3102.4512238540456,
+   "shots_to_solution_crude_noisy": 4318.984377282922,
+   "angles": {
+    "theta": [
+     -0.06481039878107113,
+     0.14656246881935012,
+     0.3044007289849494,
+     -0.10731476000311369,
+     0.03243879614341412,
+     0.11051928701717564,
+     0.19288945891057682,
+     0.1666651999272612,
+     0.6158017639982372,
+     0.12029917897971792,
+     0.2715743093223438,
+     0.1291297546288768,
+     0.004435954702747369,
+     0.05856538009829051,
+     -0.008728455988855372,
+     0.04781752284575041,
+     -0.009304540158678234,
+     -0.027927395923951447,
+     0.18141341659493732,
+     -0.08336325046163455,
+     0.35150302255761456,
+     0.19215785078872502,
+     -0.015794513219621976,
+     -0.016465180544724053,
+     0.07751562774808464,
+     0.10106221561521078,
+     0.07770091522601554,
+     0.40212798505094705,
+     0.12181835549748518,
+     0.08469193202178024,
+     -0.2065230134142566,
+     0.2504736098554246,
+     0.21214571475025243,
+     0.16937216144537992,
+     0.5462929114268051,
+     0.7651148142565891,
+     0.23686587215272545,
+     0.023763906058892365,
+     0.06443833072368278,
+     -0.05579808807844894,
+     0.021630648658968202,
+     -0.10052062703642317,
+     -0.2638773551333178,
+     0.003238429176784079,
+     -0.10996133304837558,
+     0.07443926793479595,
+     0.10238180606196956,
+     0.019723541047222324,
+     0.208759833855218,
+     0.09748426509545229,
+     0.05636949251500037,
+     0.04503343910612559,
+     0.08448418747911161,
+     0.09420660774544937,
+     0.07117110636167714,
+     0.03508278642270636,
+     0.15896747159778946,
+     0.22523602448628724,
+     -0.006247543227379828,
+     0.13890276356455436,
+     0.5757337713731838,
+     0.13751219875705806,
+     0.1340627052221705,
+     0.15768743137086527,
+     0.8144594942271387,
+     0.15863761743313784,
+     -0.08825295649688342
+    ]
+   },
+   "ansatz": "B",
+   "lr": 0.8
+  },
+  {
+   "name": "A XY mixer p=1 (balance on, Dicke start)",
+   "mode": "long_short",
+   "family": "XY mixer",
+   "balance": true,
+   "p_optimum_noiseless": 0.007083318596423449,
+   "p_within_5pct_noiseless": 0.08257984798988857,
+   "two_qubit_gates": 4173,
+   "depth": 12019,
+   "two_qubit_depth": 4102,
+   "ops": {
+    "cx": 4083,
+    "rx": 3953,
+    "rz": 3948,
+    "ry": 111,
+    "rzz": 90,
+    "h": 30,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": true,
+   "crude_noisy_p_optimum": 5.8338160104765446e-12,
+   "crude_noisy_p_within_5pct": 6.801270234962778e-11,
+   "shots_to_solution_noiseless": 141.1767643071887,
+   "shots_to_solution_crude_noisy": 171414387804.51245,
+   "angles": {
+    "gammas": [
+     0.5366834437584699
+    ],
+    "betas": [
+     -0.3044718651341316
+    ]
+   },
+   "xy_pairs": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     11,
+     0
+    ]
+   ],
+   "dicke_ones": 6,
+   "note": "generic Dicke state preparation; objective = best balanced portfolio"
+  },
+  {
+   "name": "A XY mixer p=2 (balance on, Dicke start)",
+   "mode": "long_short",
+   "family": "XY mixer",
+   "balance": true,
+   "p_optimum_noiseless": 0.019158941246497162,
+   "p_within_5pct_noiseless": 0.1468567711289514,
+   "two_qubit_gates": 4263,
+   "depth": 12047,
+   "two_qubit_depth": 4121,
+   "ops": {
+    "cx": 4083,
+    "rx": 3989,
+    "rz": 3972,
+    "rzz": 180,
+    "ry": 129,
+    "h": 60,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": true,
+   "crude_noisy_p_optimum": 1.0049969057649227e-11,
+   "crude_noisy_p_within_5pct": 7.703484168375309e-11,
+   "shots_to_solution_noiseless": 52.19495102229777,
+   "shots_to_solution_crude_noisy": 99502793915.45793,
+   "angles": {
+    "gammas": [
+     0.4127362556509204,
+     0.8914628774338457
+    ],
+    "betas": [
+     -0.4177715794159505,
+     -0.23814991547537528
+    ]
+   },
+   "xy_pairs": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     11,
+     0
+    ]
+   ],
+   "dicke_ones": 6,
+   "note": "generic Dicke state preparation; objective = best balanced portfolio"
+  },
+  {
+   "name": "A LR-QAOA p=1 on the penalty model (balance on)",
+   "mode": "long_short",
+   "family": "LR-QAOA penalty",
+   "balance": true,
+   "p_optimum_noiseless": 0.0005709752460284616,
+   "p_within_5pct_noiseless": 0.011966678167915116,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.00041014801075658664,
+   "crude_noisy_p_within_5pct": 0.008596010562759148,
+   "shots_to_solution_noiseless": 1751.3894112848327,
+   "shots_to_solution_crude_noisy": 2438.1442156828525,
+   "angles": {
+    "gammas": [
+     0.1
+    ],
+    "betas": [
+     -0.2
+    ]
+   },
+   "penalty_lambda": 0.08898909951672997,
+   "note": "objective = best balanced portfolio"
+  },
+  {
+   "name": "A LR-QAOA p=2 on the penalty model (balance on)",
+   "mode": "long_short",
+   "family": "LR-QAOA penalty",
+   "balance": true,
+   "p_optimum_noiseless": 0.0006000034501318801,
+   "p_within_5pct_noiseless": 0.012568736169736187,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.00030959961083180503,
+   "crude_noisy_p_within_5pct": 0.0064854224187255215,
+   "shots_to_solution_noiseless": 1666.6570830221078,
+   "shots_to_solution_crude_noisy": 3229.9782202997217,
+   "angles": {
+    "gammas": [
+     0.05,
+     0.1
+    ],
+    "betas": [
+     -0.2,
+     -0.1
+    ]
+   },
+   "penalty_lambda": 0.08898909951672997,
+   "note": "objective = best balanced portfolio"
+  },
+  {
+   "name": "B LR-QAOA p=1",
+   "mode": "buy_or_skip",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.01141672414087696,
+   "p_within_5pct_noiseless": 0.7297812363107051,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.00820096270076124,
+   "crude_noisy_p_within_5pct": 0.5242229403854014,
+   "shots_to_solution_noiseless": 87.59079992303171,
+   "shots_to_solution_crude_noisy": 121.93690381096073,
+   "angles": {
+    "gammas": [
+     1.0
+    ],
+    "betas": [
+     -0.7
+    ]
+   },
+   "dgamma": 1.0,
+   "dbeta": -0.7,
+   "aer_p_optimum": 0.0115,
+   "aer_p_within_5pct": 0.641,
+   "shots": 4000
+  },
+  {
+   "name": "B LR-QAOA p=2",
+   "mode": "buy_or_skip",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.015476425115658018,
+   "p_within_5pct_noiseless": 0.8263639770972746,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.007985779401471993,
+   "crude_noisy_p_within_5pct": 0.4264008242927688,
+   "shots_to_solution_noiseless": 64.61440497575028,
+   "shots_to_solution_crude_noisy": 125.2225925268701,
+   "angles": {
+    "gammas": [
+     0.7,
+     1.4
+    ],
+    "betas": [
+     -0.6,
+     -0.3
+    ]
+   },
+   "dgamma": 1.4,
+   "dbeta": -0.6,
+   "aer_p_optimum": 0.01225,
+   "aer_p_within_5pct": 0.67625,
+   "shots": 4000
+  },
+  {
+   "name": "B LR-QAOA p=3",
+   "mode": "buy_or_skip",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.018105300565952966,
+   "p_within_5pct_noiseless": 0.8539006360247434,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.006710822107906002,
+   "crude_noisy_p_within_5pct": 0.3165026311115663,
+   "shots_to_solution_noiseless": 55.232444021421045,
+   "shots_to_solution_crude_noisy": 149.01303952341436,
+   "angles": {
+    "gammas": [
+     0.4666666666666666,
+     0.9333333333333332,
+     1.4
+    ],
+    "betas": [
+     -0.6,
+     -0.4,
+     -0.2
+    ]
+   },
+   "dgamma": 1.4,
+   "dbeta": -0.6,
+   "aer_p_optimum": 0.013,
+   "aer_p_within_5pct": 0.62875,
+   "shots": 4000
+  },
+  {
+   "name": "B LR-QAOA p=4",
+   "mode": "buy_or_skip",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.020748521701710487,
+   "p_within_5pct_noiseless": 0.865106546229574,
+   "two_qubit_gates": 264,
+   "depth": 70,
+   "two_qubit_depth": 60,
+   "ops": {
+    "rzz": 264,
+    "rz": 48,
+    "rx": 48,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.005524340973263648,
+   "crude_noisy_p_within_5pct": 0.23033658051795805,
+   "shots_to_solution_noiseless": 48.19620474057971,
+   "shots_to_solution_crude_noisy": 181.01706698405042,
+   "angles": {
+    "gammas": [
+     0.35,
+     0.7,
+     1.0499999999999998,
+     1.4
+    ],
+    "betas": [
+     -0.5,
+     -0.375,
+     -0.25,
+     -0.125
+    ]
+   },
+   "dgamma": 1.4,
+   "dbeta": -0.5
+  },
+  {
+   "name": "B LR-QAOA p=5",
+   "mode": "buy_or_skip",
+   "family": "LR-QAOA",
+   "balance": false,
+   "p_optimum_noiseless": 0.020513009787429655,
+   "p_within_5pct_noiseless": 0.8571923957112221,
+   "two_qubit_gates": 330,
+   "depth": 87,
+   "two_qubit_depth": 75,
+   "ops": {
+    "rzz": 330,
+    "rz": 60,
+    "rx": 60,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.003923250450885806,
+   "crude_noisy_p_within_5pct": 0.1639437843504938,
+   "shots_to_solution_noiseless": 48.74955018121225,
+   "shots_to_solution_crude_noisy": 254.89068631196267,
+   "angles": {
+    "gammas": [
+     0.26,
+     0.52,
+     0.78,
+     1.04,
+     1.3
+    ],
+    "betas": [
+     -0.5,
+     -0.4,
+     -0.3,
+     -0.2,
+     -0.09999999999999998
+    ]
+   },
+   "dgamma": 1.3,
+   "dbeta": -0.5
+  },
+  {
+   "name": "B free-angle QAOA p=1",
+   "mode": "buy_or_skip",
+   "family": "standard",
+   "balance": false,
+   "p_optimum_noiseless": 0.011357735142215627,
+   "p_within_5pct_noiseless": 0.7360013706701688,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.008158589199237738,
+   "crude_noisy_p_within_5pct": 0.5286910425525584,
+   "shots_to_solution_noiseless": 88.04572280287596,
+   "shots_to_solution_crude_noisy": 122.57021104744808,
+   "angles": {
+    "gammas": [
+     0.9824772061014253
+    ],
+    "betas": [
+     -0.727844955621912
+    ]
+   },
+   "optimizer": "Powell",
+   "start": "lr_tuned",
+   "aer_p_optimum": 0.012,
+   "aer_p_within_5pct": 0.6505,
+   "shots": 4000
+  },
+  {
+   "name": "B free-angle QAOA p=2",
+   "mode": "buy_or_skip",
+   "family": "standard",
+   "balance": false,
+   "p_optimum_noiseless": 0.012171428450607109,
+   "p_within_5pct_noiseless": 0.9054233528365716,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.006280413072202933,
+   "crude_noisy_p_within_5pct": 0.4671951763187644,
+   "shots_to_solution_noiseless": 82.15962522871506,
+   "shots_to_solution_crude_noisy": 159.22519562065008,
+   "angles": {
+    "gammas": [
+     0.5666318114276185,
+     0.9426681103097201
+    ],
+    "betas": [
+     0.888707145697862,
+     -1.169950681019238
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "random_seed_4027"
+  },
+  {
+   "name": "B free-angle QAOA p=3",
+   "mode": "buy_or_skip",
+   "family": "standard",
+   "balance": false,
+   "p_optimum_noiseless": 0.004130823552513072,
+   "p_within_5pct_noiseless": 0.9840954226787486,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0015311108434285436,
+   "crude_noisy_p_within_5pct": 0.3647599936131767,
+   "shots_to_solution_noiseless": 242.08247757075685,
+   "shots_to_solution_crude_noisy": 653.1205786256126,
+   "angles": {
+    "gammas": [
+     -0.45860798852211954,
+     -0.8031545437644715,
+     -1.1270092968096992
+    ],
+    "betas": [
+     -0.8844377654476373,
+     -0.5799459043445675,
+     1.336783138687431
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "random_seed_5027"
+  },
+  {
+   "name": "B CVaR 0.1 p=1",
+   "mode": "buy_or_skip",
+   "family": "CVaR 0.1",
+   "balance": false,
+   "p_optimum_noiseless": 0.011474674121578722,
+   "p_within_5pct_noiseless": 0.7288410730396759,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.008242589845674322,
+   "crude_noisy_p_within_5pct": 0.5235475939529927,
+   "shots_to_solution_noiseless": 87.14844442679622,
+   "shots_to_solution_crude_noisy": 121.32109188045987,
+   "angles": {
+    "gammas": [
+     1.0341760697000095
+    ],
+    "betas": [
+     -0.7002282556848618
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default",
+   "aer_p_optimum": 0.01225,
+   "aer_p_within_5pct": 0.6455,
+   "shots": 4000
+  },
+  {
+   "name": "B CVaR 0.1 p=2",
+   "mode": "buy_or_skip",
+   "family": "CVaR 0.1",
+   "balance": false,
+   "p_optimum_noiseless": 0.02787832184440015,
+   "p_within_5pct_noiseless": 0.7162484745811678,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.014385113271886997,
+   "crude_noisy_p_within_5pct": 0.3695816231397721,
+   "shots_to_solution_noiseless": 35.87016483923933,
+   "shots_to_solution_crude_noisy": 69.51631044534854,
+   "angles": {
+    "gammas": [
+     0.9347338821650665,
+     3.980178552183322
+    ],
+    "betas": [
+     -0.8032899547269978,
+     -0.29001889198390984
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "random_seed_4026",
+   "aer_p_optimum": 0.02125,
+   "aer_p_within_5pct": 0.60075,
+   "shots": 4000
+  },
+  {
+   "name": "B CVaR 0.1 p=3",
+   "mode": "buy_or_skip",
+   "family": "CVaR 0.1",
+   "balance": false,
+   "p_optimum_noiseless": 0.05768940876157691,
+   "p_within_5pct_noiseless": 0.6362392454374104,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.021382873943404174,
+   "crude_noisy_p_within_5pct": 0.2358253252214967,
+   "shots_to_solution_noiseless": 17.33420434473292,
+   "shots_to_solution_crude_noisy": 46.76639831702618,
+   "angles": {
+    "gammas": [
+     0.8453865706061198,
+     3.036507755482706,
+     8.95188080531259
+    ],
+    "betas": [
+     -0.7111358704642766,
+     -0.3073899076154256,
+     -0.24514484579901355
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned",
+   "aer_p_optimum": 0.0295,
+   "aer_p_within_5pct": 0.49175,
+   "shots": 4000
+  },
+  {
+   "name": "B CVaR 0.25 p=1",
+   "mode": "buy_or_skip",
+   "family": "CVaR 0.25",
+   "balance": false,
+   "p_optimum_noiseless": 0.011217561809203342,
+   "p_within_5pct_noiseless": 0.7321824865456793,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.008057898645494811,
+   "crude_noisy_p_within_5pct": 0.5259478277847308,
+   "shots_to_solution_noiseless": 89.1459317995074,
+   "shots_to_solution_crude_noisy": 124.10183398857991,
+   "angles": {
+    "gammas": [
+     1.0516347781428812
+    ],
+    "betas": [
+     -0.7396825554188046
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default",
+   "aer_p_optimum": 0.01175,
+   "aer_p_within_5pct": 0.6515,
+   "shots": 4000
+  },
+  {
+   "name": "B CVaR 0.25 p=2",
+   "mode": "buy_or_skip",
+   "family": "CVaR 0.25",
+   "balance": false,
+   "p_optimum_noiseless": 0.02828580270621315,
+   "p_within_5pct_noiseless": 0.7183638143741743,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.014595371923251391,
+   "crude_noisy_p_within_5pct": 0.3706731308245161,
+   "shots_to_solution_noiseless": 35.35342483953421,
+   "shots_to_solution_crude_noisy": 68.51486932011194,
+   "angles": {
+    "gammas": [
+     0.9338494311667326,
+     4.2004880659629364
+    ],
+    "betas": [
+     -0.8009632246525409,
+     -0.2751584461565047
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_default",
+   "aer_p_optimum": 0.02175,
+   "aer_p_within_5pct": 0.6085,
+   "shots": 4000
+  },
+  {
+   "name": "B CVaR 0.25 p=3",
+   "mode": "buy_or_skip",
+   "family": "CVaR 0.25",
+   "balance": false,
+   "p_optimum_noiseless": 0.052995794597430125,
+   "p_within_5pct_noiseless": 0.6791871675821526,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.019643161885932507,
+   "crude_noisy_p_within_5pct": 0.2517441918742576,
+   "shots_to_solution_noiseless": 18.869421764429816,
+   "shots_to_solution_crude_noisy": 50.908301107885904,
+   "angles": {
+    "gammas": [
+     0.8593120942709412,
+     3.131564909733917,
+     8.417875935332539
+    ],
+    "betas": [
+     -0.787752342869098,
+     -0.2891596244619197,
+     -0.22208208401241533
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned",
+   "aer_p_optimum": 0.029,
+   "aer_p_within_5pct": 0.5335,
+   "shots": 4000
+  },
+  {
+   "name": "B multi-angle p=1",
+   "mode": "buy_or_skip",
+   "family": "multi-angle",
+   "balance": false,
+   "p_optimum_noiseless": 0.013926363024028965,
+   "p_within_5pct_noiseless": 0.8396877761750734,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.010003708796676695,
+   "crude_noisy_p_within_5pct": 0.6031719824114075,
+   "shots_to_solution_noiseless": 71.80625682919295,
+   "shots_to_solution_crude_noisy": 99.96292578330622,
+   "angles": {
+    "gammas": [
+     -3.1365077538243856e-07
+    ],
+    "betas": [
+     -0.78539814677422
+    ],
+    "field_gammas": [
+     1.0375586741939444
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "random_seed_3028",
+   "aer_p_optimum": 0.01525,
+   "aer_p_within_5pct": 0.7375,
+   "shots": 4000
+  },
+  {
+   "name": "B multi-angle p=2",
+   "mode": "buy_or_skip",
+   "family": "multi-angle",
+   "balance": false,
+   "p_optimum_noiseless": 0.014126140590862403,
+   "p_within_5pct_noiseless": 0.9897961901639813,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.007289037468909697,
+   "crude_noisy_p_within_5pct": 0.5107312553123097,
+   "shots_to_solution_noiseless": 70.79074383889802,
+   "shots_to_solution_crude_noisy": 137.19232536056387,
+   "angles": {
+    "gammas": [
+     0.07788894208230057,
+     -0.2388673141362746
+    ],
+    "betas": [
+     0.9779800383386069,
+     -1.2770864617031004
+    ],
+    "field_gammas": [
+     1.0467038632797925,
+     2.2127636110044553
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "random_seed_4026",
+   "aer_p_optimum": 0.01375,
+   "aer_p_within_5pct": 0.84125,
+   "shots": 4000
+  },
+  {
+   "name": "B multi-angle p=3",
+   "mode": "buy_or_skip",
+   "family": "multi-angle",
+   "balance": false,
+   "p_optimum_noiseless": 0.005669781886059252,
+   "p_within_5pct_noiseless": 0.9996262775011701,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.002101533608313711,
+   "crude_noisy_p_within_5pct": 0.37051658426006046,
+   "shots_to_solution_noiseless": 176.37362778606712,
+   "shots_to_solution_crude_noisy": 475.8429729812452,
+   "angles": {
+    "gammas": [
+     0.0009593527975483992,
+     0.0038947854626272616,
+     0.32699014824670264
+    ],
+    "betas": [
+     -1.125021606981711,
+     -0.47757591854771486,
+     -0.14043546440814833
+    ],
+    "field_gammas": [
+     1.1080340246778129,
+     2.183337395749737,
+     2.4091618580025167
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "B counterdiabatic p=1",
+   "mode": "buy_or_skip",
+   "family": "counterdiabatic",
+   "balance": false,
+   "p_optimum_noiseless": 8.338509141161073e-18,
+   "p_within_5pct_noiseless": 0.9999999999999161,
+   "two_qubit_gates": 66,
+   "depth": 20,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "ry": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 5.9897919580778965e-18,
+   "crude_noisy_p_within_5pct": 0.7183288830985632,
+   "shots_to_solution_noiseless": 1.1992551462991594e+17,
+   "shots_to_solution_crude_noisy": 1.6695070663537645e+17,
+   "angles": {
+    "gammas": [
+     1.4467648536302456e-07
+    ],
+    "betas": [
+     -0.6624433685817844
+    ],
+    "alphas": [
+     0.7853978445799503
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "random_seed_3026"
+  },
+  {
+   "name": "B counterdiabatic p=2",
+   "mode": "buy_or_skip",
+   "family": "counterdiabatic",
+   "balance": false,
+   "p_optimum_noiseless": 6.411146614493203e-17,
+   "p_within_5pct_noiseless": 0.9999999999996491,
+   "two_qubit_gates": 132,
+   "depth": 38,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "ry": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 3.3081284722553906e-17,
+   "crude_noisy_p_within_5pct": 0.5159963842935349,
+   "shots_to_solution_noiseless": 1.559783389977971e+16,
+   "shots_to_solution_crude_noisy": 3.022857208801893e+16,
+   "angles": {
+    "gammas": [
+     1.1084030400514728e-06,
+     8.833716501255491e-07
+    ],
+    "betas": [
+     0.8697053122417098,
+     -0.3533742432518014
+    ],
+    "alphas": [
+     1.577255661085476e-06,
+     0.7853969280005879
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "random_seed_4027"
+  },
+  {
+   "name": "B counterdiabatic p=3",
+   "mode": "buy_or_skip",
+   "family": "counterdiabatic",
+   "balance": false,
+   "p_optimum_noiseless": 5.780857930350888e-07,
+   "p_within_5pct_noiseless": 0.9999869268885818,
+   "two_qubit_gates": 198,
+   "depth": 56,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "ry": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 2.1427045113305222e-07,
+   "crude_noisy_p_within_5pct": 0.3706502607971292,
+   "shots_to_solution_noiseless": 1729847.0435499903,
+   "shots_to_solution_crude_noisy": 4666999.087891243,
+   "angles": {
+    "gammas": [
+     0.030734253581317265,
+     0.5868985313620682,
+     1.3286740955048764
+    ],
+    "betas": [
+     -0.8509390602312324,
+     -0.06725490527259412,
+     0.04981140168573213
+    ],
+    "alphas": [
+     0.6604728762070017,
+     0.1252563636292697,
+     0.002153933170346963
+    ]
+   },
+   "optimizer": "L-BFGS-B",
+   "start": "lr_tuned"
+  },
+  {
+   "name": "B VarQITE angle training p=1",
+   "mode": "buy_or_skip",
+   "family": "VarQITE angle training",
+   "balance": false,
+   "p_optimum_noiseless": 0.011355793775083832,
+   "p_within_5pct_noiseless": 0.7355409722784755,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.00815719465915427,
+   "crude_noisy_p_within_5pct": 0.5283603250900729,
+   "shots_to_solution_noiseless": 88.06077494944802,
+   "shots_to_solution_crude_noisy": 122.59116544163467,
+   "angles": {
+    "gammas": [
+     0.9801206664811957
+    ],
+    "betas": [
+     -0.72595940717298
+    ]
+   },
+   "optimizer": "VarQITE",
+   "start": "lr_tuned",
+   "aer_p_optimum": 0.01175,
+   "aer_p_within_5pct": 0.65025,
+   "shots": 4000
+  },
+  {
+   "name": "B VarQITE angle training p=2",
+   "mode": "buy_or_skip",
+   "family": "VarQITE angle training",
+   "balance": false,
+   "p_optimum_noiseless": 0.01206199638003067,
+   "p_within_5pct_noiseless": 0.8933223511832424,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.006223946519459717,
+   "crude_noisy_p_within_5pct": 0.46095110321931426,
+   "shots_to_solution_noiseless": 82.90501576136747,
+   "shots_to_solution_crude_noisy": 160.66976103882192,
+   "angles": {
+    "gammas": [
+     0.504270716946597,
+     0.8820082025713639
+    ],
+    "betas": [
+     0.8700523690207372,
+     -1.1024236502148366
+    ]
+   },
+   "optimizer": "VarQITE",
+   "start": "random_seed_4027"
+  },
+  {
+   "name": "B VarQITE angle training p=3",
+   "mode": "buy_or_skip",
+   "family": "VarQITE angle training",
+   "balance": false,
+   "p_optimum_noiseless": 0.02576262679502681,
+   "p_within_5pct_noiseless": 0.9326717597133811,
+   "two_qubit_gates": 198,
+   "depth": 53,
+   "two_qubit_depth": 45,
+   "ops": {
+    "rzz": 198,
+    "rz": 36,
+    "rx": 36,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.009549049176179613,
+   "crude_noisy_p_within_5pct": 0.345699550344621,
+   "shots_to_solution_noiseless": 38.81591764520841,
+   "shots_to_solution_crude_noisy": 104.72246833690308,
+   "angles": {
+    "gammas": [
+     0.5593467323656433,
+     1.233295369784704,
+     2.679715396409617
+    ],
+    "betas": [
+     -0.7183193069753384,
+     -0.37326522760294856,
+     -0.1679747713351644
+    ]
+   },
+   "optimizer": "VarQITE",
+   "start": "lr_tuned",
+   "aer_p_optimum": 0.0175,
+   "aer_p_within_5pct": 0.6825,
+   "shots": 4000
+  },
+  {
+   "name": "B varQITE Pauli-update ansatz A (lr 0.8)",
+   "mode": "buy_or_skip",
+   "family": "varQITE",
+   "balance": false,
+   "p_optimum_noiseless": 1.1818976933051086e-08,
+   "p_within_5pct_noiseless": 0.18805271746313562,
+   "two_qubit_gates": 66,
+   "depth": 34,
+   "two_qubit_depth": 21,
+   "ops": {
+    "ry": 66,
+    "cx": 66,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 8.489912499686982e-09,
+   "crude_noisy_p_within_5pct": 0.13508369849895524,
+   "shots_to_solution_noiseless": 84609692.16409567,
+   "shots_to_solution_crude_noisy": 117786844.09725888,
+   "angles": {
+    "theta": [
+     -0.16474269497586247,
+     1.085116383435021,
+     -0.720785407659937,
+     0.36652306375594684,
+     -0.6433486905413012,
+     0.6474925418899554,
+     0.03883812634083657,
+     -0.09466001077254721,
+     0.10385156985119261,
+     0.32675853397794813,
+     -0.09214115922706,
+     -0.24319892166087903,
+     -0.022176477345243095,
+     -0.2677927014231332,
+     0.11371587302604269,
+     -0.2466201312013539,
+     -0.2672471627510299,
+     -0.23067395850790076,
+     0.14094306366947518,
+     -0.14362767529187773,
+     -0.23259688094063477,
+     0.09031129619073455,
+     0.1819305640789214,
+     -0.011386501597142556,
+     0.06054782940638907,
+     -0.09207413398487431,
+     0.013604617357505615,
+     -0.026585453990410266,
+     0.10687272374003978,
+     0.2034285669191139,
+     0.24867692024633334,
+     -0.6189239910755427,
+     0.4294268667380505,
+     -0.01985296284533073,
+     0.1145385534174751,
+     -0.01766006142424436,
+     0.295497829731195,
+     0.02197172796186985,
+     0.041502137139538806,
+     -0.7660687516372165,
+     0.5187348509458335,
+     -0.014144089192915392,
+     0.14439144099825577,
+     -0.11625590914414224,
+     -0.43267469405294506,
+     0.09235156981337318,
+     0.054818632916902414,
+     0.010132557864166657,
+     0.04031021850756599,
+     0.006957449978349002,
+     -0.006962607872070249,
+     0.32470166484541263,
+     -1.6048862327167766,
+     1.1259817174738607,
+     -0.262368489619933,
+     -0.21348964600559817,
+     0.0276847497774165,
+     -0.09782723612153553,
+     -0.15247174737197916,
+     0.22269925315359956,
+     0.4887795525975067,
+     -1.253958338659753,
+     0.46539335028903644,
+     0.18084659635956052,
+     -0.014203406760335215,
+     -0.2596169852374878
+    ]
+   },
+   "ansatz": "A",
+   "lr": 0.8
+  },
+  {
+   "name": "B varQITE Pauli-update ansatz B (lr 0.8)",
+   "mode": "buy_or_skip",
+   "family": "varQITE",
+   "balance": false,
+   "p_optimum_noiseless": 0.00013082415258829284,
+   "p_within_5pct_noiseless": 0.030688565820540973,
+   "two_qubit_gates": 66,
+   "depth": 24,
+   "two_qubit_depth": 21,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 9.397476741107229e-05,
+   "crude_noisy_p_within_5pct": 0.02204448320976779,
+   "shots_to_solution_noiseless": 7643.848480693218,
+   "shots_to_solution_crude_noisy": 10641.154296511491,
+   "angles": {
+    "theta": [
+     -0.057201271181109764,
+     0.164987739225665,
+     0.23500279921266892,
+     -0.1267645679063569,
+     0.05296427570211608,
+     0.11576364576434833,
+     0.21177328052163719,
+     0.17894973190417943,
+     0.7207957494316753,
+     0.17616526600229976,
+     0.15605001471368068,
+     0.15182048496893705,
+     -0.012938547390106617,
+     0.06347660356671268,
+     -0.014542119438568013,
+     0.04040686067976706,
+     -0.010563544447994195,
+     -0.023353366885537796,
+     0.34439600498934086,
+     -0.10187475378078646,
+     0.4197225885028964,
+     0.215395827002447,
+     -0.03766468217854688,
+     0.019256919633850688,
+     0.11881082554682001,
+     0.16343829585202138,
+     0.11661707886041262,
+     0.6374656483949713,
+     0.1862874005139283,
+     0.1105466196873718,
+     -0.21310336375478897,
+     0.25796190915314526,
+     0.2245600835807001,
+     0.18441727728507593,
+     0.46989137188484137,
+     0.596921879878916,
+     0.2715605883066792,
+     0.009528334741680893,
+     0.05960596659473951,
+     -0.06344503651452324,
+     0.016123527663578035,
+     -0.10633206634929132,
+     -0.42068601284446916,
+     -0.010628964255355498,
+     -0.10193679089846733,
+     0.10702027283608048,
+     0.14213596380900279,
+     0.049303767503265,
+     0.3205040833615061,
+     0.13649399618346367,
+     0.054316010280934406,
+     0.07574015679851435,
+     0.11424652668929544,
+     0.16493380105675856,
+     0.10431207498007652,
+     0.024725371465942846,
+     0.19331001807148282,
+     0.40310974264184357,
+     0.03238963076843987,
+     0.13449246272116958,
+     0.6205861566903808,
+     0.1882830786152501,
+     0.08944106792644241,
+     0.3387511666498525,
+     0.8425755301864369,
+     0.13870592706116003,
+     -0.08825295649688342
+    ]
+   },
+   "ansatz": "B",
+   "lr": 0.8
+  },
+  {
+   "name": "B XY mixer p=1 (balance on, Dicke start)",
+   "mode": "buy_or_skip",
+   "family": "XY mixer",
+   "balance": true,
+   "p_optimum_noiseless": 0.0008461979957157768,
+   "p_within_5pct_noiseless": 0.030115834695877967,
+   "two_qubit_gates": 4173,
+   "depth": 12019,
+   "two_qubit_depth": 4102,
+   "ops": {
+    "cx": 4083,
+    "rx": 3953,
+    "rz": 3948,
+    "ry": 111,
+    "rzz": 90,
+    "h": 30,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": true,
+   "crude_noisy_p_optimum": 6.969280497890437e-13,
+   "crude_noisy_p_within_5pct": 2.4803379408401657e-11,
+   "shots_to_solution_noiseless": 1181.7565215976742,
+   "shots_to_solution_crude_noisy": 1434868348752.3489,
+   "angles": {
+    "gammas": [
+     1.1317856076188404
+    ],
+    "betas": [
+     -0.4566974703548867
+    ]
+   },
+   "xy_pairs": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     11,
+     0
+    ]
+   ],
+   "dicke_ones": 6,
+   "note": "generic Dicke state preparation; objective = best balanced portfolio"
+  },
+  {
+   "name": "B XY mixer p=2 (balance on, Dicke start)",
+   "mode": "buy_or_skip",
+   "family": "XY mixer",
+   "balance": true,
+   "p_optimum_noiseless": 0.006798663547145821,
+   "p_within_5pct_noiseless": 0.1170340261112698,
+   "two_qubit_gates": 4263,
+   "depth": 12047,
+   "two_qubit_depth": 4121,
+   "ops": {
+    "cx": 4083,
+    "rx": 3989,
+    "rz": 3972,
+    "rzz": 180,
+    "ry": 129,
+    "h": 60,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": true,
+   "crude_noisy_p_optimum": 3.566290924070524e-12,
+   "crude_noisy_p_within_5pct": 6.13910928572536e-11,
+   "shots_to_solution_noiseless": 147.08773173807296,
+   "shots_to_solution_crude_noisy": 280403371819.877,
+   "angles": {
+    "gammas": [
+     1.0473177960980133,
+     2.1500199638276114
+    ],
+    "betas": [
+     -0.6569399832808523,
+     -0.45177022845041365
+    ]
+   },
+   "xy_pairs": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     11,
+     0
+    ]
+   ],
+   "dicke_ones": 6,
+   "note": "generic Dicke state preparation; objective = best balanced portfolio"
+  },
+  {
+   "name": "B LR-QAOA p=1 on the penalty model (balance on)",
+   "mode": "buy_or_skip",
+   "family": "LR-QAOA penalty",
+   "balance": true,
+   "p_optimum_noiseless": 0.0005870608306611768,
+   "p_within_5pct_noiseless": 0.00586076893742889,
+   "two_qubit_gates": 66,
+   "depth": 19,
+   "two_qubit_depth": 15,
+   "ops": {
+    "rzz": 66,
+    "h": 12,
+    "rz": 12,
+    "rx": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0004217027507997933,
+   "crude_noisy_p_within_5pct": 0.004209959604922401,
+   "shots_to_solution_noiseless": 1703.4009897641286,
+   "shots_to_solution_crude_noisy": 2371.338574632058,
+   "angles": {
+    "gammas": [
+     0.1
+    ],
+    "betas": [
+     -0.2
+    ]
+   },
+   "penalty_lambda": 0.07226217608815326,
+   "note": "objective = best balanced portfolio"
+  },
+  {
+   "name": "B LR-QAOA p=2 on the penalty model (balance on)",
+   "mode": "buy_or_skip",
+   "family": "LR-QAOA penalty",
+   "balance": true,
+   "p_optimum_noiseless": 0.0006164310551258971,
+   "p_within_5pct_noiseless": 0.006150748038157334,
+   "two_qubit_gates": 132,
+   "depth": 36,
+   "two_qubit_depth": 30,
+   "ops": {
+    "rzz": 132,
+    "rz": 24,
+    "rx": 24,
+    "h": 12,
+    "measure": 12,
+    "barrier": 1
+   },
+   "generic_state_preparation": false,
+   "crude_noisy_p_optimum": 0.0003180761956113232,
+   "crude_noisy_p_within_5pct": 0.0031737637483908515,
+   "shots_to_solution_noiseless": 1622.2414358987228,
+   "shots_to_solution_crude_noisy": 3143.9007816289445,
+   "angles": {
+    "gammas": [
+     0.05,
+     0.1
+    ],
+    "betas": [
+     -0.2,
+     -0.1
+    ]
+   },
+   "penalty_lambda": 0.07226217608815326,
+   "note": "objective = best balanced portfolio"
+  }
+ ],
+ "aer_noise_model": {
+  "two_qubit_depolarizing": 0.005,
+  "one_qubit_depolarizing": 0.0005,
+  "readout": 0.005,
+  "shots": 4000,
+  "note": "approximate noise model, not IonQ; local qiskit-aer check only"
+ }
+}
