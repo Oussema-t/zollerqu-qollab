@@ -1,0 +1,440 @@
+{
+ "code": "Iceberg [[14, 12, 2]] (error detection, post-selection)",
+ "noise_model_local": {
+  "two_qubit_depolarizing": 0.005,
+  "one_qubit_depolarizing": 0.0005,
+  "readout_flip": 0.005
+ },
+ "checks": {
+  "2 equal devices p=1 checks=[]": {
+   "noiseless_max_difference": 2.7755575615628914e-17,
+   "noiseless_acceptance": 0.9999999999999978,
+   "single_faults_injected": 84,
+   "single_faults_detected": 84
+  },
+  "2 equal devices p=2 checks=[]": {
+   "noiseless_max_difference": 6.245004513516506e-17,
+   "noiseless_acceptance": 0.9999999999999979,
+   "single_faults_injected": 126,
+   "single_faults_detected": 126
+  },
+  "2 equal devices p=3 checks=[]": {
+   "noiseless_max_difference": 1.734723475976807e-17,
+   "noiseless_acceptance": 0.9999999999999963,
+   "single_faults_injected": 168,
+   "single_faults_detected": 168
+  },
+  "CPU + GPU (GPU 4x) p=1 checks=[]": {
+   "noiseless_max_difference": 1.5612511283791264e-17,
+   "noiseless_acceptance": 0.9999999999999959,
+   "single_faults_injected": 84,
+   "single_faults_detected": 84
+  },
+  "CPU + GPU (GPU 4x) p=2 checks=[]": {
+   "noiseless_max_difference": 5.551115123125783e-17,
+   "noiseless_acceptance": 0.9999999999999971,
+   "single_faults_injected": 126,
+   "single_faults_detected": 126
+  },
+  "CPU + GPU (GPU 4x) p=3 checks=[]": {
+   "noiseless_max_difference": 7.979727989493313e-17,
+   "noiseless_acceptance": 0.9999999999999971,
+   "single_faults_injected": 168,
+   "single_faults_detected": 168
+  }
+ },
+ "runs": [
+  {
+   "scenario": "2 equal devices",
+   "p": 1,
+   "angles_from": "QAOA, all angles optimised (Powell)",
+   "angles": [
+    2.0121408186146392,
+    0.5661302515805293
+   ],
+   "checks_after_layers": [],
+   "noiseless": {
+    "p_opt": 3.390728411760363e-05,
+    "p_near": 3.390728411760363e-05
+   },
+   "plain": {
+    "size": {
+     "qubits": 12,
+     "two_qubit": 66,
+     "depth": 14,
+     "depth_two_qubit": 11,
+     "ops": {
+      "rzz": 66,
+      "h": 12,
+      "rx": 12,
+      "measure": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 2000,
+     "acceptance": 1.0,
+     "p_opt": 0.0005,
+     "p_near": 0.0005,
+     "opt_per_submitted_shot": 0.0005,
+     "near_per_submitted_shot": 0.0005
+    }
+   },
+   "iceberg": {
+    "size": {
+     "qubits": 15,
+     "two_qubit": 105,
+     "depth": 42,
+     "depth_two_qubit": 38,
+     "ops": {
+      "rzz": 66,
+      "cx": 27,
+      "h": 17,
+      "measure": 15,
+      "rxx": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 1276,
+     "acceptance": 0.638,
+     "p_opt": 0.0,
+     "p_near": 0.0,
+     "opt_per_submitted_shot": 0.0,
+     "near_per_submitted_shot": 0.0
+    }
+   },
+   "seconds": 25.4880108833313
+  },
+  {
+   "scenario": "2 equal devices",
+   "p": 2,
+   "angles_from": "QAOA, all angles optimised (L-BFGS-B)",
+   "angles": [
+    1.0944823744981202,
+    1.2992258395925005,
+    1.4432570294268245,
+    0.5819244168979547
+   ],
+   "checks_after_layers": [],
+   "noiseless": {
+    "p_opt": 0.00028149957975698384,
+    "p_near": 0.00028149957975698384
+   },
+   "plain": {
+    "size": {
+     "qubits": 12,
+     "two_qubit": 132,
+     "depth": 26,
+     "depth_two_qubit": 22,
+     "ops": {
+      "rzz": 132,
+      "rx": 24,
+      "h": 12,
+      "measure": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 2000,
+     "acceptance": 1.0,
+     "p_opt": 0.0,
+     "p_near": 0.0,
+     "opt_per_submitted_shot": 0.0,
+     "near_per_submitted_shot": 0.0
+    }
+   },
+   "iceberg": {
+    "size": {
+     "qubits": 15,
+     "two_qubit": 183,
+     "depth": 65,
+     "depth_two_qubit": 61,
+     "ops": {
+      "rzz": 132,
+      "cx": 27,
+      "rxx": 24,
+      "h": 17,
+      "measure": 15
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 1006,
+     "acceptance": 0.503,
+     "p_opt": 0.0,
+     "p_near": 0.0,
+     "opt_per_submitted_shot": 0.0,
+     "near_per_submitted_shot": 0.0
+    }
+   },
+   "seconds": 38.86468195915222
+  },
+  {
+   "scenario": "2 equal devices",
+   "p": 3,
+   "angles_from": "QAOA, all angles optimised (Powell)",
+   "angles": [
+    0.3473290923400618,
+    1.4901684749924489,
+    0.6996302818324217,
+    0.21047681212371575,
+    0.25377626196415065,
+    0.3124684778328912
+   ],
+   "checks_after_layers": [],
+   "noiseless": {
+    "p_opt": 0.006529514995673211,
+    "p_near": 0.006529514995673211
+   },
+   "plain": {
+    "size": {
+     "qubits": 12,
+     "two_qubit": 198,
+     "depth": 38,
+     "depth_two_qubit": 33,
+     "ops": {
+      "rzz": 198,
+      "rx": 36,
+      "h": 12,
+      "measure": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 2000,
+     "acceptance": 1.0,
+     "p_opt": 0.002,
+     "p_near": 0.002,
+     "opt_per_submitted_shot": 0.002,
+     "near_per_submitted_shot": 0.002
+    }
+   },
+   "iceberg": {
+    "size": {
+     "qubits": 15,
+     "two_qubit": 261,
+     "depth": 88,
+     "depth_two_qubit": 84,
+     "ops": {
+      "rzz": 198,
+      "rxx": 36,
+      "cx": 27,
+      "h": 17,
+      "measure": 15
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 853,
+     "acceptance": 0.4265,
+     "p_opt": 0.008206330597889801,
+     "p_near": 0.008206330597889801,
+     "opt_per_submitted_shot": 0.0035,
+     "near_per_submitted_shot": 0.0035
+    }
+   },
+   "seconds": 38.52055597305298
+  },
+  {
+   "scenario": "CPU + GPU (GPU 4x)",
+   "p": 1,
+   "angles_from": "QAOA, all angles optimised (Powell)",
+   "angles": [
+    0.8262365713838402,
+    0.4508043014350172
+   ],
+   "checks_after_layers": [],
+   "noiseless": {
+    "p_opt": 0.003278714328536276,
+    "p_near": 0.006465883845224129
+   },
+   "plain": {
+    "size": {
+     "qubits": 12,
+     "two_qubit": 66,
+     "depth": 15,
+     "depth_two_qubit": 11,
+     "ops": {
+      "rzz": 66,
+      "h": 12,
+      "rz": 12,
+      "rx": 12,
+      "measure": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 2000,
+     "acceptance": 1.0,
+     "p_opt": 0.0015,
+     "p_near": 0.0035,
+     "opt_per_submitted_shot": 0.0015,
+     "near_per_submitted_shot": 0.0035
+    }
+   },
+   "iceberg": {
+    "size": {
+     "qubits": 15,
+     "two_qubit": 117,
+     "depth": 43,
+     "depth_two_qubit": 39,
+     "ops": {
+      "rzz": 78,
+      "cx": 27,
+      "h": 17,
+      "measure": 15,
+      "rxx": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 1233,
+     "acceptance": 0.6165,
+     "p_opt": 0.0032441200324412004,
+     "p_near": 0.008110300081103,
+     "opt_per_submitted_shot": 0.002,
+     "near_per_submitted_shot": 0.005
+    }
+   },
+   "seconds": 22.654942989349365
+  },
+  {
+   "scenario": "CPU + GPU (GPU 4x)",
+   "p": 2,
+   "angles_from": "QAOA, all angles optimised (L-BFGS-B)",
+   "angles": [
+    0.8587921119411026,
+    7.625000775356473,
+    0.5298515996282689,
+    0.2732117641840894
+   ],
+   "checks_after_layers": [],
+   "noiseless": {
+    "p_opt": 0.010258559786163093,
+    "p_near": 0.020105069310444815
+   },
+   "plain": {
+    "size": {
+     "qubits": 12,
+     "two_qubit": 132,
+     "depth": 28,
+     "depth_two_qubit": 22,
+     "ops": {
+      "rzz": 132,
+      "rz": 24,
+      "rx": 24,
+      "h": 12,
+      "measure": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 2000,
+     "acceptance": 1.0,
+     "p_opt": 0.01,
+     "p_near": 0.0185,
+     "opt_per_submitted_shot": 0.01,
+     "near_per_submitted_shot": 0.0185
+    }
+   },
+   "iceberg": {
+    "size": {
+     "qubits": 15,
+     "two_qubit": 207,
+     "depth": 67,
+     "depth_two_qubit": 63,
+     "ops": {
+      "rzz": 156,
+      "cx": 27,
+      "rxx": 24,
+      "h": 17,
+      "measure": 15
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 968,
+     "acceptance": 0.484,
+     "p_opt": 0.009297520661157025,
+     "p_near": 0.015495867768595042,
+     "opt_per_submitted_shot": 0.0045,
+     "near_per_submitted_shot": 0.0075
+    }
+   },
+   "seconds": 22.159667015075684
+  },
+  {
+   "scenario": "CPU + GPU (GPU 4x)",
+   "p": 3,
+   "angles_from": "QAOA, all angles optimised (L-BFGS-B)",
+   "angles": [
+    0.6838980043744151,
+    4.796410816887636,
+    5.991539769948069,
+    0.6595246182367737,
+    0.2903741578671187,
+    0.2437496123847602
+   ],
+   "checks_after_layers": [],
+   "noiseless": {
+    "p_opt": 0.020484735921054424,
+    "p_near": 0.039377114040284225
+   },
+   "plain": {
+    "size": {
+     "qubits": 12,
+     "two_qubit": 198,
+     "depth": 41,
+     "depth_two_qubit": 33,
+     "ops": {
+      "rzz": 198,
+      "rz": 36,
+      "rx": 36,
+      "h": 12,
+      "measure": 12
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 2000,
+     "acceptance": 1.0,
+     "p_opt": 0.011,
+     "p_near": 0.022,
+     "opt_per_submitted_shot": 0.011,
+     "near_per_submitted_shot": 0.022
+    }
+   },
+   "iceberg": {
+    "size": {
+     "qubits": 15,
+     "two_qubit": 297,
+     "depth": 91,
+     "depth_two_qubit": 87,
+     "ops": {
+      "rzz": 234,
+      "rxx": 36,
+      "cx": 27,
+      "h": 17,
+      "measure": 15
+     }
+    },
+    "local_noise": {
+     "shots": 2000,
+     "accepted": 766,
+     "acceptance": 0.383,
+     "p_opt": 0.014360313315926894,
+     "p_near": 0.02349869451697128,
+     "opt_per_submitted_shot": 0.0055,
+     "near_per_submitted_shot": 0.009
+    }
+   },
+   "seconds": 31.227016925811768
+  }
+ ],
+ "chosen": {
+  "scenario": "CPU + GPU (GPU 4x)",
+  "p": 3,
+  "rule": "max near-optimal shots per submitted Iceberg shot (local noise model)"
+ }
+}

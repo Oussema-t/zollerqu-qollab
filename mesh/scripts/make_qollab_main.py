@@ -54,10 +54,15 @@ def short_label(block):
 
 circuits = {key: dict(name=b["name"], label=short_label(b), role=b["role"], graded_under=list(selection["instances"]) if b["graded_under"] == "both scenarios" else [b["graded_under"]],
                       spec=b["spec"], predicted=b["predicted"], gates=b["gates"]) for key, b in keys.items()}
+iceberg_path = ROOT / "qollab" / "iceberg_circuits.json"         # written by scripts/iceberg_build.py (verified there)
+if iceberg_path.exists():
+    circuits.update(json.loads(iceberg_path.read_text())["circuits"])
 commit = subprocess.run(["git", "-C", str(Path.home() / "zollerqu-mesh"), "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip() or "unknown"
 
 TEMPLATE = '''# ======  COPY THIS WHOLE CELL INTO QOLLAB'S main.py  ======
 """ZollerQu: splitting a simulation mesh between two compute devices, 12 qubits (one per mesh region). Qollab x IonQ hackathon.
+Error-detection experiment: run qaoa_plain_* and then qaoa_iceberg_* (same logical QAOA; the Iceberg version encodes the 12
+logical qubits in 14 data qubits + 1 check ancilla and keeps only the shots that pass every check). Error DETECTION, not correction.
 
 This effort is supported by Qollab & IonQ.
 
@@ -101,9 +106,67 @@ CIRCUITS = __CIRCUITS__
 DEFAULT_CIRCUIT = "__DEFAULT__"
 
 
+def build_iceberg(spec):
+    """Iceberg [[k+2, k, 2]] error-detection version of the QAOA circuit (Self, Benedetti, Amaro, Nature Physics 2024).
+    Data qubits 0..k-1 = regions, k = top t, k+1 = bottom b. Logical X_i = X_t X_i, logical Z_i = Z_i Z_b; stabilisers X^(k+2)
+    and Z^(k+2). Start: GHZ, then H on every data qubit (= logical |+>^k). Cost rzz(2 g J_ij) as in the plain circuit; fields
+    rzz(2 g h_i) on (i, b); mixer rxx(-2 b) on (t, i). Checks use FRESH ancillas (no reset) and every qubit is measured once,
+    at the end (no gate after a measurement). The final Z check is the parity of the 14 data bits."""
+    k, top, bottom = spec["n_logical"], spec["top"], spec["bottom"]
+    data = list(range(k + 2))
+    qc = QuantumCircuit(spec["n_qubits"])
+    ancillas = iter(range(k + 2, spec["n_qubits"]))
+
+    def x_check():                                  # ancilla reads 0 if X^(k+2) = +1
+        a = next(ancillas)
+        qc.h(a)
+        for q in data:
+            qc.cx(a, q)
+        qc.h(a)
+
+    def z_check():                                  # ancilla reads 0 if Z^(k+2) = +1
+        a = next(ancillas)
+        for q in data:
+            qc.cx(q, a)
+
+    qc.h(top)
+    for q in data:
+        if q != top:
+            qc.cx(top, q)
+    qc.h(data)
+    J, h = np.asarray(spec["J_scaled"]), np.asarray(spec["h_scaled"])
+    pairs = [pair for layer_round in spec["zz_pairs"] for pair in layer_round]
+    for layer, (gamma, beta) in enumerate(zip(spec["gammas"], spec["betas"]), start=1):
+        for i, j in pairs:
+            if J[i][j] != 0:
+                qc.rzz(float(2 * gamma * J[i][j]), i, j)
+        for q in range(k):
+            if h[q] != 0:
+                qc.rzz(float(2 * gamma * h[q]), q, bottom)
+        for q in range(k):
+            qc.rxx(float(-2 * beta), top, q)
+        if layer in spec["check_after"]:
+            x_check()
+            z_check()
+    x_check()
+    qc.measure_all()
+    return qc
+
+
+def iceberg_decode(key, spec):
+    """Count key (rightmost = qubit 0) -> (accepted, logical bits): accepted if every ancilla reads 0 and the data parity is even;
+    logical bit i = bit_i XOR bit_b."""
+    bits = [int(b) for b in key.replace(" ", "")[::-1]]
+    n_data = spec["n_logical"] + 2
+    data, ancillas = bits[:n_data], bits[n_data:spec["n_qubits"]]
+    return sum(data) % 2 == 0 and not any(ancillas), [data[q] ^ data[spec["bottom"]] for q in range(spec["n_logical"])]
+
+
 def build_circuit(spec):
     """QAOA: H (or RY(theta) warm start); per layer rzz(2 gamma J_ij) over zz_pairs, rz(2 gamma h_i), then the mixer
     rx(-2 beta) = exp(+i beta X) (warm starts: ry(-s theta) rz(-2 beta) ry(s theta)). varQITE: H, then the trained gates."""
+    if spec["kind"] == "iceberg":
+        return build_iceberg(spec)
     n = spec["n_qubits"]
     qc = QuantumCircuit(n)
     qc.h(range(n)) if spec.get("start", "plus") == "plus" else None
@@ -152,9 +215,9 @@ def build_circuit(spec):
 
 
 def region_bits(key, spec):
-    """Count key -> bits of all regions (rightmost character = qubit 0; fixed regions are not measured)."""
+    """Count key -> bits of all regions (rightmost character = qubit 0; fixed regions are not measured; Iceberg: decoded)."""
     key = key.replace(" ", "")[-spec["n_qubits"]:]
-    qubit_bits = [int(b) for b in key[::-1]]
+    qubit_bits = iceberg_decode(key, spec)[1] if spec["kind"] == "iceberg" else [int(b) for b in key[::-1]]
     bits = [0] * N_REGIONS
     for region, value in spec.get("fixed_regions", {}).items():
         bits[int(region)] = int(value)
@@ -169,9 +232,16 @@ def cost(bits, scenario):
 
 
 def grade(counts, spec, scenario):
-    """Every shot counted (nothing filtered): P(optimum), P(within 5 %), P(balanced), mean cost, best and most frequent split."""
+    """Plain circuits: every shot counted (nothing filtered). Iceberg: only ACCEPTED shots are graded (post-selection); the
+    acceptance and the successes per SUBMITTED shot are reported too. P(optimum), P(within 5 %), P(balanced), mean cost, ..."""
     optimal, e_min, work = set(scenario["optimal_states"]), scenario["e_min"], np.asarray(scenario["work"], dtype=float)
+    submitted = sum(counts.values())
+    if spec["kind"] == "iceberg":
+        counts = {key: c for key, c in counts.items() if iceberg_decode(key, spec)[0]}
     shots = sum(counts.values())
+    if shots == 0:
+        return dict(shots=0, submitted=submitted, acceptance=0.0, p_opt=0.0, p_near=0.0, p_balanced=0.0, mean_cost=float("nan"),
+                    distinct_splits=0, splits={}, opt_per_submitted_shot=0.0, near_per_submitted_shot=0.0)
     splits = {}
     for key, count in counts.items():
         bits = region_bits(key, spec)
@@ -184,7 +254,8 @@ def grade(counts, spec, scenario):
     p_bal = sum(s["count"] for s in splits.values() if abs(s["share_b"] - scenario["alpha"]) <= BALANCE_TOLERANCE) / shots
     best = min(splits.items(), key=lambda item: item[1]["cost"])
     top = max(splits.items(), key=lambda item: item[1]["count"])
-    return dict(shots=shots, p_opt=p_opt, p_near=p_near, p_balanced=p_bal,
+    return dict(shots=shots, submitted=submitted, acceptance=shots / submitted, opt_per_submitted_shot=p_opt * shots / submitted,
+                near_per_submitted_shot=p_near * shots / submitted, p_opt=p_opt, p_near=p_near, p_balanced=p_bal,
                 mean_cost=sum(s["count"] * s["cost"] for s in splits.values()) / shots, distinct_splits=len(splits),
                 best_state=best[0], best_cost=best[1]["cost"], best_gap_percent=max(0.0, 100 * (best[1]["cost"] / e_min - 1)),
                 most_frequent_state=top[0], most_frequent_count=top[1]["count"], most_frequent_is_optimum=top[0] in optimal,
@@ -241,7 +312,16 @@ def show_results(key, entry, counts, source):
         result = grade(counts, spec, scenario)
         predicted = entry["predicted"] if len(entry["graded_under"]) == 1 else dict(p_opt=scenario["uniform_p_opt"], p_near=None)
         print()
-        print("=== %s, scored as '%s' (alpha = %s), %d shots, %s ===" % (entry["name"], scenario_name, scenario["alpha"], result["shots"], source))
+        print("=== %s, scored as '%s' (alpha = %s), %d shots, %s ===" % (entry["name"], scenario_name, scenario["alpha"], result["submitted"], source))
+        if spec["kind"] == "iceberg":
+            print("  Iceberg error detection: %d of %d shots ACCEPTED (%.1f %%; local approximate noise model predicted %.1f %%)."
+                  " The numbers below are per ACCEPTED shot; per SUBMITTED shot: P(optimum) %.4f, P(within 5 %%) %.4f" % (
+                      result["shots"], result["submitted"], 100 * result["acceptance"], 100 * entry["predicted"]["acceptance_local"],
+                      result["opt_per_submitted_shot"], result["near_per_submitted_shot"]))
+            if result["shots"] == 0:
+                print("  No shot passed the checks: nothing to grade.")
+                reports.append(dict(scenario=scenario_name, **{k: v for k, v in result.items() if k != "splits"}))
+                continue
         if spec.get("seeded_by"):
             print("  NOTE: this circuit starts from the %s; with these angles it returns that answer, so it shows how much"
                   " the noise damages a known split - it is not a quantum search." % spec["seeded_by"])
@@ -251,8 +331,9 @@ def show_results(key, entry, counts, source):
         print("  P(optimum)            measured %.4f | noiseless prediction %.4f | random guessing %.5f" % (
             result["p_opt"], predicted["p_opt"], scenario["uniform_p_opt"]))
         if len(entry["graded_under"]) == 1:
-            print("                         crude estimate %.4f (noiseless x 0.995^gates) | approximate local noise model %s" % (
-                predicted["crude_p_opt"], "%.4f" % predicted["aer_p_opt"] if predicted.get("aer_p_opt") is not None else "-"))
+            print("                         crude estimate %.4f (noiseless x 0.995^gates) | approximate local noise model %s%s" % (
+                predicted["crude_p_opt"], "%.4f" % predicted["aer_p_opt"] if predicted.get("aer_p_opt") is not None else "-",
+                " (per accepted shot)" if spec["kind"] == "iceberg" else ""))
             print("  P(within 5 %% of opt)  measured %.4f | noiseless prediction %.4f" % (result["p_near"], predicted["p_near"]))
         else:
             print("  P(within 5 %% of opt)  measured %.4f" % result["p_near"])
@@ -271,7 +352,28 @@ def show_results(key, entry, counts, source):
             print("    x%-4d cost %.4f  share B %.2f  %-9s %s" % (s["count"], s["cost"], s["share_b"], tag, split_text(s["bits"])))
         plot(entry, scenario_name, scenario, result, source)
         reports.append(dict(scenario=scenario_name, **{k: v for k, v in result.items() if k != "splits"}))
+    if entry.get("partner"):
+        compare_with_partner(key, entry, reports[0])
     return reports
+
+
+def compare_with_partner(key, entry, report):
+    """Plain vs Iceberg side by side, if the partner circuit's saved run is available (results/ionq_<partner>_*.json)."""
+    import glob
+    partner = entry["partner"]
+    files = sorted(glob.glob("results/ionq_%s_*.json" % partner))
+    if not files:
+        print("\\n(Run %s too, for the plain vs Iceberg comparison; or paste both RAW COUNTS lines to the team.)" % partner)
+        return
+    with open(files[-1]) as handle:
+        other = json.load(handle)["summary"][0]
+    rows = {key: report, partner: other}
+    print("\\n=== Plain vs Iceberg (same logical QAOA, same scenario; %s) ===" % ("this run + saved " + files[-1]))
+    print("  %-30s %8s %9s %10s %12s %12s %7s %6s" % ("circuit", "shots", "accepted", "P(opt)|acc", "P(opt)/shot", "P(near)/shot", "qubits", "2q"))
+    for k, r in rows.items():
+        e = CIRCUITS[k]
+        print("  %-30s %8d %8.1f%% %10.4f %12.4f %12.4f %7d %6d" % (k, r["submitted"], 100 * r["acceptance"], r["p_opt"],
+              r["opt_per_submitted_shot"], r["near_per_submitted_shot"], e["spec"]["n_qubits"], e["gates"]["two_qubit"]))
 
 
 def cost_band(state, split_cost, scenario):
@@ -301,18 +403,19 @@ def plot(entry, scenario_name, scenario, result, source):
     measured = [0] * len(BANDS)
     for state, s in result["splits"].items():
         measured[cost_band(state, s["cost"], scenario)] += s["count"]
-    probabilities = Statevector(build_circuit(spec).remove_final_measurements(inplace=False)).probabilities()
+    logical = dict(spec, kind="qaoa", n_qubits=spec["n_logical"]) if spec["kind"] == "iceberg" else spec   # ideal = plain logical circuit
+    probabilities = Statevector(build_circuit(logical).remove_final_measurements(inplace=False)).probabilities()
     ideal = [0.0] * len(BANDS)
     for index, probability in enumerate(probabilities):
         if probability > 1e-12:
-            bits = region_bits(format(index, "0%db" % spec["n_qubits"]), spec)
+            bits = region_bits(format(index, "0%db" % logical["n_qubits"]), logical)
             state = int(sum(b << r for r, b in enumerate(bits)))
             ideal[cost_band(state, cost(bits, scenario), scenario)] += probability * shots
     with warnings.catch_warnings():               # Qollab's in-browser matplotlib warns about float figure sizes (harmless)
         warnings.simplefilter("ignore")
         fig, ax = plt.subplots(figsize=(9, 3.6))
         x = np.arange(len(BANDS))
-        ax.bar(x - 0.2, measured, width=0.4, color="#2a78d6", label="measured shots (%s)" % source)
+        ax.bar(x - 0.2, measured, width=0.4, color="#2a78d6", label="measured shots (%s)%s" % (source, ", accepted only" if spec["kind"] == "iceberg" else ""))
         ax.bar(x + 0.2, ideal, width=0.4, color="#eb6834", alpha=0.75, label="ideal: exact noiseless x shots")
         for xi, value in zip(x, measured):
             if value:
@@ -328,7 +431,78 @@ def plot(entry, scenario_name, scenario, result, source):
 
 
 def main(circuit: str = "__DEFAULT__", shots: int = 1000, wait_minutes: int = 60, seed: int = 2026):
-    """circuit: __KEYS__ (ONE circuit per job on IonQ); shots per run; wait_minutes for the IonQ queue."""
+    """circuit: __KEYS__, or iceberg_compare (= the plain and the Iceberg QAOA as two jobs, one after the other, then the
+    comparison). ONE circuit per job on IonQ; shots per job; wait_minutes for the IonQ queue."""
+    if circuit.strip() == "iceberg_compare":
+        pair = [k for k, e in CIRCUITS.items() if e.get("partner")]
+        pair.sort(key=lambda k: CIRCUITS[k]["spec"]["kind"] == "iceberg")     # plain first, then Iceberg
+        results = {}
+        for k in pair:
+            print("\\n" + "=" * 100 + "\\nJob %d of 2: %s\\n" % (len(results) + 1, k) + "=" * 100)
+            results[k] = run_one(k, shots, wait_minutes, seed)
+        compare_pair(results)
+        return
+    run_one(circuit, shots, wait_minutes, seed)
+
+
+def compare_pair(results):
+    """Plain vs Iceberg from the two jobs of this Run: table and the figure for the video."""
+    rows = [(k, r) for k, r in results.items() if r]
+    if len(rows) < 2:
+        print("Only %d of the 2 jobs returned results: no comparison." % len(rows))
+        return
+    print("\\n=== Plain vs Iceberg error detection (same logical QAOA, same scenario, %s) ===" % rows[0][1]["source"])
+    print("  %-26s %7s %9s %11s %11s %12s %12s %7s %6s %6s" % ("circuit", "shots", "accepted", "P(opt)|kept", "P(near)|kept",
+          "P(opt)/sent", "P(near)/sent", "qubits", "2q", "depth"))
+    for k, r in rows:
+        s, g = r["summary"][0], CIRCUITS[k]["gates"]
+        print("  %-26s %7d %8.1f%% %11.4f %11.4f %12.4f %12.4f %7d %6d %6d" % (k, s["submitted"], 100 * s["acceptance"], s["p_opt"], s["p_near"],
+              s["opt_per_submitted_shot"], s["near_per_submitted_shot"], g["qubits"], g["two_qubit"], g["depth"]))
+    ice = [r for k, r in rows if CIRCUITS[k]["spec"]["kind"] == "iceberg"][0]
+    if ice["source"].startswith("backend") and ice["summary"][0]["acceptance"] >= 0.999:
+        print("  WARNING: Iceberg kept every shot. On a noisy simulator some shots must fail the checks, so this backend was most likely")
+        print("  NOISELESS. For the noise model choose Select QPU -> 'IonQ Forte 1 (29q) noise model'.")
+    try:
+        import matplotlib.pyplot as plt
+    except Exception as err:
+        print("  (matplotlib not available: %s)" % err)
+        return
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        fig, axes = plt.subplots(1, 4, figsize=(15, 3.8))
+        names = ["plain" if CIRCUITS[k]["spec"]["kind"] != "iceberg" else "Iceberg" for k, _ in rows]
+        colours = ["#2a78d6", "#1baf7a"]
+        s = [r["summary"][0] for _, r in rows]
+        noiseless = CIRCUITS[rows[0][0]]["predicted"]["p_near"]
+        ax = axes[0]
+        x = np.arange(2)
+        ax.bar(x - 0.2, [100 * v["p_near"] for v in s], 0.4, color=colours, label="per kept shot")
+        ax.bar(x + 0.2, [100 * v["near_per_submitted_shot"] for v in s], 0.4, color=colours, alpha=0.45, hatch="//", label="per shot sent")
+        ax.axhline(100 * noiseless, color="#555555", ls="--", lw=1, label="noiseless")
+        ax.set_xticks(x)
+        ax.set_xticklabels(names)
+        ax.set_ylabel("% of shots within 5 % of the optimum")
+        ax.set_title("success rate", loc="left", fontsize=10)
+        ax.legend(frameon=False, fontsize=7)
+        for ax, field, label in ((axes[1], "acceptance", "% of shots accepted"),):
+            ax.bar(names, [100 * v[field] for v in s], color=colours)
+            ax.set_ylim(0, 105)
+            ax.set_title(label, loc="left", fontsize=10)
+        for ax, field, label in ((axes[2], "qubits", "qubits"), (axes[3], "depth", "circuit depth (2q gates in labels)")):
+            values = [CIRCUITS[k]["gates"][field] for k, _ in rows]
+            ax.bar(names, values, color=colours)
+            if field == "depth":
+                for i, (k, _) in enumerate(rows):
+                    ax.text(i, values[i], "%d 2q" % CIRCUITS[k]["gates"]["two_qubit"], ha="center", va="bottom", fontsize=8)
+            ax.set_title(label, loc="left", fontsize=10)
+        fig.suptitle("Mesh QAOA (12 regions), plain vs Iceberg error detection: %s" % rows[0][1]["source"], fontsize=10)
+        fig.tight_layout()
+        plt.show()
+
+
+def run_one(circuit, shots, wait_minutes, seed):
+    """One circuit, one job: build, run (or sample noiselessly without a backend), grade, print, save. Returns the payload."""
     print("ZollerQu mesh partitioning on IonQ, 12 qubits. This effort is supported by Qollab & IonQ.")
     key = circuit.strip()
     if key not in CIRCUITS:
@@ -369,6 +543,7 @@ def main(circuit: str = "__DEFAULT__", shots: int = 1000, wait_minutes: int = 60
             print("Could not save a file here (%s); copy the RAW COUNTS line below instead." % err)
     print("RAW COUNTS (copy this line to save the run):")
     print(json.dumps(payload))
+    return payload
 
 
 if sys.platform != "emscripten":  # Qollab (Pyodide) calls main() itself; locally we call it here
@@ -396,6 +571,7 @@ markdown = ("## Code for Qollab (paste into `main.py`)\n\n"
             f"- **One circuit per job**: pick it with the `circuit` parameter in the Run dialog. The default is `{fallback_key}`. Options: "
             + ", ".join(f"`{k}`" for k in circuits) + ".\n"
             "- **Nothing is trained on Qollab**: the circuits and angles were chosen offline from the 12-qubit results (`scripts/ionq_selection_*.py`, table in `results/ionq_selection/candidates_table.md`).\n"
+            "- **Error-detection experiment**: set `circuit` to `iceberg_compare`. One Run sends two jobs, one after the other: the tuned QAOA (p = 3, CPU + GPU) without error detection, then the same logical circuit on the Iceberg [[14, 12, 2]] code (15 qubits: 14 data + 1 check ancilla, no reset, every qubit measured once at the end). Iceberg shots that fail a check are discarded (error DETECTION, not correction); the comparison table and figure follow. Verified offline by `scripts/iceberg_build.py` (noiseless equivalence, every injected single-qubit fault caught; local approximate noise model in `results/iceberg/local_check.json`).\n"
             "- **Grading**: every shot is graded against the exact optimum. The output prints the predictions next to the measured numbers, and ends with a `RAW COUNTS` line to save.\n"
             "- **This notebook cell** runs the same code locally (exact noiseless sampling of the default circuit, labelled as such).")
 start = next((i for i, c in enumerate(nb.cells) if c.cell_type == "code" and c.source.startswith("# ======  COPY THIS WHOLE CELL INTO QOLLAB")), None)
