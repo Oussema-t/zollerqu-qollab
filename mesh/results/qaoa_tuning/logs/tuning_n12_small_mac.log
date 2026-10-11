@@ -1,0 +1,16 @@
+[    79 s] notebook loaded
+[    95 s] 2 equal devices, p = 1: best on calibration = QAOA, all angles optimised (Powell) (0.0180); its TEST mean P(near) 0.0019, hit@1000 0.736
+[   121 s] 2 equal devices, p = 2: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0276); its TEST mean P(near) 0.0027, hit@1000 0.735
+[   158 s] 2 equal devices, p = 3: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0348); its TEST mean P(near) 0.0014, hit@1000 0.571
+[   220 s] 2 equal devices, p = 4: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0433); its TEST mean P(near) 0.0008, hit@1000 0.431
+[   297 s] 2 equal devices, p = 5: best on calibration = QAOA, all angles optimised (Nelder-Mead) (0.0468); its TEST mean P(near) 0.0253, hit@1000 1.000
+[   393 s] 2 equal devices, p = 6: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0668); its TEST mean P(near) 0.0385, hit@1000 1.000
+[   516 s] 2 equal devices, p = 8: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.1139); its TEST mean P(near) 0.0625, hit@1000 1.000
+[   526 s] CPU + GPU (GPU 4x), p = 1: best on calibration = QAOA, all angles optimised (Powell) (0.0035); its TEST mean P(near) 0.0067, hit@1000 0.988
+[   555 s] CPU + GPU (GPU 4x), p = 2: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0123); its TEST mean P(near) 0.0149, hit@1000 0.987
+[   625 s] CPU + GPU (GPU 4x), p = 3: best on calibration = QAOA, all angles optimised (Nelder-Mead) (0.0288); its TEST mean P(near) 0.0278, hit@1000 0.924
+[   743 s] CPU + GPU (GPU 4x), p = 4: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0493); its TEST mean P(near) 0.0503, hit@1000 0.963
+[   886 s] CPU + GPU (GPU 4x), p = 5: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0736); its TEST mean P(near) 0.0815, hit@1000 0.968
+[  1196 s] CPU + GPU (GPU 4x), p = 6: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.1015); its TEST mean P(near) 0.1170, hit@1000 1.000
+[  1475 s] CPU + GPU (GPU 4x), p = 8: best on calibration = QAOA, all angles optimised (Powell) (0.1490); its TEST mean P(near) 0.1728, hit@1000 1.000
+[  1475 s] saved /Users/t/Downloads/zollerqu_mesh_workspace/results/qaoa_tuning/tuning_n12.json

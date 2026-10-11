@@ -5,6 +5,8 @@ usage: python scripts/run_29_qubits.py <n> <seeds, comma-separated> <parallel in
   test: also run the notebook's exact simulator on the same instance (n <= 16) and compare every probability.
 Memory per instance at n = 29: energies float32 (2.1 GB) + statevector complex64 (4.3 GB) + small buffers.
 Nothing here is tuned on the n = 29 instances: the angles and depths come from scripts/q29_choice.json (chosen at n = 20).
+Environment overrides (defaults reproduce the first 29-qubit run): Q29_CHOICE = another settings file (e.g. scripts/q29_choice_tuned.json,
+whose 'configs' list is used as given), Q29_OUT = parent folder of the hpc_n<n> output folder.
 Outputs per instance: <case>_seed<s>_<scenario>.json (metrics) and .raw.npz (everything needed to show the results again:
 the instance itself, all sampled shots, the best cost of every classical repeat, cost distributions, qubit marginals, most likely splits).
 """
@@ -40,6 +42,9 @@ BLOCK_BITS = min(int(os.environ.get("Q29_BLOCK_BITS", 18)), N)   # mixer: qubits
 CHUNK_BITS = min(int(os.environ.get("Q29_CHUNK_BITS", 20)), N)   # streaming passes work on 2^CHUNK_BITS amplitudes at a time
 assert CHUNK_BITS >= LOW, "a streaming chunk must hold whole rows of the energy table"
 OUT = ROOT / "results" / ("hpc_validation" if len(sys.argv) > 4 and sys.argv[4] == "test" else "") / f"hpc_n{N}"   # test mode: validation folder
+if os.environ.get("Q29_OUT"):
+    OUT = ROOT / os.environ["Q29_OUT"] / f"hpc_n{N}"
+CHOICE_FILE = ROOT / os.environ.get("Q29_CHOICE", "scripts/q29_choice.json")
 OUT.mkdir(parents=True, exist_ok=True)
 T0 = time.time()
 
@@ -272,7 +277,10 @@ def instance_mesh(ns, case_name, seed):
 
 
 def quantum_configs(ns, scenario, choice):
-    """(label, role, p, angles): the best fixed schedule at n = 20, the COBYLA angles transferred from n = 20, and LR-QAOA p = 2."""
+    """(label, role, p, angles): the best fixed schedule at n = 20, the COBYLA angles transferred from n = 20, and LR-QAOA p = 2;
+    or, for a settings file with a 'configs' list (scripts/q29_choice_tuned.json), exactly those settings."""
+    if "configs" in choice:
+        return [(c["label"], c["role"], c["p"], np.array(c["angles"], dtype=np.float64)) for c in choice["configs"]]
     best, trained = choice["best_fixed"], choice["trained"]
     best_deltas = ns["T4_LR_DELTAS"][scenario][best["variant"]]
     return [(f"{best['variant']}, p = {best['p']} (best fixed schedule at n = 20)", "best fixed schedule", best["p"],
@@ -407,7 +415,10 @@ if __name__ == "__main__":
         np.savez_compressed(ns["FROZEN_REGIONS_PATH"], **ns["frozen_regions"])
         log(f"frozen regions: {ns['frozen_region_log']}, {len(ns['frozen_regions'])} assignments in {ns['FROZEN_REGIONS_PATH']}")
         sys.exit(0)
-    choices = json.loads((ROOT / "scripts" / "q29_choice.json").read_text())["choice"]
+    choices = json.loads(CHOICE_FILE.read_text())["choice"]
+    log(f"settings from {CHOICE_FILE.relative_to(ROOT)}; results to {OUT.relative_to(ROOT)}")
+    missing = [s for s in ns["TARGET_SHARES"] if s not in choices]
+    assert not missing, f"{CHOICE_FILE.name} has no settings for {missing}: nothing was run"
     jobs = [(case, seed, scenario) for seed in SEEDS for case in CASES for scenario in ns["TARGET_SHARES"]]
     running = {}
     for case, seed, scenario in jobs:

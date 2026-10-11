@@ -1,0 +1,5 @@
+[   167 s] notebook loaded
+[   318 s] CPU + GPU (GPU 4x), p = 1: best on calibration = QAOA, all angles optimised (Powell) (0.0056); its TEST mean P(near) 0.0067, hit@1000 0.984
+[   716 s] CPU + GPU (GPU 4x), p = 2: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0168); its TEST mean P(near) 0.0188, hit@1000 1.000
+[  1050 s] CPU + GPU (GPU 4x), p = 3: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0299); its TEST mean P(near) 0.0348, hit@1000 1.000
+[  2061 s] CPU + GPU (GPU 4x), p = 4: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0552); its TEST mean P(near) 0.0620, hit@1000 1.000

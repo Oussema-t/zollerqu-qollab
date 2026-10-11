@@ -1,0 +1,5 @@
+[   167 s] notebook loaded
+[   325 s] 2 equal devices, p = 1: best on calibration = QAOA, all angles optimised (Powell) (0.0065); its TEST mean P(near) 0.0016, hit@1000 0.504
+[   555 s] 2 equal devices, p = 2: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0097); its TEST mean P(near) 0.0037, hit@1000 0.765
+[   995 s] 2 equal devices, p = 3: best on calibration = QAOA, all angles optimised (Powell) (0.0174); its TEST mean P(near) 0.0148, hit@1000 1.000
+[  1894 s] 2 equal devices, p = 4: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0268); its TEST mean P(near) 0.0237, hit@1000 1.000

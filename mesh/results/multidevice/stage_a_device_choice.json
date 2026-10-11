@@ -1,0 +1,1914 @@
+{
+ "goals": {
+  "fastest": {
+   "rows": [
+    {
+     "method": "LR-QAOA",
+     "p": 1,
+     "gammas": [
+      2.672033898305085
+     ],
+     "betas": [
+      0.85
+     ],
+     "calibration_mean_p_opt": 0.16652762982278482,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.06201051711610948,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.0880682813018565,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.013653314324597314,
+       "hit_1000": 0.999998929492785,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.12234581140278392,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.1467249950108202,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.08656058383123348,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 1,
+     "gammas": [
+      2.7226983625840173
+     ],
+     "betas": [
+      0.8306378327638013
+     ],
+     "calibration_mean_p_opt": 0.1668340064575259,
+     "calibration_evaluations": 48,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.060663778164383814,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.08722705229198145,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.012923747357752332,
+       "hit_1000": 0.999997757648688,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.12080275837918243,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.14600679299099956,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.08552482583685991,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 2,
+     "gammas": [
+      3.0,
+      6.0
+     ],
+     "betas": [
+      0.6,
+      0.3
+     ],
+     "calibration_mean_p_opt": 0.20538282567345453,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.08656004570944785,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.13576839321025094,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.02460349185203889,
+       "hit_1000": 0.9999999999848226,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.16808627062305842,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.2344526178005582,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.12989416383907085,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 2,
+     "gammas": [
+      2.3359323939744865,
+      12.044376387232308
+     ],
+     "betas": [
+      0.5901902605503816,
+      0.4464016271739897
+     ],
+     "calibration_mean_p_opt": 0.31197116541009146,
+     "calibration_evaluations": 223,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.15457058834852452,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.25818600890955645,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.046417015160740094,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.29056040106943964,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.4344578153256417,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.23683836576278047,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 3,
+     "gammas": [
+      2.0,
+      4.0,
+      6.0
+     ],
+     "betas": [
+      0.49999999999999994,
+      0.3333333333333333,
+      0.16666666666666666
+     ],
+     "calibration_mean_p_opt": 0.26539304089934646,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.09695443912055866,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.14986052064064434,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.02402383850695505,
+       "hit_1000": 0.9999999999725078,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.19300264522275765,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.26871847427794093,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.14651198355377132,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 3,
+     "gammas": [
+      1.3501018652773942,
+      3.298291709923472,
+      11.01300524727458
+     ],
+     "betas": [
+      0.38142436327875817,
+      0.35728766910849896,
+      0.42650952017438515
+     ],
+     "calibration_mean_p_opt": 0.37428160190420945,
+     "calibration_evaluations": 411,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.1998763939805396,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.2963952119916771,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.059923244767876846,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.33701836706537774,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.49753913156541313,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.2781504698741769,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 4,
+     "gammas": [
+      1.5,
+      3.0,
+      4.5,
+      6.0
+     ],
+     "betas": [
+      0.44999999999999996,
+      0.33749999999999997,
+      0.22499999999999998,
+      0.11249999999999999
+     ],
+     "calibration_mean_p_opt": 0.3071123651487213,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.11178165043891099,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.16755200295978928,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.02613106394542754,
+       "hit_1000": 0.999999999996834,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.21561192076135213,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.3094413122784169,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.16610359007677938,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 4,
+     "gammas": [
+      0.6201382581751912,
+      1.3031253116991977,
+      5.9341173815982735,
+      9.926706785769326
+     ],
+     "betas": [
+      0.7970666753138946,
+      0.41768773947436016,
+      0.3211303204005082,
+      0.4072671817752842
+     ],
+     "calibration_mean_p_opt": 0.38308473815420524,
+     "calibration_evaluations": 1030,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.1564760443650528,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.2706984726650366,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.05433469962324978,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.2803454505101482,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.4341670884437025,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.23920435112143798,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 5,
+     "gammas": [
+      1.2000000000000002,
+      2.4000000000000004,
+      3.5999999999999996,
+      4.800000000000001,
+      6.0
+     ],
+     "betas": [
+      0.39999999999999997,
+      0.32,
+      0.23999999999999996,
+      0.16,
+      0.07999999999999997
+     ],
+     "calibration_mean_p_opt": 0.3200949376392798,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.12581465889815244,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.19327222270153535,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.029692816885611286,
+       "hit_1000": 0.9999999999999188,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.2402450450886883,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.35126952963441865,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.1880588546416812,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 5,
+     "gammas": [
+      -0.43937869247296657,
+      1.1803518177489898,
+      2.3398172807621442,
+      7.997300078342974,
+      21.184222338149823
+     ],
+     "betas": [
+      1.756820361389738,
+      0.4478870691796131,
+      0.24277056356247617,
+      0.39434779213064064,
+      0.2940824863162794
+     ],
+     "calibration_mean_p_opt": 0.5146981776633173,
+     "calibration_evaluations": 2000,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.21061996650727108,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.4129773693479789,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.10012325188254911,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.3995924413896493,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.5445923575608309,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.33358107733765585,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 5,
+     "test_pools": 5
+    }
+   ],
+   "chosen": {
+    "method": "QAOA, angles optimised on calibration pools",
+    "p": 5
+   },
+   "pool7": {
+    "best_devices": [
+     "C1",
+     "C2",
+     "C3",
+     "C4",
+     "G1",
+     "G2",
+     "G3",
+     "G4"
+    ],
+    "best_time_h": 9.412955465587045,
+    "best_energy_kwh": 27.29660263138164,
+    "feasible_choices": 236,
+    "diagonal_terms_by_weight": {
+     "1": 8,
+     "2": 28,
+     "3": 56,
+     "4": 70,
+     "5": 56,
+     "6": 28,
+     "7": 8,
+     "8": 1
+    },
+    "cnot_per_cost_layer_general_diagonal": 1538,
+    "quadratic_approximation_keeps_optimum": false,
+    "quadratic_approximation_rank_of_true_optimum": 127
+   }
+  },
+  "overnight": {
+   "rows": [
+    {
+     "method": "LR-QAOA",
+     "p": 1,
+     "gammas": [
+      5.899152542372882
+     ],
+     "betas": [
+      0.25
+     ],
+     "calibration_mean_p_opt": 0.014586188132674958,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.018967086099970564,
+       "hit_1000": 0.9999999951741001,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.00562204517526978,
+       "hit_1000": 0.9964396924765593,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.012294565637620172,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 2,
+     "test_pools": 2
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 1,
+     "gammas": [
+      6.009605649918002
+     ],
+     "betas": [
+      0.27078249884643807
+     ],
+     "calibration_mean_p_opt": 0.014703189339835335,
+     "calibration_evaluations": 54,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.0190657333748478,
+       "hit_1000": 0.9999999956357879,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.0056032937429464314,
+       "hit_1000": 0.9963719177747021,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.012334513558897116,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 2,
+     "test_pools": 2
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 2,
+     "gammas": [
+      2.848728813559322,
+      5.697457627118644
+     ],
+     "betas": [
+      0.49999999999999994,
+      0.24999999999999997
+     ],
+     "calibration_mean_p_opt": 0.025005311186895137,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.0293870213876826,
+       "hit_1000": 0.9999999999998888,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.0055087918109577435,
+       "hit_1000": 0.9960102278721594,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.017447906599320172,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 1,
+     "test_pools": 2
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 2,
+     "gammas": [
+      1.660345500388226,
+      5.975517749899773
+     ],
+     "betas": [
+      0.3529400810356048,
+      0.25790456542978674
+     ],
+     "calibration_mean_p_opt": 0.035028662918965746,
+     "calibration_evaluations": 199,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.043109406733124925,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.007148027439551118,
+       "hit_1000": 0.9992335161925954,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.025128717086338022,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 1,
+     "test_pools": 2
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 3,
+     "gammas": [
+      0.6217514124293786,
+      1.2435028248587572,
+      1.8652542372881358
+     ],
+     "betas": [
+      0.44999999999999996,
+      0.3,
+      0.15
+     ],
+     "calibration_mean_p_opt": 0.02870692718678885,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.032886895560603466,
+       "hit_1000": 0.999999999999997,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.005217594931868193,
+       "hit_1000": 0.9946531844151432,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.01905224524623583,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 1,
+     "test_pools": 2
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 3,
+     "gammas": [
+      1.8746532392101196,
+      1.6879338071843821,
+      1.7405062862644645
+     ],
+     "betas": [
+      0.3622932255002872,
+      0.3349538171494061,
+      0.24185888866696287
+     ],
+     "calibration_mean_p_opt": 0.055072737302346714,
+     "calibration_evaluations": 491,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.04225221618744764,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.0027976795074843627,
+       "hit_1000": 0.939287175551107,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.022524947847466004,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 0,
+     "test_pools": 2
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 4,
+     "gammas": [
+      0.7940677966101695,
+      1.588135593220339,
+      2.3822033898305084,
+      3.176271186440678
+     ],
+     "betas": [
+      0.35,
+      0.26249999999999996,
+      0.175,
+      0.0875
+     ],
+     "calibration_mean_p_opt": 0.037575254499381275,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.0417875874097706,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.0038610357349190758,
+       "hit_1000": 0.9791105028572891,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.022824311572344838,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 1,
+     "test_pools": 2
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 4,
+     "gammas": [
+      1.8043451836530748,
+      1.6117016510548248,
+      1.5928357532686248,
+      6.02531417336195
+     ],
+     "betas": [
+      0.3794682373181008,
+      0.3545477016765397,
+      0.33417355152281486,
+      0.23888108437933767
+     ],
+     "calibration_mean_p_opt": 0.09628182465047616,
+     "calibration_evaluations": 960,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.09266031051445184,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.018223976456593214,
+       "hit_1000": 0.9999999897098486,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.055442143485522524,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 1,
+     "test_pools": 2
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 5,
+     "gammas": [
+      0.5949152542372882,
+      1.1898305084745764,
+      1.7847457627118644,
+      2.3796610169491528,
+      2.9745762711864407
+     ],
+     "betas": [
+      0.44999999999999996,
+      0.36,
+      0.26999999999999996,
+      0.18,
+      0.08999999999999997
+     ],
+     "calibration_mean_p_opt": 0.0515671194798273,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.0600084278135925,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.006406010681023367,
+       "hit_1000": 0.9983820853602567,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.033207219247307934,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 1,
+     "test_pools": 2
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 5,
+     "gammas": [
+      1.7424459066240536,
+      1.6215000016150056,
+      1.5716292827935003,
+      1.6189654173784271,
+      6.044532117534706
+     ],
+     "betas": [
+      0.3731136089682139,
+      0.3526743199127345,
+      0.3389885305367344,
+      0.32257189271096093,
+      0.22184818128625264
+     ],
+     "calibration_mean_p_opt": 0.13206784529586088,
+     "calibration_evaluations": 1936,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.10703688571122018,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.08333333333333333,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.028477912866356613,
+       "hit_1000": 0.9999999999997164,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.012195121951219513,
+       "most_likely_is_optimal": true
+      }
+     ],
+     "test_mean_p_opt": 0.06775739928878839,
+     "test_mean_random": 0.00244140625,
+     "test_most_likely_optimal": 1,
+     "test_pools": 2
+    }
+   ],
+   "chosen": {
+    "method": "QAOA, angles optimised on calibration pools",
+    "p": 5
+   },
+   "pool7": {
+    "best_devices": [
+     "C1",
+     "C2",
+     "G1",
+     "G2",
+     "G3",
+     "G4"
+    ],
+    "best_time_h": 11.772151898734178,
+    "best_energy_kwh": 23.749086103938403,
+    "feasible_choices": 12,
+    "diagonal_terms_by_weight": {
+     "1": 8,
+     "2": 28,
+     "3": 56,
+     "4": 70,
+     "5": 56,
+     "6": 28,
+     "7": 8,
+     "8": 1
+    },
+    "cnot_per_cost_layer_general_diagonal": 1538,
+    "quadratic_approximation_keeps_optimum": false,
+    "quadratic_approximation_rank_of_true_optimum": 7
+   }
+  },
+  "lowest energy": {
+   "rows": [
+    {
+     "method": "LR-QAOA",
+     "p": 1,
+     "gammas": [
+      5.596610169491526
+     ],
+     "betas": [
+      0.65
+     ],
+     "calibration_mean_p_opt": 0.11828209009624853,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.01684163143189138,
+       "hit_1000": 0.9999999579776584,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.06707115943514508,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.0074277326526458725,
+       "hit_1000": 0.9994217218769911,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.06255781565979254,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.08793203726634681,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.04836607528916433,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 1,
+     "gammas": [
+      5.5866518140791595
+     ],
+     "betas": [
+      0.6609735202610657
+     ],
+     "calibration_mean_p_opt": 0.11834207442452298,
+     "calibration_evaluations": 53,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.01704461551702014,
+       "hit_1000": 0.9999999658173271,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.06801609849736712,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.007407626072285484,
+       "hit_1000": 0.9994098883397134,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.06266744398914396,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.08887031644126425,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.048801220103416185,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 2,
+     "gammas": [
+      3.0,
+      6.0
+     ],
+     "betas": [
+      0.65,
+      0.325
+     ],
+     "calibration_mean_p_opt": 0.15398578746389335,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.019700099274545305,
+       "hit_1000": 0.9999999977146188,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.133725921601815,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.007644247765782685,
+       "hit_1000": 0.9995350658534042,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.07491861600104781,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.09077052091708947,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.06535188111205606,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 2,
+     "gammas": [
+      2.1066700310845836,
+      6.7262340282905075
+     ],
+     "betas": [
+      0.644844486615377,
+      0.44384771687182045
+     ],
+     "calibration_mean_p_opt": 0.16817279032615778,
+     "calibration_evaluations": 161,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.00902976421705983,
+       "hit_1000": 0.9998850231358338,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.12985914947604643,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.0066702298872111255,
+       "hit_1000": 0.9987599149239571,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.0698899179112645,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.08407811153027005,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.05990543460437039,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 3,
+     "gammas": [
+      2.0,
+      4.0,
+      6.0
+     ],
+     "betas": [
+      0.6,
+      0.4,
+      0.2
+     ],
+     "calibration_mean_p_opt": 0.2123262056276786,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.02879071129879138,
+       "hit_1000": 0.9999999999997945,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.1784896794529739,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.01468370271335413,
+       "hit_1000": 0.9999996235856703,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.08834998942689193,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.13037458794274795,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.08813773416695185,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 3,
+     "gammas": [
+      1.6533365164332237,
+      2.9500368310685827,
+      6.948920116089207
+     ],
+     "betas": [
+      0.4767589909687189,
+      0.47152920296422646,
+      0.33958400396014654
+     ],
+     "calibration_mean_p_opt": 0.2631217146554777,
+     "calibration_evaluations": 409,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.009756176642810978,
+       "hit_1000": 0.9999447741798437,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.20544044226021005,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.006590838246552558,
+       "hit_1000": 0.9986567372394702,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.06866614879960134,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.15838466656801378,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.08976765450343774,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 4,
+     "gammas": [
+      1.5,
+      3.0,
+      4.5,
+      6.0
+     ],
+     "betas": [
+      0.5499999999999999,
+      0.4125,
+      0.27499999999999997,
+      0.13749999999999998
+     ],
+     "calibration_mean_p_opt": 0.2675689597210389,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.03144690043887267,
+       "hit_1000": 0.9999999999999867,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.20686630383269433,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.019675247988169872,
+       "hit_1000": 0.9999999976559429,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.0904144989711002,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.1623071020468195,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.10214201065553133,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 4,
+     "gammas": [
+      1.6562810310042968,
+      2.82200712807043,
+      7.107766549440351,
+      7.021843958597575
+     ],
+     "betas": [
+      0.46761853637973166,
+      0.5479843398760236,
+      0.26737171174299024,
+      0.25981814067414055
+     ],
+     "calibration_mean_p_opt": 0.34638945441983415,
+     "calibration_evaluations": 580,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.017430777136886778,
+       "hit_1000": 0.9999999769242114,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.2196365832021055,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.009436489655641112,
+       "hit_1000": 0.9999237349221465,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.09979385735688169,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.19212936078345091,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.1076854136269932,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "LR-QAOA",
+     "p": 5,
+     "gammas": [
+      1.2000000000000002,
+      2.4000000000000004,
+      3.5999999999999996,
+      4.800000000000001,
+      6.0
+     ],
+     "betas": [
+      0.49999999999999994,
+      0.39999999999999997,
+      0.29999999999999993,
+      0.19999999999999998,
+      0.09999999999999996
+     ],
+     "calibration_mean_p_opt": 0.28928556964083296,
+     "calibration_evaluations": 1800,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.031087973812255164,
+       "hit_1000": 0.9999999999999808,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.22817321385252984,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": true
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.0199881682821082,
+       "hit_1000": 0.9999999982965908,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.09855715162535571,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.18389433166911515,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.1123401678482728,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 1,
+     "test_pools": 5
+    },
+    {
+     "method": "QAOA, angles optimised on calibration pools",
+     "p": 5,
+     "gammas": [
+      1.3565793936906498,
+      1.489775395874668,
+      5.740705017497053,
+      6.61094354156911,
+      7.697974551376099
+     ],
+     "betas": [
+      0.6156459485110677,
+      0.4668672110058629,
+      0.3967660632935668,
+      0.23046555665362334,
+      0.2404934704967594
+     ],
+     "calibration_mean_p_opt": 0.4058372358452683,
+     "calibration_evaluations": 2000,
+     "test": [
+      {
+       "seed": 7,
+       "n": 8,
+       "p_opt": 0.02978126387098515,
+       "hit_1000": 0.999999999999926,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.00423728813559322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 8,
+       "n": 8,
+       "p_opt": 0.14875877260926237,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.00390625,
+       "feasible_random_p_opt": 0.004291845493562232,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 9,
+       "n": 10,
+       "p_opt": 0.01505300021721045,
+       "hit_1000": 0.99999974126115,
+       "random_p_opt": 0.0009765625,
+       "feasible_random_p_opt": 0.0010080645161290322,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 10,
+       "n": 7,
+       "p_opt": 0.15999008177604376,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      },
+      {
+       "seed": 11,
+       "n": 7,
+       "p_opt": 0.15485998824597752,
+       "hit_1000": 1.0,
+       "random_p_opt": 0.0078125,
+       "feasible_random_p_opt": 0.008547008547008548,
+       "most_likely_is_optimal": false
+      }
+     ],
+     "test_mean_p_opt": 0.10168862134389585,
+     "test_mean_random": 0.0048828125,
+     "test_most_likely_optimal": 0,
+     "test_pools": 5
+    }
+   ],
+   "chosen": {
+    "method": "QAOA, angles optimised on calibration pools",
+    "p": 5
+   },
+   "pool7": {
+    "best_devices": [
+     "C1",
+     "G1",
+     "G2",
+     "G3",
+     "G4"
+    ],
+    "best_time_h": 13.448275862068956,
+    "best_energy_kwh": 21.979599645249248,
+    "feasible_choices": 236,
+    "diagonal_terms_by_weight": {
+     "1": 8,
+     "2": 28,
+     "3": 56,
+     "4": 70,
+     "5": 56,
+     "6": 28,
+     "7": 8,
+     "8": 1
+    },
+    "cnot_per_cost_layer_general_diagonal": 1538,
+    "quadratic_approximation_keeps_optimum": false,
+    "quadratic_approximation_rank_of_true_optimum": 54
+   }
+  }
+ },
+ "test_pools": [
+  {
+   "seed": 7,
+   "devices": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+   ]
+  },
+  {
+   "seed": 8,
+   "devices": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+   ]
+  },
+  {
+   "seed": 9,
+   "devices": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5"
+   ]
+  },
+  {
+   "seed": 10,
+   "devices": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "G1",
+    "G2",
+    "G3"
+   ]
+  },
+  {
+   "seed": 11,
+   "devices": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "G1",
+    "G2",
+    "G3"
+   ]
+  }
+ ]
+}
