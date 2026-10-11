@@ -276,11 +276,18 @@ def local_counts(qc, shots, seed):
 def run_backend(qc, backend, shots, wait_minutes):
     """ONE circuit per job; prints the status every 10 s; returns counts or None."""
     compiled = transpile(qc, backend, optimization_level=1)
-    try:
-        job = backend.run(compiled, shots=shots)
-    except Exception as err:                      # qiskit-ionq can hide the real error behind an AttributeError
-        print("Backend run failed:", type(err).__name__, err)
-        return None
+    first_try = time.time()
+    while True:                                   # IonQ runs one job per account at a time: wait while another job runs
+        try:
+            job = backend.run(compiled, shots=shots)
+            break
+        except Exception as err:                  # qiskit-ionq can hide the real error behind an AttributeError
+            if "already running" in str(err).lower() and time.time() - first_try < 60 * wait_minutes:
+                print("IonQ: another job of this account is still running; waiting 30 s and trying again (%.0f s so far)" % (time.time() - first_try))
+                time.sleep(30)
+                continue
+            print("Backend run failed:", type(err).__name__, err)
+            return None
     try:
         print("Job submitted:", job.job_id())
     except Exception:
