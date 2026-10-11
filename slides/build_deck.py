@@ -61,6 +61,7 @@ BUDGET_FILE = "results/stocks_fair_budget_n12.json"
 TUNING_FILE = "results/stocks_qaoa_tuning_n12.json"
 N29_FILE = "results/stocks_qaoa_n29.json"
 CANDIDATES_FILE = "qollab/circuit_candidates.json"
+EXP29_FILE = "results/stocks_exp29_summary.json"
 LINKS = {"Qollab project": None, "Demo video": None}   # set a URL to show that line on the closing slide
 CIRCUIT = "B CVaR 0.1 p=3"
 MODE = "buy_or_skip"
@@ -170,6 +171,19 @@ def collect():
     put("best29_layers", runs29[key29]["p"], f"{N29_FILE}: modes.{MODE}.circuits.{key29}.p")
     put("best29_hit1000", runs29[key29]["p_optimum_in_shots"], f"{N29_FILE}: modes.{MODE}.circuits.{key29}.p_optimum_in_shots")
     put("n29_repetitions", big["repetitions"], f"{N29_FILE}: repetitions")
+
+    exp = load(EXP29_FILE)
+    rows = [r for r in exp["rows"] if r["mode"] == MODE and r["tuning_evaluations_29"] == 0]
+    paper = {r["p"]: r["hit@1000"] for r in rows if r["source"] == "s0_baseline_ramp12" or "original grid" in r["label"]}
+    wider = {r["p"]: r["hit@1000"] for r in rows if (r["source"] == "s0_baseline_ramp12" and r["p"] <= 4) or "wide grid" in r["label"]
+             or ("deep grid" in r["label"] and r["p"] > 16)}
+    put("depth_paper", {str(k): v for k, v in sorted(paper.items())}, f"{EXP29_FILE}: rows, ramp tuned at 12 with strength <= 1.5 (paper grid)")
+    put("depth_wider", {str(k): v for k, v in sorted(wider.items())}, f"{EXP29_FILE}: rows, ramp tuned at 12 on the wider grids (strength <= 3.0 up to 16 layers, <= 6.0 above)")
+    put("gates_layer_29", next(r["two_qubit_gates"] // r["p"] for r in rows), f"{EXP29_FILE}: two_qubit_gates / p")
+    put("exp_greedy_1000", exp["classical"]["budgets"]["1000"]["greedy descent (restarted)"]["hit_rate"], f"{EXP29_FILE}: classical.budgets['1000'] greedy")
+    put("exp_sa_1000", exp["classical"]["budgets"]["1000"]["simulated annealing (one run)"]["hit_rate"], f"{EXP29_FILE}: classical.budgets['1000'] annealing")
+    put("exp_greedy_10000", exp["classical"]["budgets"]["10000"]["greedy descent (restarted)"]["hit_rate"], f"{EXP29_FILE}: classical.budgets['10000'] greedy")
+    put("exp_repetitions", exp["classical"]["repetitions"], f"{EXP29_FILE}: classical.repetitions")
 
     return n, src
 
@@ -417,37 +431,35 @@ def fig_main(n):
     return save(fig, "main_result.png")
 
 
-def fig_scaling(n):
-    """Slide 7: share of runs that find the exact best portfolio within 1,000 evaluations, by problem size."""
-    sizes = [12, 16, 20, 29]
-    qaoa = [100 * n[f"scale_qaoa_{s}"] for s in sizes]
-    rand = [100 * n["hit1000_random_12"]] + [100 * n[f"scale_random_{s}"] for s in sizes[1:]]
-    classical = {12: 100 * n["hit1000_greedy_12"], 29: 100 * n["scale_greedy_29"]}
+def fig_depth29(n):
+    """Slide 7: 29 assets, share of 1,000-shot runs that contain the exact best portfolio, against the number of layers."""
+    paper = {int(k): 100 * v for k, v in n["depth_paper"].items()}
+    wider = {int(k): 100 * v for k, v in n["depth_wider"].items()}
+    classical = 100 * n["exp_greedy_1000"]
     fig = plt.figure(figsize=(7.3, 4.2))
     ax = fig.add_axes([0.1, 0.205, 0.88, 0.665])
-    ax.set_xlim(10.4, 31.6)
-    ax.set_ylim(-4, 118)
+    ax.set_xlim(0, 33.5)
+    ax.set_ylim(-4, 112)
     ax.set_yticks([0, 25, 50, 75, 100])
+    ax.set_xticks([1, 3, 8, 12, 16, 20, 24, 32])
     ax.yaxis.grid(True)
     ax.set_axisbelow(True)
     ax.spines["left"].set_visible(False)
-    ax.set_xticks(sizes)
-    ax.set_xlabel("number of assets = qubits", labelpad=6)
-    ax.plot(sizes, rand, color=GREY, lw=2.5, marker="o", ms=10, mfc=GREY, mec=BG, mew=2, zorder=3, label="random guessing")
-    ax.plot(sizes, qaoa, color=TEAL, lw=3, marker="o", ms=13, mfc=TEAL, mec=BG, mew=2.5, zorder=4, label="QAOA (noiseless)")
-    ax.plot(list(classical), list(classical.values()), ls="", marker="D", ms=13, mfc=LIGHT, mec=BG, mew=2.5, zorder=5, label="classical methods")
-    ax.plot([12], [classical[12]], ls="", marker="D", ms=19, mfc="none", mec=LIGHT, mew=2.2, zorder=3)
-    for size, value in zip(sizes, qaoa):
-        ax.text(size + (0.45 if size == 12 else 0), value + 7.5, "both 100 %" if size == 12 else (f"{value:.0f} %" if value >= 10 else f"{value:.1f} %"),
-                ha="center", va="bottom", fontsize=MIN_PT, fontweight="bold", color=WHITE)
-    ax.text(28.2, classical[29], f"{classical[29]:.0f} %", ha="right", va="center", fontsize=MIN_PT, fontweight="bold", color=WHITE)
-    ax.text(12.55, rand[0] + 1.5, f"{rand[0]:.0f} %", ha="left", va="center", fontsize=MIN_PT, color=MUTED)
-    handles, labels = ax.get_legend_handles_labels()
-    order = [1, 2, 0]
-    ax.legend([handles[i] for i in order], [labels[i] for i in order], loc="upper right", bbox_to_anchor=(1.0, 1.0), handletextpad=0.4,
-              borderaxespad=0.0, labelcolor=WHITE, handlelength=1.4, frameon=True, facecolor=BG, edgecolor="none", framealpha=1.0)
-    fig.text(0.008, 0.945, f"% of runs that find the best portfolio in {n['budget']:,} evaluations", fontsize=MIN_PT, color=MUTED, ha="left", va="center")
-    return save(fig, "scaling.png")
+    ax.set_xlabel(f"layers ({n['gates_layer_29']} two-qubit gates each)", labelpad=6)
+    ax.axhline(classical, color=LIGHT, ls=(0, (6, 4)), lw=2.2, zorder=2)
+    ax.text(33.3, classical - 3, f"classical methods\n1,000 evaluations: {classical:.0f} %", ha="right", va="top", fontsize=MIN_PT, color=LIGHT,
+            linespacing=1.15)
+    for points, color, size, label in ((paper, GREY, 10, "ramp as in the paper"), (wider, TEAL, 12, "ramp tuned on a wider grid")):
+        ps = sorted(points)
+        ax.plot(ps, [points[p] for p in ps], color=color, lw=3, marker="o", ms=size, mfc=color, mec=BG, mew=2, zorder=4, label=label)
+    for p, dx, dy, ha in ((3, 0.4, 7, "center"), (12, -0.8, 4, "right"), (16, -0.8, 3, "right"), (24, 0, 6, "center")):
+        value = wider[p]
+        ax.text(p + dx, value + dy, f"{value:.1f} %" if value < 10 or 99 < value < 100 else f"{value:.0f} %", ha=ha, va="bottom",
+                fontsize=MIN_PT, fontweight="bold", color=WHITE, zorder=6)
+    ax.legend(loc="lower right", bbox_to_anchor=(1.0, 0.0), handletextpad=0.4, borderaxespad=0.0, labelcolor=WHITE, handlelength=1.4,
+              frameon=True, facecolor=BG, edgecolor="none", framealpha=1.0)
+    fig.text(0.008, 0.945, "29 assets: % of 1,000-shot runs that find the best", fontsize=MIN_PT, color=MUTED, ha="left", va="center")
+    return save(fig, "depth29.png")
 
 
 # ---------------------------------------------------------------- layout (one description, two renderers)
@@ -789,21 +801,24 @@ def build_slides(n, figures, tickers, buy, corr):
     slides.append(s)
 
     # 7 ---------------------------------------------------------------- scaling + honest comparison
-    s = Slide(7, "SCALING AND HONEST COMPARISON", "Up to 29 qubits, classical heuristics win", source=[
-        f"12-20 qubits: server simulation, 10 Oct 2026 · 29 qubits: server simulation of all {n['states_29']:,} states,",
-        f"11 Oct 2026 · classical: {n['n29_repetitions']} runs · the same {n['budget']:,} evaluations for every method"], notes=(
-        "In noiseless simulation up to twenty-nine qubits the circuit stays far above random guessing, but classical heuristics win: "
-        f"they find the best portfolio in {100 * n['scale_greedy_29']:.0f} percent of runs, the circuit in {100 * n['scale_qaoa_29']:.0f} percent. "
-        f"And our circuit first needed about {round(n['training_circuits'], -2):,} training circuits. We claim no quantum advantage."))
-    s.image(figures["scaling"], MX, 1.65, 7.3, 4.2, (
-        f"Line chart: share of runs that find the best portfolio within {n['budget']:,} evaluations, against the number of assets. QAOA in noiseless simulation: "
-        f"{100 * n['scale_qaoa_12']:.0f} % at 12, {100 * n['scale_qaoa_16']:.0f} % at 16, {100 * n['scale_qaoa_20']:.0f} % at 20 and {100 * n['scale_qaoa_29']:.1f} % at 29 qubits. "
-        f"Classical methods: 100 % at 12 and {100 * n['scale_greedy_29']:.0f} % at 29. Random guessing: {100 * n['hit1000_random_12']:.0f} % at 12 and about 0 % from 20 on."))
+    w = {int(k): v for k, v in n["depth_wider"].items()}
+    gates16 = 16 * n["gates_layer_29"]
+    s = Slide(7, "SCALING AND HONEST COMPARISON", "29 qubits: more layers help, only without noise", source=[
+        f"Server simulation of all {n['states_29']:,} states, 11 Oct 2026; ramp tuned at 12 assets, no tuning at 29",
+        f"Classical: greedy descent and annealing, {n['exp_repetitions']} runs, the same {n['budget']:,} evaluations"], notes=(
+        f"At twenty-nine assets the three-layer circuit finds the best portfolio in {100 * w[3]:.0f} percent of runs, classical methods in {100 * n['exp_greedy_1000']:.0f}. "
+        f"With more layers, the noiseless circuit reaches {100 * w[16]:.0f} percent at sixteen. "
+        "But that is six and a half thousand two-qubit gates, far beyond today's noise. No advantage is claimed."))
+    s.image(figures["depth"], MX, 1.65, 7.3, 4.2, (
+        f"Line chart for 29 assets: share of 1,000-shot runs that contain the exact best portfolio, against the number of layers, in noiseless simulation. "
+        f"With the ramp tuned on a wider grid: {100 * w[3]:.1f} % at 3 layers, {100 * w[12]:.0f} % at 12, {100 * w[16]:.0f} % at 16, {100 * w[24]:.1f} % at 24 and "
+        f"{100 * w[32]:.0f} % at 32. With the ramp as in the paper: {100 * float(n['depth_paper']['16']):.0f} % at 16 layers. "
+        f"Classical methods with 1,000 evaluations: {100 * n['exp_greedy_1000']:.0f} %."))
     y = s.text(8.3, 1.72, 4.43, ["Read with care"], size=22, bold=True)
-    s.bullets(8.3, y + 0.18, 4.43, [[f"Training came first: {n['training_circuits']:,}", "simulated circuits"],
-                                    ["A shot is not the same work", "as a classical evaluation"],
-                                    [f"12 assets: greedy needs {n['greedy_median']:.0f}", f"evaluations, our noisy run {n['median_noisy']:.0f}"],
-                                    ["29 qubits: noiseless simulation", "only, angles reused from 12"]], size=MIN_PT, gap=0.17, color=WHITE)
+    s.bullets(8.3, y + 0.18, 4.43, [["Noiseless simulation only"],
+                                    [f"16 layers = {gates16:,} two-qubit", f"gates; our {n['gates_circuit']}-gate IonQ run", f"lost a factor {n['noise_factor']:.0f} to noise"],
+                                    [f"Classical: {100 * n['exp_greedy_10000']:.0f} % with 10,000", "evaluations"],
+                                    ["A shot is not the same work", "as a classical evaluation"]], size=MIN_PT, gap=0.17, color=WHITE)
     slides.append(s)
 
     # 8 ---------------------------------------------------------------- demo, limits, next steps
@@ -811,7 +826,7 @@ def build_slides(n, figures, tickers, buy, corr):
         "[CUT TO LIVE QOLLAB DEMO] Here is the project on Qollab, with the code in main.py. "
         "We press Run, select the IonQ Forte 1 noise model, and one job returns counts and plots. "
         "[BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. "
-        "Next: the other selected circuits, shorter circuits, and twenty-nine assets."))
+        "Next: other circuits, shorter circuits, and the depth noise allows."))
     s.rect(MX, 1.7, 5.6, 4.15)
     y = s.text(MX + 0.3, 1.95, 5.0, ["Live demo on Qollab"], size=24, bold=True) + 0.32
     steps = [["Open the project:", "the code is in main.py"], ["Run → Select QPU →", "IonQ Forte 1 (29q) noise model"], ["One job returns the counts,", "the table and the plots"]]
@@ -826,7 +841,7 @@ def build_slides(n, figures, tickers, buy, corr):
     y = s.text(6.75, y + 0.42, 5.98, ["Next steps"], size=22, bold=True)
     s.bullets(6.75, y + 0.16, 5.98, [[f"Run the other {n['selected_other']} selected circuits"],
                                      [f"Shorter circuits: {n['gates_all_12']} instead of {n['gates_circuit']} gates"],
-                                     ["29 assets on the IonQ Forte 1 noise model"]], size=MIN_PT, gap=0.14)
+                                     ["Find how many layers the noise allows"]], size=MIN_PT, gap=0.14)
     slides.append(s)
 
     # 9 ---------------------------------------------------------------- closing
@@ -886,7 +901,7 @@ def main():
     buy = exact_optimum()
     style()
     figures = {"hero": fig_hero(tickers, corr), "graph": fig_graph(tickers, corr, buy), "score": fig_formula_score(), "ising": fig_formula_ising(),
-               "circuit": fig_circuit(n), "gates": fig_gates(n), "main": fig_main(n), "scaling": fig_scaling(n)}
+               "circuit": fig_circuit(n), "gates": fig_gates(n), "main": fig_main(n), "depth": fig_depth29(n)}
     slides, extra = build_slides(n, figures, tickers, buy, corr)
     for slide in slides:                                # run the layout checks of the frame and the title too
         frame(slide)
@@ -913,7 +928,7 @@ def main():
         (figures["circuit"], 4, f"schematic; pair count from {TUNING_FILE} (meta.kept_links), shots from {IONQ_FILE}"),
         (figures["gates"], 5, f"{TUNING_FILE} (circuits.n12 and circuits.large, routing_p1)"),
         (figures["main"], 6, f"{IONQ_FILE} (IonQ run), {CANDIDATES_FILE} (noiseless rate, classical medians), {BUDGET_FILE} (random rate)"),
-        (figures["scaling"], 7, f"{TUNING_FILE} (12, 16, 20 qubits), {N29_FILE} (29 qubits), {BUDGET_FILE} (classical and random at 12)"),
+        (figures["depth"], 7, f"{EXP29_FILE} (29-asset depth experiment and its classical baselines)"),
     ]
     missing = [label for label, url in LINKS.items() if not url]
     pending = ["No placeholder is left on the slides. Slide 8 is shown together with a live Qollab session (no screenshot)."]

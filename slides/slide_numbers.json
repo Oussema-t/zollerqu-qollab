@@ -279,6 +279,59 @@
   "n29_repetitions": {
    "value": 200,
    "source": "results/stocks_qaoa_n29.json: repetitions"
+  },
+  "depth_paper": {
+   "value": {
+    "1": 0.03553512233772062,
+    "2": 0.06293843070469754,
+    "3": 0.06602228203145667,
+    "4": 0.09836514365842612,
+    "5": 0.07677243627853991,
+    "6": 0.05937588610816631,
+    "8": 0.10614896129714975,
+    "10": 0.17555806645428573,
+    "12": 0.2616981031115994,
+    "16": 0.4527936869947425
+   },
+   "source": "results/stocks_exp29_summary.json: rows, ramp tuned at 12 with strength <= 1.5 (paper grid)"
+  },
+  "depth_wider": {
+   "value": {
+    "1": 0.03553512233772062,
+    "2": 0.06293843070469754,
+    "3": 0.06602228203145667,
+    "4": 0.09836514365842612,
+    "5": 0.09735252471253462,
+    "6": 0.18773159184756938,
+    "8": 0.37238868526390007,
+    "10": 0.4977420680125103,
+    "12": 0.6212049135703027,
+    "16": 0.8993475249076517,
+    "20": 0.9677031337349556,
+    "24": 0.9956182216742994,
+    "32": 0.999966625185982
+   },
+   "source": "results/stocks_exp29_summary.json: rows, ramp tuned at 12 on the wider grids (strength <= 3.0 up to 16 layers, <= 6.0 above)"
+  },
+  "gates_layer_29": {
+   "value": 406,
+   "source": "results/stocks_exp29_summary.json: two_qubit_gates / p"
+  },
+  "exp_greedy_1000": {
+   "value": 0.61,
+   "source": "results/stocks_exp29_summary.json: classical.budgets['1000'] greedy"
+  },
+  "exp_sa_1000": {
+   "value": 0.61,
+   "source": "results/stocks_exp29_summary.json: classical.budgets['1000'] annealing"
+  },
+  "exp_greedy_10000": {
+   "value": 1.0,
+   "source": "results/stocks_exp29_summary.json: classical.budgets['10000'] greedy"
+  },
+  "exp_repetitions": {
+   "value": 200,
+   "source": "results/stocks_exp29_summary.json: classical.repetitions"
   }
  }
 }

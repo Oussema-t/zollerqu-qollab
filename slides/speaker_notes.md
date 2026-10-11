@@ -1,6 +1,6 @@
 # Speaker notes: Portfolio Selection with QAOA (ZollerQu, stocks project)
 
-Spoken script for all 9 slides: **379 words** (about 2:48-2:55 at 130-135 words per minute; target 330-380 words).
+Spoken script for all 9 slides: **380 words** (about 2:49-2:55 at 130-135 words per minute; target 330-380 words).
 
 Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advantage or speed-up claim, no wall-clock comparison.
 
@@ -52,19 +52,19 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 **Source line on the slide:** IonQ Forte 1 noise model (Qollab): 1 job, 1,000 shots, 11 Oct 2026 · noiseless simulation / Classical: median of 50 runs. Sampler medians come from the hit rate per shot. Training not counted.
 
-## Slide 7: Up to 29 qubits, classical heuristics win
+## Slide 7: 29 qubits: more layers help, only without noise
 
-**Script (47 words):** In noiseless simulation up to twenty-nine qubits the circuit stays far above random guessing, but classical heuristics win: they find the best portfolio in 61 percent of runs, the circuit in 7 percent. And our circuit first needed about 4,900 training circuits. We claim no quantum advantage.
+**Script (48 words):** At twenty-nine assets the three-layer circuit finds the best portfolio in 7 percent of runs, classical methods in 61. With more layers, the noiseless circuit reaches 90 percent at sixteen. But that is six and a half thousand two-qubit gates, far beyond today's noise. No advantage is claimed.
 
-**Alt text** (`slides/figures/scaling.png`): Line chart: share of runs that find the best portfolio within 1,000 evaluations, against the number of assets. QAOA in noiseless simulation: 100 % at 12, 89 % at 16, 66 % at 20 and 6.6 % at 29 qubits. Classical methods: 100 % at 12 and 61 % at 29. Random guessing: 22 % at 12 and about 0 % from 20 on.
+**Alt text** (`slides/figures/depth29.png`): Line chart for 29 assets: share of 1,000-shot runs that contain the exact best portfolio, against the number of layers, in noiseless simulation. With the ramp tuned on a wider grid: 6.6 % at 3 layers, 62 % at 12, 90 % at 16, 99.6 % at 24 and 100 % at 32. With the ramp as in the paper: 45 % at 16 layers. Classical methods with 1,000 evaluations: 61 %.
 
-**Source line on the slide:** 12-20 qubits: server simulation, 10 Oct 2026 · 29 qubits: server simulation of all 536,870,912 states, / 11 Oct 2026 · classical: 200 runs · the same 1,000 evaluations for every method
+**Source line on the slide:** Server simulation of all 536,870,912 states, 11 Oct 2026; ramp tuned at 12 assets, no tuning at 29 / Classical: greedy descent and annealing, 200 runs, the same 1,000 evaluations
 
 ## Slide 8: Try it on Qollab: one click, one IonQ job
 
 **Cut to the live Qollab demo at the marker below, then come back to the slide.**
 
-**Script (49 words):** [CUT TO LIVE QOLLAB DEMO] Here is the project on Qollab, with the code in main.py. We press Run, select the IonQ Forte 1 noise model, and one job returns counts and plots. [BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. Next: the other selected circuits, shorter circuits, and twenty-nine assets.
+**Script (49 words):** [CUT TO LIVE QOLLAB DEMO] Here is the project on Qollab, with the code in main.py. We press Run, select the IonQ Forte 1 noise model, and one job returns counts and plots. [BACK TO SLIDE] Our limits: a noisy simulator, one job, and strong classical baselines. Next: other circuits, shorter circuits, and the depth noise allows.
 
 ## Slide 9: Thank you for your attention
 
@@ -83,7 +83,7 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 | `slides/figures/circuit_sketch.png` | slide 4 | schematic; pair count from results/stocks_qaoa_tuning_n12.json (meta.kept_links), shots from results/ionq_B_cvar_p3_20261011-052116.json |
 | `slides/figures/gate_counts.png` | slide 5 | results/stocks_qaoa_tuning_n12.json (circuits.n12 and circuits.large, routing_p1) |
 | `slides/figures/main_result.png` | slide 6 | results/ionq_B_cvar_p3_20261011-052116.json (IonQ run), qollab/circuit_candidates.json (noiseless rate, classical medians), results/stocks_fair_budget_n12.json (random rate) |
-| `slides/figures/scaling.png` | slide 7 | results/stocks_qaoa_tuning_n12.json (12, 16, 20 qubits), results/stocks_qaoa_n29.json (29 qubits), results/stocks_fair_budget_n12.json (classical and random at 12) |
+| `slides/figures/depth29.png` | slide 7 | results/stocks_exp29_summary.json (29-asset depth experiment and its classical baselines) |
 
 ## Open points
 

@@ -401,7 +401,8 @@ def large(path):
             f"{gb['mean_best_quality']:.4f} (greedy, {100 * gb['hit_rate']:.0f}\\%) and {sb['mean_best_quality']:.4f} (annealing, {100 * sb['hit_rate']:.0f}\\%). "
             f"The circuit's most likely portfolio in mode A {'is the exact optimum' if ca['most_probable_state'] == opt_a else f'differs from the exact optimum in {differs} assets'} (Fig.~\\ref{{fig:cut29}}); "
             f"the thinned surrogate's own optimum {'coincides with' if a['exact_thinned_surrogate']['same_state_as_dense_optimum'] else 'differs from'} the dense optimum. "
-            f"At this size the classical heuristics win on reaching the exact optimum within the budget, while the untuned circuit still samples far above random.")
+            f"At this size and depth ($p\\le 5$) the classical heuristics win on reaching the exact optimum within the budget, while the untuned circuit still samples "
+            f"far above random; Sec.~\\ref{{sec:exp29}} shows what changes with more layers.")
     (OUT.parent / "n29_text.tex").write_text(text + "\n")
     return data
 
@@ -444,6 +445,136 @@ def large_comparison(data):
         fig.savefig(OUT / f"budget29.{ext}", dpi=220, bbox_inches="tight")
 
 
+def pct(x):
+    if x >= 1.0 - 1e-12:
+        return "100"
+    return f"{100 * x:.1f}" if x < 0.995 else (f"{100 * x:.2f}" if x < 0.9999 else "$>$99.99")
+
+
+def exp29(summary_path, classical_ls_path):
+    """29-asset improvement experiment: figure (depth, both modes), table (mode B, one factor at a time) and text."""
+    data = json.loads(summary_path.read_text())
+    rows, classical = data["rows"], {"buy_or_skip": data["classical"], "long_short": json.loads(classical_ls_path.read_text())}
+
+    def series(mode):
+        out = {"paper grid ($\\Delta\\gamma\\leq 1.5$)": {}, "wider grid ($\\Delta\\gamma\\leq 3$, $\\leq 6$ above $p=16$)": {}}
+        a, b = list(out)
+        for r in rows:
+            if r["mode"] != mode or r["tuning_evaluations_29"] != 0:
+                continue
+            if r["source"] == "s0_baseline_ramp12":
+                out[a][r["p"]] = r["hit@1000"]
+                if r["p"] <= 4:
+                    out[b][r["p"]] = r["hit@1000"]
+            elif "original grid" in r["label"]:
+                out[a][r["p"]] = r["hit@1000"]
+            elif "wide grid" in r["label"] or ("deep grid" in r["label"] and r["p"] > 16) or mode == "long_short":
+                out[b][r["p"]] = r["hit@1000"]
+        return {k: v for k, v in out.items() if v}
+
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.7), sharey=True)
+    for ax, mode in zip(axes, ("buy_or_skip", "long_short")):
+        for name, points in series(mode).items():
+            color, marker = (GREY, "s") if name.startswith("paper grid") else (BLUE, "o")
+            ps = sorted(points)
+            ax.plot(ps, [100 * points[p] for p in ps], color=color, marker=marker, ms=3.5, lw=1.4, label=f"LR-QAOA, ramp tuned at 12, {name}")
+        block = classical[mode]["budgets"]["1000"]
+        ax.axhline(100 * block["greedy descent (restarted)"]["hit_rate"], color=BROWN, ls="--", lw=1.1, label="restarted greedy, 1 000 evaluations")
+        ax.axhline(100 * block["simulated annealing (one run)"]["hit_rate"], color=ORANGE, ls=":", lw=1.4, label="annealing, 1 000 evaluations")
+        ax.set_title(MODE_NAME[mode], loc="left")
+        ax.set_xlabel("layers $p$ (406 two-qubit gates each)")
+        ax.set_xticks([1, 3, 8, 12, 16, 20, 24, 32])
+        ax.set_ylim(0, 104)
+        ax.grid(True, color="#e5e4df", linewidth=0.5)
+        ax.spines[["top", "right"]].set_visible(False)
+    axes[0].set_ylabel("hit@1000 (%)")
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=(0, 0.17, 1, 1))
+    for ext in ("pdf", "png"):
+        fig.savefig(OUT / f"exp29.{ext}", dpi=220, bbox_inches="tight")
+    plt.close(fig)
+
+    b_rows = [r for r in rows if r["mode"] == "buy_or_skip"]
+    def find(pred):
+        return next(r for r in b_rows if pred(r))
+    picks = [
+        ("Ramp tuned at 12 (as in Table~\\ref{tab:n29})", find(lambda r: r["source"] == "s0_baseline_ramp12" and r["p"] == 3)),
+        ("Ramp re-tuned at 29, lowest energy", find(lambda r: r["factor"] == "ramp re-tuned at 29" and "lowest expectation" in r["label"])),
+        ("Ramp re-tuned at 29, lowest CVaR$_{0.1}$", find(lambda r: r["factor"] == "ramp re-tuned at 29" and "CVaR" in r["label"])),
+        ("COBYLA, all $2p$ angles", find(lambda r: r["label"].startswith("COBYLA, ramp tuned at 12, objective expectation"))),
+        ("L-BFGS-B, all $2p$ angles", find(lambda r: r["label"].startswith("L-BFGS-B"))),
+        ("Nelder--Mead, all $2p$ angles", find(lambda r: r["label"].startswith("Nelder-Mead"))),
+        ("SPSA, seed 2026 / 2027", None),
+        ("COBYLA on CVaR$_{0.1}$", find(lambda r: r["factor"] == "objective")),
+        ("COBYLA on 1\\,000 / 10\\,000 shots", None),
+        ("COBYLA from a random start (2 seeds)", None),
+        ("Ramp tuned at 12, more layers", None),
+        ("$p=16$, ramp re-tuned at 29, lowest energy", find(lambda r: r["factor"].startswith("combination") and "lowest expectation" in r["label"] and "both grids" in r["label"])),
+        ("$p=16$, ramp re-tuned at 29, lowest CVaR$_{0.1}$", find(lambda r: r["factor"].startswith("combination") and "CVaR" in r["label"] and "both grids" in r["label"])),
+    ]
+    spsa = sorted((r for r in b_rows if r["label"].startswith("SPSA")), key=lambda r: r["label"])
+    shots = sorted((r for r in b_rows if r["factor"] == "shots"), key=lambda r: r["label"])
+    rand = sorted((r for r in b_rows if r["factor"] == "initialisation"), key=lambda r: r["label"])
+    depth = {r["p"]: r for r in b_rows if r["tuning_evaluations_29"] == 0 and (("wide grid" in r["label"]) or ("deep grid" in r["label"] and r["p"] > 16))}
+    lines = []
+    for name, r in picks:
+        if r is not None:
+            lines.append(f"{name} & {r['p']} & {r['tuning_evaluations_29']} & {pct(r['hit@1000'])} & {pct(r['hit@10000'])}\\\\")
+        elif name.startswith("SPSA"):
+            lines.append(f"{name} & 3 & {spsa[0]['tuning_evaluations_29']} & {pct(spsa[0]['hit@1000'])} / {pct(spsa[1]['hit@1000'])} & {pct(spsa[0]['hit@10000'])} / {pct(spsa[1]['hit@10000'])}\\\\")
+        elif name.startswith("COBYLA on 1"):
+            lines.append(f"{name} & 3 & 38--40 & {pct(shots[0]['hit@1000'])}, {pct(shots[1]['hit@1000'])} / {pct(shots[2]['hit@1000'])} & "
+                         f"{pct(shots[0]['hit@10000'])}, {pct(shots[1]['hit@10000'])} / {pct(shots[2]['hit@10000'])}\\\\")
+        elif name.startswith("COBYLA from"):
+            lines.append(f"{name} & 3 & 40 & {pct(rand[0]['hit@1000'])} / {pct(rand[1]['hit@1000'])} & {pct(rand[0]['hit@10000'])} / {pct(rand[1]['hit@10000'])}\\\\")
+        else:
+            for p in (12, 16, 24, 32):
+                r = depth[p]
+                lines.append(f"{name}, $p={p}$ & {p} & 0 & {pct(r['hit@1000'])} & {pct(r['hit@10000'])}\\\\")
+    cb = classical["buy_or_skip"]["budgets"]
+    lines.append("\\midrule")
+    for key, label in (("greedy descent (restarted)", "Restarted greedy (classical)"), ("simulated annealing (one run)", "Simulated annealing (classical)")):
+        lines.append(f"{label} & -- & -- & {pct(cb['1000'][key]['hit_rate'])} & {pct(cb['10000'][key]['hit_rate'])}\\\\")
+    table = ("\\begin{tabular}{@{}lrrrr@{}}\\toprule\nChange (mode B, 29 assets) & $p$ & tuning circuits at 29 & hit@1000 (\\%) & hit@10\\,000 (\\%)\\\\\\midrule\n"
+             + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n")
+    (OUT.parent / "table_exp29.tex").write_text(table)
+
+    w = {p: depth[p]["hit@1000"] for p in depth}
+    paper16 = find(lambda r: "original grid" in r["label"] and r["p"] == 16)["hit@1000"]
+    base = picks[0][1]["hit@1000"]
+    ls = {r["p"]: r["hit@1000"] for r in rows if r["mode"] == "long_short"}
+    cl = classical["long_short"]["budgets"]
+    text = (f"With the ramp tuned at 12 assets and no tuning at 29, hit@1000 in mode~B rises from {pct(base)}\\,\\% at $p=3$ to {pct(w[12])}\\,\\% at $p=12$, "
+            f"{pct(w[16])}\\,\\% at $p=16$, {pct(w[24])}\\,\\% at $p=24$ and {pct(w[32])}\\,\\% at $p=32$, against {pct(cb['1000']['greedy descent (restarted)']['hit_rate'])}\\,\\% "
+            f"for restarted greedy and annealing with 1\\,000 evaluations (Fig.~\\ref{{fig:exp29}}). This requires a wide enough ramp grid at 12 assets: the Task-4 grid "
+            f"stopped at $\\Delta\\gamma=1.5$, while deeper circuits choose 2.4--3.2; with the old limit $p=16$ reaches only {pct(paper16)}\\,\\%. "
+            f"In mode~A the same recipe gives {pct(ls[3])}, {pct(ls[8])}, {pct(ls[16])}, {pct(ls[24])} and {pct(ls[32])}\\,\\% at $p=3,8,16,24,32$, against "
+            f"{pct(cl['1000']['greedy descent (restarted)']['hit_rate'])}\\,\\% (greedy) and {pct(cl['1000']['simulated annealing (one run)']['hit_rate'])}\\,\\% (annealing) "
+            f"with 1\\,000 evaluations and {pct(cl['10000']['simulated annealing (one run)']['hit_rate'])}\\,\\% (annealing) with 10\\,000.")
+    (OUT.parent / "exp29_text.tex").write_text(text + "\n")
+
+
+def ionq(run_path, candidates_path):
+    """The one recorded run on the IonQ Forte 1 noise model (Qollab), as text for the paper."""
+    run = json.loads(run_path.read_text())
+    s = run["summary"][0]
+    shots = sum(run["counts"].values())
+    hits = round(s["p_optimum"] * shots)
+    row = next(r for r in json.loads(candidates_path.read_text())["rows"] if r["name"] == s["circuit"])
+    from scipy import stats
+    lo, hi = stats.beta.ppf(0.025, hits, shots - hits + 1), stats.beta.ppf(0.975, hits + 1, shots - hits)
+    shots_tex = f"{shots:,}".replace(",", "\\,")
+    text = (f"We ran the 12-asset mode-B circuit with the highest noiseless and estimated noisy success, CVaR$_{{0.1}}$-QAOA at $p=3$ "
+            f"({row['two_qubit_gates']} two-qubit gates), once on the IonQ Forte~1 noise model through Qollab ({shots_tex} shots, 11 October 2026). "
+            f"{hits} shots were the exact optimum ({1000 * hits / shots:.0f} per 1\\,000; 95\\,\\% interval {1000 * lo:.0f}--{1000 * hi:.0f}), "
+            f"against {1000 * row['p_optimum_noiseless']:.0f} per 1\\,000 in the noiseless simulation of the same circuit and {1000 / 4096:.2f} per 1\\,000 for uniform guessing: "
+            f"{s['p_optimum'] / (1 / 4096):.0f}$\\times$ random, but {row['p_optimum_noiseless'] / s['p_optimum']:.0f}$\\times$ below noiseless. "
+            f"{100 * s['p_within_5pct']:.1f}\\,\\% of the shots were within 5\\,\\% of the optimum (noiseless: {100 * row['p_within_5pct_noiseless']:.1f}\\,\\%). "
+            f"This is a single job on a noise model, not hardware; the interval covers sampling error only.")
+    (OUT.parent / "ionq_text.tex").write_text(text + "\n")
+
+
 if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
     results = t4.load()
@@ -457,4 +588,12 @@ if __name__ == "__main__":
     if n29.is_file():
         large_comparison(large(n29))
         print("29-qubit figures and table written")
+    root = OUT.parent.parent
+    if (root / "results" / "stocks_exp29_summary.json").is_file():
+        exp29(root / "results" / "stocks_exp29_summary.json", root / "results" / "stocks_exp29_classical_long_short.json")
+        print("29-asset experiment figure, table and text written")
+    ionq_runs = sorted((root / "results").glob("ionq_B_cvar_p3_*.json"))
+    if ionq_runs:
+        ionq(ionq_runs[-1], root / "qollab" / "circuit_candidates.json")
+        print("IonQ text written from", ionq_runs[-1].name)
     print("ladder, budget figure and table written; most likely state is the optimum:", cut(json.loads(t4.PARAMETERS_PATH.read_text())))

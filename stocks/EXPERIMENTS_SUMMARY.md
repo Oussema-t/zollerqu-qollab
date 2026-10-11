@@ -152,3 +152,12 @@ Every distribution is scored on the dense objective; "thinned" = the 244-link ci
 - Expected noise impact: ~0.5 % error per two-qubit gate x 66-244 gates per layer.
 - Post-selection vs XY mixer at 29 qubits (Dicke preparation cost).
 - How to present "no advantage" positively on the project page (sampler quality, IonQ connectivity benefit).
+
+## 4.15 29 assets: what improves QAOA (11 Oct 2026, Hetzner, exact noiseless)
+Same Hamiltonian and data, mode B, one factor at a time, % of 1,000-shot runs that find the exact best of 537 million portfolios:
+- Baseline (3 layers, ramp tuned at 12): 6.6 %. Greedy and annealing with 1,000 evaluations: 61 %; with 10,000: 100 %.
+- 3-layer changes: ramp re-tuned at 29 9.9 % (by energy) / 17.9 % (by CVaR 0.1, same pick as the oracle); COBYLA 13.1 %, L-BFGS-B 11.9 %, Nelder-Mead 11.5 %, SPSA 9.2 / 3.1 % (two seeds); COBYLA on CVaR 15.3 %; with shot noise 10.5-11.0 %; random starts 7.1-7.7 %.
+- More layers, ramp tuned at 12 on a wider grid (no 29-qubit tuning): 62 % (12 layers), 90 % (16), 97 % (20), 99.6 % (24), 100 % (32). With the paper's grid (strength <= 1.5): 45 % at 16.
+- 16 layers + ramp re-tuned at 29 (18 circuits): 96.4 % (energy) / 99.5 % (CVaR).
+- Long/short: 37 % (16 layers), 98 % (24) vs annealing 3.5 % (1,000) and 42 % (10,000).
+- Caveats: noiseless only; 16 layers = 6,496 two-qubit gates (the 198-gate IonQ run lost a factor 8); a shot is not a classical evaluation; simple untuned heuristics. Files: results/exp29/README.md, notebook section 4.15, paper Sec. 9, deck slide 7.
