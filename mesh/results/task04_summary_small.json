@@ -2671,8 +2671,8 @@
   "qaoa_runs": 2016,
   "classical_records": 90,
   "objective_evaluations": 187303,
-  "instances_computed": 18,
-  "instances_from_checkpoint": 0,
-  "measured_wall_seconds": 193.76675550002255
+  "instances_computed": 0,
+  "instances_from_checkpoint": 18,
+  "measured_wall_seconds": 22.034328540990828
  }
 }

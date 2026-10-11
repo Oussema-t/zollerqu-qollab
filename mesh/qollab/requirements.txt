@@ -1,0 +1,1 @@
+# Qollab installs qiskit automatically; numpy is available in Pyodide. No other package is needed.

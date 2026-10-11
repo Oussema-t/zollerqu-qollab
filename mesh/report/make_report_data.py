@@ -31,29 +31,33 @@ def pct(x):
     return "--" if x is None else (f"{100 * x:.0f}" if x >= 0.095 else (f"{100 * x:.1f}" if x >= 0.0095 else f"{100 * x:.2f}"))
 
 
-rows = []   # (label, 2q gates, training circuits, [(per-shot, hit) per scenario], group)
+SHOTS = S04["run_settings"]["shots"]
+def big(x):
+    return f"{x:,.0f}".replace(",", "\\,")
+rows = []   # (label, 2q gates, training circuits, total evaluations, [(per-shot, hit) per scenario], group)
 u = [summary(s, "uniform control", 0) for s in SCEN]
-rows.append(("Uniform random sampling", "0", "0", [(u[i]["p_near"], qvc(s, "uniform random")) for i, s in enumerate(SCEN)], "c"))
-rows.append(("Random with target share", "0", "0", [(u[i]["p_near_target_share_sampler"], qvc(s, "random, target share")) for i, s in enumerate(SCEN)], "c"))
-for label, key in (("Simulated annealing", "simulated annealing"), ("Local search (restarts)", "local search"), ("Spectral bisection", "spectral bisection")):
-    rows.append((label, "0", "0", [(None, qvc(s, key)) for s in SCEN], "c"))
+rows.append(("Uniform random sampling", "0", "0", big(SHOTS), [(u[i]["p_near"], qvc(s, "uniform random")) for i, s in enumerate(SCEN)], "c"))
+rows.append(("Random with target share", "0", "0", big(SHOTS), [(u[i]["p_near_target_share_sampler"], qvc(s, "random, target share")) for i, s in enumerate(SCEN)], "c"))
+for label, key, total in (("Simulated annealing", "simulated annealing", SHOTS), ("Local search (restarts)", "local search", SHOTS), ("Spectral bisection", "spectral bisection", 22)):
+    rows.append((label, "0", "0", big(total), [(None, qvc(s, key)) for s in SCEN], "c"))
 for label, method, p in (("LR-QAOA, $p=2$", "LR-QAOA", 2), ("QAOA + COBYLA, $p=2$", "QAOA COBYLA", 2), ("CVaR-QAOA + COBYLA, $p=2$", "CVaR COBYLA", 2),
                          ("Warm start (spectral)$^\\dagger$, $p=2$", "WS rounded A", 2)):
     ms = [summary(s, method, p) for s in SCEN]
-    rows.append((label, "132", f"{max(m['evaluations'] for m in ms):.0f}", [(m["p_near"], m["hit_near"]) for m in ms], "q"))
+    training = float(np.mean([m["evaluations"] for m in ms]))
+    rows.append((label, "132", f"{training:.0f}", big((training + 1) * SHOTS), [(m["p_near"], m["hit_near"]) for m in ms], "q"))
 for label, method in (("varQITE ZY (paper, all pairs)", "varQITE ZY (paper, all pairs)"), ("varQITE A (all pairs)", "varQITE A (all pairs)"),
                       ("varQITE A$^{+}$ (edges, our ext.)", "varQITE A+ (graph edges, ry layer)"), ("varQITE B (IonQ-native, edges)", "varQITE B (IonQ-native, graph edges)")):
     gates = vq(SCEN[0], method, "two_qubit_gates")
-    circuits = np.mean([vq(s, method, "training_circuits") for s in SCEN])
-    rows.append((label, f"{gates:.0f}", f"{circuits:,.0f}".replace(",", "\\,"), [(vq(s, method, "p_near"), vq(s, method, "hit_near")) for s in SCEN], "v"))
+    circuits = float(np.mean([vq(s, method, "training_circuits") for s in SCEN]))
+    rows.append((label, f"{gates:.0f}", big(circuits), big((circuits + 1) * SHOTS), [(vq(s, method, "p_near"), vq(s, method, "hit_near")) for s in SCEN], "v"))
 with open(os.path.join(HERE, "table_n12.tex"), "w") as f:   # rows as a macro (an \\input inside tabular breaks \\bottomrule)
     f.write("\\newcommand{\\TableNtwelve}{%\n")
     previous = None
-    for label, gates, circuits, values, group in rows:
+    for label, gates, circuits, total, values, group in rows:
         if previous and group != previous:
             f.write("\\midrule\n")
         cells = " & ".join(f"{pct(p)} & {pct(h)}" for p, h in values)
-        f.write(f"{label} & {gates} & {circuits} & {cells} \\\\\n")
+        f.write(f"{label} & {gates} & {circuits} & {total} & {cells} \\\\\n")
         previous = group
     f.write("}\n")
 
@@ -128,6 +132,32 @@ macros.update(ScLocalTwelveEq=sc(SCEN[0], "Local search", 12), ScCobylaTwelveEq=
               AblFields=pct(summary(SCEN[1], "ablation: fields only", 2)["p_near"]), AblCouplings=pct(summary(SCEN[1], "ablation: couplings only", 2)["p_near"]),
               VQZYcircuits=f"{vq(SCEN[0], 'varQITE ZY (paper, all pairs)', 'training_circuits'):,.0f}".replace(",", "\\,"),
               RuntimeSpread=f"{max(abs(v[0]) for k, v in S04['modelled_outcome_excess_percent'].items() if 'modelled_hours' in k):.1f}")
+with open(os.path.join(HERE, "table_scaling.tex"), "w") as f:
+    f.write("\\newcommand{\\TableScaling}{%\n")
+    for name in ("Local search", "Spectral bisection", "Simulated annealing", "Random, target share", "LR-QAOA $p=2$", "QAOA+COBYLA $p=2$"):
+        cells = []
+        for scen in SCEN:
+            cells += ["--" if scaling[scen][name][k] is None or np.isnan(scaling[scen][name][k]) else f"{100 * scaling[scen][name][k]:.0f}" for k in range(len(NS))]
+        f.write(f"{name} & " + " & ".join(cells) + " \\\\\n")
+    f.write("}\n")
+VQL = json.load(open(os.path.join(LARGE, "varqite_summary_large.json")))
+def vql(scen, method, field, n=16):
+    v = [r[field] for r in VQL["rows"] if r["scenario"] == scen and r["method"] == method and r["n"] == n]
+    return float(np.mean(v)) if v else float("nan")
+macros.update(VQLApEq=f"{vql(SCEN[0], 'varQITE A+ (graph edges, ry layer)', 'mean_ratio'):.3f}", VQLApCpu=f"{vql(SCEN[1], 'varQITE A+ (graph edges, ry layer)', 'mean_ratio'):.3f}",
+              VQLnearMax=pct(max(r["p_near"] for r in VQL["rows"] if r["n"] == 16 and r["method"].startswith("varQITE"))),
+              COBYLAtotal=big((np.mean([summary(s, "QAOA COBYLA", 2)["evaluations"] for s in SCEN]) + 1) * SHOTS),
+              VQZYtotal=big((np.mean([vq(s, "varQITE ZY (paper, all pairs)", "training_circuits") for s in SCEN]) + 1) * SHOTS))
+BATCH = json.load(open(os.path.join(HERE, "..", "qollab", "mesh_batch.json")))
+with open(os.path.join(HERE, "table_ionq.tex"), "w") as f:
+    f.write("\\newcommand{\\TableIonQ}{%\n")
+    names = [c["name"] for c in BATCH["scenarios"][0]["circuits"]]
+    for k, name in enumerate(names):
+        cs = [scen["circuits"][k] for scen in BATCH["scenarios"]]
+        label = name.replace("varQITE A+ (graph edges, ry layer)", "varQITE A$^{+}$ (edges)").replace("varQITE ZY (paper, all pairs)", "varQITE ZY (paper)")
+        f.write(f"{label} & {cs[0]['two_qubit_gates']} & " + " & ".join(f"{pct(c['predicted']['p_opt'])} & {pct(c['predicted']['p_near'])}" for c in cs) + " \\\\\n")
+    f.write("}\n")
+macros.update(NIonQ=str(sum(len(s["circuits"]) for s in BATCH["scenarios"])))
 with open(os.path.join(HERE, "numbers.tex"), "w") as f:
     for k, v in macros.items():
         f.write(f"\\newcommand{{\\{k}}}{{{v}}}\n")

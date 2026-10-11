@@ -1,85 +1,159 @@
 \documentclass[10pt,twocolumn]{article}
-\usepackage[a4paper,margin=1.45cm,columnsep=0.55cm]{geometry}
+\usepackage[a4paper,margin=1.6cm,columnsep=0.6cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
 \usepackage{titlesec}
 \usepackage{enumitem}
-\titlespacing*{\section}{0pt}{5pt}{2pt}
+\titlespacing*{\section}{0pt}{7pt}{3pt}
 \titleformat*{\section}{\normalsize\bfseries}
-\setlength{\parskip}{0pt}
-\setlist{nosep,leftmargin=1.1em}
+\setlist{nosep,leftmargin=1.2em}
+\newtheorem{lemma}{Lemma}
+\renewcommand{\topfraction}{0.9}\renewcommand{\dbltopfraction}{0.9}\renewcommand{\textfraction}{0.07}\renewcommand{\floatpagefraction}{0.8}\renewcommand{\dblfloatpagefraction}{0.8}\setcounter{topnumber}{3}\setcounter{dbltopnumber}{3}
 \input{numbers.tex}
 \input{table_n12.tex}
+\input{table_scaling.tex}
+\input{table_ionq.tex}
 
-\title{\vspace{-1.1cm}\large\bfseries Quantum optimisation for heterogeneous mesh partitioning:\\an open, exactly graded benchmark of QAOA and varQITE\vspace{-0.25cm}}
+\title{\vspace{-1.0cm}\large\bfseries Quantum mesh partitioning for heterogeneous devices:\\
+unequal work shares expose a structural limit of a varQITE ansatz\vspace{-0.2cm}}
 \author{\normalsize Team ZollerQu --- Qollab $\times$ IonQ Hackathon, October 2026}
-\date{\vspace{-0.75cm}}
+\date{\vspace{-0.7cm}}
 
 \begin{document}
 \maketitle
 
-\noindent\textbf{Abstract.} Parallel PDE solvers split a mesh between compute devices; on heterogeneous clusters each device should receive work in proportion to its speed while the cut between parts stays short. We cast this two-device split with a target work share $\alpha$ as an Ising problem and benchmark quantum samplers against classical heuristics on nine reproducible finite-element meshes (12--24 coarse regions, one qubit each), grading every method against the exact optimum. In noiseless simulation, QAOA beats random sampling ($\LRgainEqual\times$ per shot at $\alpha{=}0.5$; $\LRgainShare\times$ the fair target-share sampler at $\alpha{=}0.8$) and matches local search at 12 qubits, but falls far behind classical methods at 16--20 qubits. IonQ's varQITE reaches a near-optimal split on $\VQZYequal\%$ of shots at $\alpha{=}0.5$, yet fails at $\alpha{=}0.8$ because of a structural limit of its ansatz that we identify. We claim no quantum advantage.
+\noindent\textbf{Abstract.} Quantum graph partitioning has so far been studied for \emph{balanced} bipartitions, notably by IonQ with Ansys and Synopsys inside LS-DYNA. Modern clusters mix CPUs and GPUs, so a mesh must be split with an \emph{unequal} target share $\alpha$ proportional to device speed. We formulate this heterogeneous split as an Ising problem and benchmark QAOA, its variants and IonQ's variational imaginary-time evolution (varQITE) against classical heuristics on nine reproducible finite-element meshes, grading every method against the exact optimum and counting every evaluation. The heterogeneous case changes the picture: varQITE with the published pair-rotation ansatz returns a near-optimal split on $\VQZYequal\%$ of shots for equal devices but fails completely for $\alpha{=}0.8$. We prove why: a qubit that only ever acts as the control of the ansatz's two-qubit gates keeps a 50/50 marginal for all angles, which caps the probability of a unique optimum at $1/2$; equal shares hide this because their optimum is doubly degenerate. QAOA beats random sampling at both shares and matches local search at 12 qubits, but falls behind classical heuristics from 16 qubits on. No quantum advantage is claimed.
 
-\section{Introduction}
-Graph partitioning of finite-element meshes decides load balance and communication in parallel solvers. IonQ with Ansys/Synopsys recently inserted quantum graph partitioning into LS-DYNA to reduce fill-in of sparse direct solvers, using varQITE \cite{aboumrad2025} and Iterative-QAOA \cite{zhu2026}, always with \emph{balanced} halves and closed code; quantum annealing has been tried for HPC load balancing \cite{qaLB2024}. We study the \emph{heterogeneous} case (unequal device speeds, hence unequal target shares), release all code, and grade every quantum and classical method against exact enumeration on the same objective.
-
-\section{Problem, benchmark and model}
-\textbf{Benchmark.} Nine plates meshed with Delaunay triangulation (1\,670--2\,166 triangles): a rectangle with a known answer, an L-plate with a heat source, two sources, a plate with a hole (stress-style mesh), and a five-step complexity ladder on one L-plate (uniform $\to$ three sources $\to$ heavy-material zone with $3\times$ work $\to$ strong-coupling zone with $3\times$ border cost $\to$ priority zone). Each mesh is grouped into $n$ connected regions by $k$-means with a connectivity repair; region work and border cost are summed exactly.
-
-\textbf{Ising model.} With $z_i{=}{+}1$ (device A) or ${-}1$ (device B), normalised work $\tilde a_i$ and border costs $\tilde c_{ij}$,
-\begin{equation*}
-E(z)=\sum_{\langle ij\rangle}\tilde c_{ij}\tfrac{1-z_iz_j}{2}+\lambda\Big(\sum_i\tilde a_iz_i-(1-2\alpha)\Big)^{2}\;[+\mu P(z)],
-\end{equation*}
-following the Ising form of graph partitioning \cite{lucas2014}. The balance term couples \emph{every} pair of regions ($n(n{-}1)/2$ two-qubit terms), which suits IonQ's all-to-all connectivity. Scenarios: two equal devices ($\alpha{=}0.5$, $\lambda{=}10$) and CPU+GPU with an assumed $4\times$ faster GPU ($\alpha{=}0.8$, $\lambda{=}3.98$); $\lambda$ is shared per scenario and selected by exact enumeration. A synthetic 8-device pool (CPUs/GPUs with speed, memory and power) shows the device-choice layer: fastest plan 9.4\,h/27.3\,kWh, overnight 11.8\,h/23.7\,kWh, lowest energy 13.4\,h/22.0\,kWh, versus 37.5\,h/56.1\,kWh for equal shares (modelled, not measured).
-
-\section{Methods}
-\textbf{Quantum (noiseless statevector, cross-checked with Qiskit to $10^{-15}$).} QAOA with cost layer $e^{-i\gamma E}$ and mixer $e^{+i\beta\sum X}$: linear-ramp LR-QAOA \cite{lrqaoa2025}; optimised angles with COBYLA, Nelder--Mead, Powell, L-BFGS-B (budget 200 evaluations) and shot-based SPSA \cite{spall1998}; CVaR-QAOA \cite{cvar2020}; warm starts \cite{egger2021}; a symmetry-reduced variant. varQITE \cite{morris2024}: each step solves $G\,\dot\theta=d$ with $d_k={-}(\langle P_kH\rangle-\langle P_k\rangle\langle H\rangle)$ and $G_{kj}{=}\partial\langle P_k\rangle/\partial\theta_j$ by parameter shift, for the paper's $e^{i\theta Z_rY_q}$ ansatz on all pairs (ZY), a $R_Y$+CX ansatz on all pairs or graph edges (A), our extension with one $R_Y$ per qubit (A$^+$) and an IonQ-native RZZ+RX ansatz (B), all trained on exact expectations.
-\textbf{Classical.} Uniform and target-share random sampling, simulated annealing, local search with restarts, spectral bisection; same objective, same budget of 1\,000 candidates as QAOA's 1\,000 shots.
-\textbf{Honesty measures.} All schedules, step sizes and annealing temperatures are tuned on separate calibration meshes, never on scored instances; the p=0 control and the target-share sampler are always reported; the main metric is the probability of a split with cost $\le1.05\times$ optimum; 30 injected bugs (signs, bit order, schedules, metric formulas) are all caught by the cell's checks; a crude depolarising estimate $F{=}(1{-}0.005)^{N_{2q}}$ indicates noise sensitivity.
-
-\begin{figure*}[t]
-\centering\includegraphics[width=\textwidth]{fig_results.pdf}\vspace{-0.25cm}
-\caption{(a,b) Probability that 1\,000 candidates (classical) or shots (QAOA, noiseless) contain a split within 5\% of the optimum, versus problem size (cases 2 and 9, seeds 7--9; the 24-qubit reference is the best classical result; QAOA is not simulated at 24 qubits). (c,d) varQITE training curves at $n{=}12$ (mean over nine cases), with QAOA+COBYLA and uniform sampling for reference.}
-\label{fig:results}\vspace{-0.15cm}
+\section{Introduction and contributions}
+\begin{figure*}[!t]
+\centering\includegraphics[width=0.6\textwidth]{../results/regions_n12_seed7.png}\vspace{-0.2cm}
+\caption{The nine benchmark meshes, each grouped into 12 regions (one qubit per region); numbers are region indices, black lines region borders.}
+\label{fig:regions}\vspace{-0.3cm}
 \end{figure*}
-
-\begin{table*}[t]
+\begin{figure*}[!t]
+\centering\includegraphics[width=0.95\textwidth]{../results/graph_cut_2_main_n12_seed7.png}\vspace{-0.25cm}
+\caption{Case 2 (L-plate with a heat source), 12 regions. Columns: the region graph (node size = work, line width = border cost); the split returned by QAOA+COBYLA ($p{=}2$, best of 1\,000 shots); the split returned by varQITE ZY; the exact optimum. Rows: equal devices (top), CPU+GPU with $\alpha{=}0.8$ (bottom). varQITE finds the optimum for equal devices but not for the unequal share; QAOA's best shot is optimal for $\alpha{=}0.8$.}
+\label{fig:graph}\vspace{-0.2cm}
+\end{figure*}
+\begin{table*}[!t]
 \centering\footnotesize
-\caption{Results at $n{=}12$ qubits (nine cases, noiseless): two-qubit gates, training circuits, per-shot probability of cost $\le1.05\times$ optimum (\%), and probability that 1\,000 shots/candidates contain such a split (\%). $^\dagger$Starts from the classical spectral split.}
+\caption{Results at $n{=}12$ qubits (nine cases, noiseless). Training circuits are means over cases and scenarios; total evaluations = $(\text{training}+1)\times1\,000$ for quantum methods, candidates for classical ones (spectral bisection: $2(n{-}1)$ threshold cuts). Per shot: probability of cost $\le1.05\times$ optimum (\%); hit@1000: probability that 1\,000 shots/candidates contain such a split (\%). $^\dagger$Starts from the classical spectral split.}
 \label{tab:n12}\vspace{0.05cm}
-\begin{tabular}{@{}lrrrrrr@{}}
+\begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-& & & \multicolumn{2}{c}{equal devices ($\alpha{=}0.5$)} & \multicolumn{2}{c}{CPU+GPU ($\alpha{=}0.8$)}\\
-\cmidrule(lr){4-5}\cmidrule(l){6-7}
-Method & 2q gates & training circuits & per shot & hit@1000 & per shot & hit@1000\\
+& & & & \multicolumn{2}{c}{equal devices ($\alpha{=}0.5$)} & \multicolumn{2}{c}{CPU+GPU ($\alpha{=}0.8$)}\\
+\cmidrule(lr){5-6}\cmidrule(l){7-8}
+Method & 2q gates & training circuits & total evaluations & per shot & hit@1000 & per shot & hit@1000\\
 \midrule
 \TableNtwelve
 \bottomrule
-\end{tabular}\vspace{-0.3cm}
+\end{tabular}\vspace{-0.2cm}
 \end{table*}
+Parallel PDE solvers partition their mesh among compute devices; the partition sets both the load balance and the communication volume. IonQ inserted quantum graph partitioning into Ansys/Synopsys LS-DYNA to reduce fill-in of sparse direct solvers, first with varQITE \cite{aboumrad2025,morris2024} and later with Iterative-QAOA \cite{zhu2026}; quantum annealing has been tried for HPC load balancing \cite{qaLB2024}. These studies use balanced halves and closed code. Our contributions:
+\begin{enumerate}
+\item \textbf{Heterogeneous partitioning}: a two-device split with target share $\alpha=s_B/(s_A+s_B)$ from device speeds, plus a device-choice layer for a synthetic multi-device pool.
+\item \textbf{A structural limit of the varQITE ansatz under unequal shares} (Lemma~1), measured on all cases, and a one-layer change (A$^+$) that removes the cap.
+\item \textbf{An open benchmark graded against the exact optimum}: nine meshes, five QAOA families, varQITE and five classical baselines, with total evaluations counted for every method and all tuning done on held-out meshes.
+\item \textbf{Reproducibility}: meshes and region assignments shipped as data files; 30 injected bugs all caught by the checks; one batched IonQ job prepared.
+\end{enumerate}
+
+\section{Problem and model}
+\textbf{Benchmark.} Nine plates meshed by Delaunay triangulation (1\,670--2\,166 triangles, Fig.~\ref{fig:regions}): a rectangle with a known answer, an L-plate with a heat source, two sources, a plate with a hole (stress-style mesh), and a five-step complexity ladder on one L-plate (uniform $\to$ three sources $\to$ heavy-material zone, $3\times$ work $\to$ strong-coupling zone, $3\times$ border cost $\to$ priority zone). Each mesh is grouped into $n$ connected regions (one qubit each) by $k$-means with a connectivity repair; region work $a_i$ and border cost $c_{ij}$ are exact sums. Meshes and region assignments are stored as data files, because floating-point differences made 4 of 9 meshes differ between macOS/arm64 and Linux/x86-64 builds.
+
+\textbf{Ising model.} With $z_i{=}{+}1$ (device A) or ${-}1$ (device B) and normalised $\tilde a_i$, $\tilde c_{ij}$,
+\begin{equation*}
+E(z)=\sum_{\langle ij\rangle}\tilde c_{ij}\tfrac{1-z_iz_j}{2}+\lambda\Big(\sum_i\tilde a_iz_i-(1-2\alpha)\Big)^{2}\;[+\mu P(z)],
+\end{equation*}
+the Ising form of graph partitioning \cite{lucas2014} with a target share. For $\alpha{\neq}0.5$ the balance term contains single-qubit fields $h_i\propto(1-2\alpha)\tilde a_i$, so $E(z)\neq E(-z)$ and the optimum is generically unique. The balance term couples every pair of regions ($n(n{-}1)/2$ two-qubit terms), which suits IonQ's all-to-all connectivity. Scenarios: equal devices ($\alpha{=}0.5$, $\lambda{=}10$) and CPU+GPU with an assumed $4\times$ faster GPU ($\alpha{=}0.8$, $\lambda{=}3.98$); $\lambda$ is shared per scenario and validated by exact enumeration.
+
+\textbf{Device choice (modelled).} For a synthetic pool of 8 devices with assumed speed, memory and power, exhaustive search gives a fastest plan of 9.4\,h / 27.3\,kWh, an overnight plan ($\le$12\,h) of 11.8\,h / 23.7\,kWh and a lowest-energy plan of 13.4\,h / 22.0\,kWh, against 37.5\,h / 56.1\,kWh for equal shares.
+
+
+
+\section{Methods}
+\textbf{QAOA} (noiseless statevector, cross-checked against Qiskit circuits to $10^{-15}$): cost layer $e^{-i\gamma E}$, mixer $e^{+i\beta\sum X}$; linear-ramp LR-QAOA \cite{lrqaoa2025}; optimised angles with COBYLA, Nelder--Mead, Powell, L-BFGS-B (budget 200 evaluations) and shot-based SPSA \cite{spall1998}; CVaR-QAOA \cite{cvar2020}; warm starts \cite{egger2021}; a symmetry-reduced variant at $\alpha{=}0.5$.
+\textbf{varQITE} \cite{morris2024}: each step solves $G\,\dot\theta=d$ by least squares with $d_k={-}(\langle P_kH\rangle-\langle P_k\rangle\langle H\rangle)$ and $G_{kj}=\partial\langle P_k\rangle/\partial\theta_j$ (parameter shift), starting from $|{+}\rangle^{\otimes n}$ with all angles zero. Ansätze: the paper's $e^{i\theta Z_rY_q}$ on all pairs ordered by vertex weight (ZY); $R_Y$ on the target followed by CX on all pairs or on graph edges (A); A with one $R_Y$ per qubit in front (A$^+$, ours); an IonQ-native RZZ + RX ansatz (B). Training uses exact expectations.
+\textbf{Classical}: uniform and target-share random sampling, simulated annealing, local search with restarts, spectral bisection.
+\textbf{Metrics}: the probability per shot of a split with cost $\le1.05\times$ optimum, and the probability that 1\,000 shots or candidates contain one. \textbf{Total evaluations} count everything a method spends, in hardware-equivalent cost evaluations: $(\text{training circuits}+1)\times1\,000$ shots for quantum methods and the number of candidates for classical ones.
+\textbf{Honesty measures}: schedules, step sizes and annealing temperatures are tuned on separate calibration meshes; the p=0 control and the target-share sampler are always reported; a crude depolarising estimate $F{=}(1{-}0.005)^{N_{2q}}$ indicates noise sensitivity.
+
+\section{The control-qubit limit of the varQITE ansatz}
+\begin{lemma}
+Let $U(\theta)$ be a product of gates that each commute with $Z_r$ for a fixed qubit $r$ (single-qubit gates on other qubits, CX with control $r$, $e^{i\theta Z_rY_q}$, any gate diagonal on $r$). Then for every $\theta$ the measured marginal of $r$ on $U(\theta)|{+}\rangle^{\otimes n}$ is exactly $1/2$, so every bitstring $x^\star$ has probability at most $1/2$.
+\end{lemma}
+\noindent\emph{Proof.} $P(x_r{=}1)=\langle\psi|\tfrac{1-Z_r}{2}|\psi\rangle$ with $\psi=U|{+}\rangle^{\otimes n}$; since $[U,Z_r]=0$ this equals $\langle{+}|\tfrac{1-Z_r}{2}|{+}\rangle=\tfrac12$, and $P(x^\star)\le P(x_r{=}x^\star_r)=\tfrac12$. $\square$
+
+In the ZY ansatz ordered by vertex weight, the heaviest vertex is the $Z$ side of every pair it touches; in ansatz A it is only ever a CX control. Both therefore contain such a qubit, which we verified numerically on all trained circuits. For $\alpha{=}0.5$ without priority, $E(z){=}E({-}z)$: the optimum comes as a pair $x^\star$, $\bar x^\star$, so a 50/50 qubit costs nothing, which is why the original MaxCut benchmarks did not expose it. For $\alpha{=}0.8$ the optimum is unique and the cap binds. Adding one $R_Y$ per qubit (A$^+$) breaks the commutation and removes the cap.
+
+
+
+
 
 \section{Results}
-\textbf{12 qubits (Table~\ref{tab:n12}).} All QAOA variants beat random sampling on every case: LR-QAOA raises the per-shot success $\LRgainEqual\times$ at $\alpha{=}0.5$; at $\alpha{=}0.8$ it is $\LRgainUniformCPU\times$ uniform guessing but only $\LRgainShare\times$ the classical target-share sampler (QAOA+COBYLA $\COBYLAshare\times$). An ablation explains the gap: the single-region terms alone give $\AblFields\%$ per shot, the pair terms alone $\AblCouplings\%$, both $\IdealLR\%$. With 1\,000 shots QAOA matches the best classical heuristic (local search $\ScLocalTwelveEq\%$, QAOA+COBYLA $\ScCobylaTwelveEq\%$ at $\alpha{=}0.5$), but at 4\,096 states exhaustive search is exact and cheap. Warm starts inherit most of their success from the spectral split; the convex-relaxation warm start is degenerate here ($c_i{=}\alpha$ for every region).
+\begin{figure*}[!t]
+\centering\includegraphics[width=\textwidth]{fig_results.pdf}\vspace{-0.25cm}
+\caption{(a,b) Probability that 1\,000 candidates (classical) or shots (QAOA, noiseless) contain a split within 5\% of the optimum, versus problem size (cases 2 and 9, seeds 7--9; at 24 qubits the reference is the best classical result and QAOA is not simulated). (c,d) varQITE training curves at $n{=}12$ (mean over nine cases), with QAOA+COBYLA and uniform sampling for reference.}
+\label{fig:results}\vspace{-0.2cm}
+\end{figure*}
+\textbf{12 qubits (Table~\ref{tab:n12}, Fig.~\ref{fig:graph}).} All QAOA variants beat random sampling on every case: LR-QAOA raises the per-shot success $\LRgainEqual\times$ at $\alpha{=}0.5$; at $\alpha{=}0.8$ it is $\LRgainUniformCPU\times$ uniform guessing but only $\LRgainShare\times$ the target-share sampler (QAOA+COBYLA $\COBYLAshare\times$). An ablation explains the gap: the single-region terms alone give $\AblFields\%$ per shot, the pair terms alone $\AblCouplings\%$, both $\IdealLR\%$. In hit@1000, QAOA+COBYLA ($\ScCobylaTwelveEq\%$) edges out local search ($\ScLocalTwelveEq\%$) at $\alpha{=}0.5$, but it spends $\COBYLAtotal$ total evaluations against 1\,000, and exhaustive search over all 4\,096 splits is exact. Warm starts inherit most of their success from the spectral split; the convex-relaxation warm start is degenerate here ($c_i{=}\alpha$ for every region).
 
-\textbf{Scaling (Fig.~\ref{fig:results}a,b; 216 instances, \NLargeRuns\ QAOA runs on a Hetzner node).} At fixed depth $p{=}2$ QAOA loses about an order of magnitude per shot for every four extra qubits. At 20 qubits QAOA+COBYLA finds a split within 5\% in $\ScCobylaTwentyEq\%$ / $\ScCobylaTwentyCpu\%$ of runs ($\alpha{=}0.5$ / $0.8$), versus $\ScSpectralTwentyEq\%$ / $\ScSpectralTwentyCpu\%$ for spectral bisection and $\ScLocalTwentyEq\%$ / $\ScLocalTwentyCpu\%$ for local search.
+\textbf{varQITE.} At $\alpha{=}0.5$ the ZY ansatz converges to near-optimal splits ($\VQZYequal\%$ per shot, 30--100\% on every case) with 66 two-qubit gates, at a cost of $\VQZYtotal$ total evaluations. At $\alpha{=}0.8$ every variant fails, as Lemma~1 predicts for A and ZY; A$^+$ removes the cap and reaches an approximation ratio of $\approx0.98$ but still misses the 5\% window. At 16 qubits (graph-edge variants), A$^+$ reaches $r{=}\VQLApEq$ / $\VQLApCpu$ and no variant exceeds $\VQLnearMax\%$ per shot.
 
-\textbf{varQITE (Fig.~\ref{fig:results}c,d).} At $\alpha{=}0.5$ the paper's ZY ansatz converges to near-optimal splits ($\VQZYequal\%$ per shot, 30--100\% on every case) with 66 two-qubit gates, but only after $\approx\VQZYcircuits$ exact-expectation training circuits. At $\alpha{=}0.8$ every varQITE variant fails: in ansatz A and ZY a qubit that is only ever a control keeps a 50/50 marginal for all angles, which caps a unique optimum at probability $1/2$; A$^+$ removes the cap and reaches $r{\approx}0.98$ but still misses the 5\% window. Graph-edge versions (22 gates) are too weak.
 
-\textbf{Noise and outcome.} The depolarising estimate lowers LR-QAOA ($p{=}2$, $\alpha{=}0.8$) from $\IdealLR\%$ to $\NoiseLR\%$ per shot and makes deeper circuits worse. The modelled runtime of every method's best split lies within $\RuntimeSpread\%$ of the runtime-optimal split.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{hit@1000 (\%) versus qubits $n$ (cases 2, 9; seeds 7--9).}
+\label{tab:scaling}\vspace{0.05cm}
+\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+& \multicolumn{4}{c}{equal devices} & \multicolumn{4}{c}{CPU+GPU}\\
+\cmidrule(lr){2-5}\cmidrule(l){6-9}
+$n$ & 12 & 16 & 20 & 24 & 12 & 16 & 20 & 24\\
+\midrule
+\TableScaling
+\bottomrule
+\end{tabular}\vspace{-0.3cm}
+\end{table}
+
+\textbf{Scaling (Fig.~\ref{fig:results}, Table~\ref{tab:scaling}; 216 instances, \NLargeRuns\ QAOA runs on an 8-core server).} At fixed depth $p{=}2$ QAOA loses about an order of magnitude per shot for every four extra qubits. At 20 qubits QAOA+COBYLA reaches $\ScCobylaTwentyEq\%$ / $\ScCobylaTwentyCpu\%$ ($\alpha{=}0.5$ / $0.8$), against $\ScSpectralTwentyEq\%$ / $\ScSpectralTwentyCpu\%$ for spectral bisection and $\ScLocalTwentyEq\%$ / $\ScLocalTwentyCpu\%$ for local search.
+
+\textbf{Noise and outcome.} The depolarising estimate lowers LR-QAOA ($p{=}2$, $\alpha{=}0.8$) from $\IdealLR\%$ to $\NoiseLR\%$ per shot and makes deeper circuits worse. The modelled runtime of every method's best split lies within $\RuntimeSpread\%$ of the runtime-optimal split, so better samplers matter little for this objective at this size.
+
+\section{One batched IonQ job}
+Table~\ref{tab:ionq} lists the \NIonQ\ circuits prepared for a single IonQ Forte~1 noise-model job on Qollab (case 2, 12 qubits, 1\,000 shots each): the p=0 control, LR-QAOA, QAOA+COBYLA and the final trained varQITE circuits. varQITE is trained on a noiseless local simulator; only its final circuits are sampled on IonQ. The Qollab program rebuilds the circuits from a data file, re-checks the exact optimum by brute force and grades every shot. The job has not been run yet.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{The single IonQ batch: two-qubit gates and noiseless predictions (\%) of P(optimum) and P(cost $\le1.05\times$ opt.).}
+\label{tab:ionq}\vspace{0.05cm}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+& & \multicolumn{2}{c}{equal} & \multicolumn{2}{c}{CPU+GPU}\\
+\cmidrule(lr){3-4}\cmidrule(l){5-6}
+Circuit & 2q & opt & $\le$1.05 & opt & $\le$1.05\\
+\midrule
+\TableIonQ
+\bottomrule
+\end{tabular}\vspace{-0.3cm}
+\end{table}
 
 \section{Discussion and limitations}
-The pipeline works end to end and quantifies where today's quantum samplers stand on a real engineering objective: competitive at 12 qubits, outpaced by classical heuristics beyond, and---for varQITE---strongly dependent on ansatz structure under unequal shares. All results are noiseless simulations or models; varQITE training used exact expectations; runtimes, energies and device speeds are modelled assumptions. At 16 qubits the graph-edge varQITE variants still never reach the 5\% window. Four of the nine meshes (cases 1, 2, 4, 5) differ at bit level between the macOS/arm64 and Linux/x86-64 builds, so the server's large-mode case-2 instances are equivalent but not identical to the notebook's; shipping meshes as data files will fix this. Next: the single batched IonQ Forte~1 noise-model run (p=0 control, QAOA and the final trained varQITE circuits), and measured CPU/GPU runs of refined meshes on HPC.
+The heterogeneous share is not a cosmetic generalisation: it breaks the spin-flip symmetry that balanced benchmarks enjoy, and with it the success of a published ansatz. QAOA, whose mixer acts on every qubit, does not have this blind spot but is outpaced by classical heuristics beyond 12 qubits at fixed depth. All results are noiseless simulations or models; varQITE training used exact expectations; device speeds, runtimes and energies are assumptions. Next steps: run the IonQ batch; build single-qubit layers like A$^+$ into deeper varQITE ansätze; recursive splits for more than two devices; measured CPU/GPU runs on refined meshes.
 
-\noindent\textbf{This effort is supported by Qollab \& IonQ.} Code and all result files: \url{https://github.com/Oussema-t/zollerqu-qollab} (branch \texttt{mesh}). AI assistants (Claude Code, ChatGPT) were used for code and text; every number is produced by the published code.
+\noindent\textbf{This effort is supported by Qollab \& IonQ.} Code, data files and all results: \url{https://github.com/Oussema-t/zollerqu-qollab} (branch \texttt{mesh}). AI assistants (Claude Code, ChatGPT) were used for code and text; every number is produced by the published code.
 
 {\footnotesize
 \begin{thebibliography}{9}\setlength{\itemsep}{0pt}
 \bibitem{aboumrad2025} W.~Aboumrad \emph{et al.}, Accelerating large-scale linear algebra using variational quantum imaginary time evolution, arXiv:2503.13128 (2025).
+\bibitem{morris2024} T.~D.~Morris, A.~Kaushik, M.~Roetteler, P.~C.~Lotshaw, Performant near-term quantum combinatorial optimization, arXiv:2404.16135 (2024).
 \bibitem{zhu2026} D.~Zhu \emph{et al.}, End-to-end performance of quantum-accelerated large-scale linear algebra workflows, arXiv:2603.15515 (2026).
 \bibitem{qaLB2024} Load balancing for high performance computing using quantum annealing, arXiv:2408.04097 (2024).
 \bibitem{lucas2014} A.~Lucas, Ising formulations of many NP problems, Front.\ Phys.\ \textbf{2}, 5 (2014).
@@ -87,6 +161,5 @@ The pipeline works end to end and quantifies where today's quantum samplers stan
 \bibitem{spall1998} J.~C.~Spall, Implementation of the simultaneous perturbation algorithm, IEEE Trans.\ Aerosp.\ Electron.\ Syst.\ \textbf{34}, 817 (1998).
 \bibitem{cvar2020} P.~Kl.~Barkoutsos \emph{et al.}, Improving variational quantum optimization using CVaR, Quantum \textbf{4}, 256 (2020).
 \bibitem{egger2021} D.~J.~Egger, J.~Mare\v{c}ek, S.~Woerner, Warm-starting quantum optimization, Quantum \textbf{5}, 479 (2021).
-\bibitem{morris2024} T.~D.~Morris, A.~Kaushik, M.~Roetteler, P.~C.~Lotshaw, Performant near-term quantum combinatorial optimization, arXiv:2404.16135 (2024).
 \end{thebibliography}}
 \end{document}
