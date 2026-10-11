@@ -109,6 +109,30 @@ and p, untuned.
 Warm start, variational real-time evolution, recursive QAOA, any optimiser loop on the backend.
 No run on IonQ yet. README, credits, video and the Qollab main.py are still to do.
 
+## 4.10 29 qubits, exact simulation (added later; Hetzner 8-core server, 957 s)
+stocks/large_sim.py: memory-lean exact statevector (energies built bit by bit, complex64 amplitudes, ~13 GB at 29 qubits,
+28 s per layer). All 2^29 = 536,870,912 energies enumerated -> the TRUE optimum at 29 assets (mode A -0.01017,
+mode B -0.00621); the Task 3 annealer had already found both. LR-QAOA uses the 12-asset ramp WITHOUT re-tuning.
+Every distribution is scored on the dense objective; "thinned" = the 244-link circuit model, "dense" = all 406 links.
+| 29 assets, eta 1, budget 1,000 | A quality | A best-of-1000 | A hit@1000 | B quality | B best-of-1000 | B hit@1000 |
+|---|---:|---:|---:|---:|---:|---:|
+| uniform random | 0.876 | 0.9772 | 0.000 | 0.732 | 0.9652 | 0.000 |
+| greedy, restarted (dense) | - | 0.9927 | 0.015 | - | 0.9998 | 0.610 |
+| annealing, one 1,000-step run | - | 0.9924 | 0.035 | - | 0.9999 | 0.610 |
+| LR-QAOA p=5 thinned (12-asset ramp) | 0.958 | 0.9952 | 0.004 | 0.978 | 0.9993 | 0.112 |
+| LR-QAOA p=4 thinned | 0.953 | 0.9942 | 0.002 | 0.979 | 0.9993 | 0.126 |
+| LR-QAOA p=2 dense | 0.933 | 0.9876 | 0.000 (most likely state = optimum) | 0.973 | 0.9990 | 0.063 |
+- P(opt) per shot at 29 qubits: 4.2e-6 (A, p=5; 2,271x uniform), 1.3e-4 (B, p=4; 72,065x uniform). One state in 537 million,
+  so hit@1000 is near zero for every sampler in mode A; the discriminating metric is the quality of the best portfolio
+  found within the budget.
+- Mode A: the untuned circuit's best-of-1,000 (0.9952) is slightly above greedy (0.9927) and annealing (0.9924); its most
+  likely portfolio differs from the optimum in 5 assets (PFE, SLV, VNQ, XLV, XOM); 17 long / 12 short; cuts 124 of 226
+  "together" links and 6 of 18 "opposite" links.
+- Mode B: greedy and annealing reach the exact optimum in 61 % of runs, the circuit in 11-13 %; best-of-1000 0.9993 vs 0.9998.
+- The thinned surrogate's own optimum is NOT the dense optimum in either mode (cost of thinning).
+- Conclusion for the page: at 29 qubits the transferred ramp keeps the sampling quality (0.96 / 0.98) and in mode A matches
+  the simple heuristics at equal budget, but it does not reach the exact optimum reliably; classical heuristics win on that.
+
 ## 5. Honest conclusions
 1. Under the SAME budget of 1,000 evaluations the tuned circuits find the optimum in 99-100 % of runs, restarted
    greedy in 82 % (A) / 100 % (B), a 1,000-step annealer in 47 % / 100 %, random sampling in 22 %; but the circuits

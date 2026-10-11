@@ -1,0 +1,21 @@
+long_short: energies built in 18 s; exact optimum -0.01017 (1 state), Task 3 best found -0.010168202880224644, surrogate optimum is the dense optimum: False
+  long_short LR-QAOA on the thinned model, p=1: quality 0.919, P(opt)/shot 2.78e-08, hit@1000 exact 0.000 sampled 0.000, best-of-1000 quality 0.9846, most probable = optimum: False (28.0 s)
+  long_short LR-QAOA on the thinned model, p=2: quality 0.933, P(opt)/shot 1.16e-07, hit@1000 exact 0.000 sampled 0.000, best-of-1000 quality 0.9886, most probable = optimum: False (47.3 s)
+  long_short LR-QAOA on the thinned model, p=3: quality 0.947, P(opt)/shot 1.05e-06, hit@1000 exact 0.001 sampled 0.000, best-of-1000 quality 0.9928, most probable = optimum: False (67.9 s)
+  long_short LR-QAOA on the thinned model, p=4: quality 0.953, P(opt)/shot 2.22e-06, hit@1000 exact 0.002 sampled 0.005, best-of-1000 quality 0.9942, most probable = optimum: False (86.1 s)
+  long_short LR-QAOA on the thinned model, p=5: quality 0.958, P(opt)/shot 4.23e-06, hit@1000 exact 0.004 sampled 0.010, best-of-1000 quality 0.9952, most probable = optimum: False (105.7 s)
+  long_short LR-QAOA on the dense model, p=1: quality 0.915, P(opt)/shot 1.83e-08, hit@1000 exact 0.000 sampled 0.000, best-of-1000 quality 0.9836, most probable = optimum: False (26.0 s)
+  long_short LR-QAOA on the dense model, p=2: quality 0.933, P(opt)/shot 7.96e-08, hit@1000 exact 0.000 sampled 0.000, best-of-1000 quality 0.9876, most probable = optimum: True (46.9 s)
+  long_short LR-QAOA on the dense model, p=3: quality 0.946, P(opt)/shot 7.74e-07, hit@1000 exact 0.001 sampled 0.000, best-of-1000 quality 0.9922, most probable = optimum: False (65.1 s)
+  long_short classical at the same budget: {'random sampling': {'hit_rate': 0.0, 'mean_best_quality': 0.9771744698860758}, 'greedy descent (restarted)': {'hit_rate': 0.015, 'mean_best_quality': 0.9926691596456908, 'mean_restarts': 3.925}, 'simulated annealing (one run)': {'hit_rate': 0.035, 'mean_best_quality': 0.9924084040614416}} (1 s)
+buy_or_skip: energies built in 18 s; exact optimum -0.00621 (1 state), Task 3 best found -0.0062091966716142435, surrogate optimum is the dense optimum: False
+  buy_or_skip LR-QAOA on the thinned model, p=1: quality 0.965, P(opt)/shot 3.61e-05, hit@1000 exact 0.035 sampled 0.030, best-of-1000 quality 0.9985, most probable = optimum: False (25.8 s)
+  buy_or_skip LR-QAOA on the thinned model, p=2: quality 0.975, P(opt)/shot 7.59e-05, hit@1000 exact 0.073 sampled 0.095, best-of-1000 quality 0.9991, most probable = optimum: False (44.7 s)
+  buy_or_skip LR-QAOA on the thinned model, p=3: quality 0.977, P(opt)/shot 9.25e-05, hit@1000 exact 0.088 sampled 0.105, best-of-1000 quality 0.9992, most probable = optimum: False (63.1 s)
+  buy_or_skip LR-QAOA on the thinned model, p=4: quality 0.979, P(opt)/shot 1.34e-04, hit@1000 exact 0.126 sampled 0.105, best-of-1000 quality 0.9993, most probable = optimum: False (81.5 s)
+  buy_or_skip LR-QAOA on the thinned model, p=5: quality 0.978, P(opt)/shot 1.18e-04, hit@1000 exact 0.112 sampled 0.120, best-of-1000 quality 0.9993, most probable = optimum: False (99.5 s)
+  buy_or_skip LR-QAOA on the dense model, p=1: quality 0.965, P(opt)/shot 3.62e-05, hit@1000 exact 0.036 sampled 0.040, best-of-1000 quality 0.9986, most probable = optimum: False (24.7 s)
+  buy_or_skip LR-QAOA on the dense model, p=2: quality 0.973, P(opt)/shot 6.50e-05, hit@1000 exact 0.063 sampled 0.055, best-of-1000 quality 0.9990, most probable = optimum: False (43.6 s)
+  buy_or_skip LR-QAOA on the dense model, p=3: quality 0.973, P(opt)/shot 6.83e-05, hit@1000 exact 0.066 sampled 0.070, best-of-1000 quality 0.9990, most probable = optimum: False (62.0 s)
+  buy_or_skip classical at the same budget: {'random sampling': {'hit_rate': 0.0, 'mean_best_quality': 0.965191273811661}, 'greedy descent (restarted)': {'hit_rate': 0.61, 'mean_best_quality': 0.9998413389495522, 'mean_restarts': 2.975}, 'simulated annealing (one run)': {'hit_rate': 0.61, 'mean_best_quality': 0.9998820573059937}} (1 s)
+saved: results/stocks_qaoa_n29.json in 956.7 s

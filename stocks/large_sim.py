@@ -114,14 +114,17 @@ def metrics(probabilities, energies, e_min, e_max, tolerance, shots=BUDGET, with
             "most_probable_energy": float(energies[top]), "probability_sum": total}
 
 
-def sampled_hits(probabilities, energies, e_min, tolerance, budget, seeds, rng):
-    """hit@budget measured by sampling `seeds` repetitions of `budget` shots from the exact distribution."""
+def sampled_hits(probabilities, energies, e_min, e_max, tolerance, budget, seeds, rng):
+    """`seeds` repetitions of `budget` shots from the exact distribution: hit rate of the optimum and the mean
+    quality of the best portfolio found (the metric that still discriminates when the optimum itself is unreachable)."""
     cdf = np.cumsum(probabilities, dtype=np.float64)
     draws = rng.random(seeds * budget) * cdf[-1]
     index = np.searchsorted(cdf, draws)
     del cdf
-    best = energies[index].reshape(seeds, budget).min(axis=1)
-    return float(np.mean(best <= e_min + tolerance))
+    best = energies[index].reshape(seeds, budget).min(axis=1).astype(np.float64)
+    return {"hit_rate": float(np.mean(best <= e_min + tolerance)),
+            "mean_best_quality": float(np.mean((e_max - best) / (e_max - e_min))),
+            "best_quality_min": float(np.min((e_max - best) / (e_max - e_min)))}
 
 
 def top_states(probabilities, energies, k, n, tickers, mode):
@@ -132,16 +135,20 @@ def top_states(probabilities, energies, k, n, tickers, mode):
              "assignment": ising.describe(spins_of_index(int(i), n), tickers, mode)} for i in order]
 
 
-def classical_at_budget(model, e_min, tolerance, budget, seeds):
+def classical_at_budget(model, e_min, e_max, tolerance, budget, seeds):
+    """Same budget as the circuits: hit rate of the optimum and mean quality of the best portfolio found."""
+    def summary(best_energies, extra=None):
+        best = np.asarray(best_energies, dtype=np.float64)
+        out = {"hit_rate": float(np.mean(best <= e_min + tolerance)), "mean_best_quality": float(np.mean((e_max - best) / (e_max - e_min)))}
+        return {**out, **(extra or {})}
     rows = {}
     rng = np.random.default_rng(2026)
-    rows["random sampling"] = float(np.mean([fair_budget.random_within_budget(model, budget, rng)[0] <= e_min + tolerance for _ in range(seeds)]))
+    rows["random sampling"] = summary([fair_budget.random_within_budget(model, budget, rng)[0] for _ in range(seeds)])
     rng = np.random.default_rng(2027)
     greedy = [fair_budget.greedy_within_budget(model, budget, rng) for _ in range(seeds)]
-    rows["greedy descent (restarted)"] = float(np.mean([g[0] <= e_min + tolerance for g in greedy]))
-    rows["greedy mean restarts"] = float(np.mean([g[2] for g in greedy]))
+    rows["greedy descent (restarted)"] = summary([g[0] for g in greedy], {"mean_restarts": float(np.mean([g[2] for g in greedy]))})
     rng = np.random.default_rng(2028)
-    rows["simulated annealing (one run)"] = float(np.mean([fair_budget.annealing_within_budget(model, budget, rng)[0] <= e_min + tolerance for _ in range(seeds)]))
+    rows["simulated annealing (one run)"] = summary([fair_budget.annealing_within_budget(model, budget, rng)[0] for _ in range(seeds)])
     return rows
 
 
@@ -193,7 +200,7 @@ def run(n=29, eta=1.0, lr_p=LR_P_VALUES, dense_p=DENSE_P_VALUES, budget=BUDGET, 
                 gammas, betas = qaoa.lr_schedule(p, lr[str(p)]["best_dgamma"], lr[str(p)]["best_dbeta"])
                 probabilities = sims[kind].probabilities(gammas, betas)
                 m = metrics(probabilities, e_dense, e_min, e_max, tolerance, budget)
-                m["hit_at_budget_sampled"] = sampled_hits(probabilities, e_dense, e_min, tolerance, budget, seeds, np.random.default_rng(2029))
+                m["sampled"] = sampled_hits(probabilities, e_dense, e_min, e_max, tolerance, budget, seeds, np.random.default_rng(2029))
                 m["surrogate_expectation"] = dot64(probabilities, e_thin) / m["probability_sum"] if kind == "thinned" else None
                 m["top_states"] = top_states(probabilities, e_dense, TOP_STATES, n, tickers, mode)
                 m.update({"p": p, "dgamma": lr[str(p)]["best_dgamma"], "dbeta": lr[str(p)]["best_dbeta"], "circuit_model": kind,
@@ -201,12 +208,12 @@ def run(n=29, eta=1.0, lr_p=LR_P_VALUES, dense_p=DENSE_P_VALUES, budget=BUDGET, 
                 del probabilities
                 block["circuits"][f"{kind}_p{p}"] = m
                 log(f"  {mode} LR-QAOA on the {kind} model, p={p}: quality {m['quality']:.3f}, P(opt)/shot {m['p_optimum']:.2e}, "
-                    f"hit@{budget} exact {m['p_optimum_in_shots']:.3f} sampled {m['hit_at_budget_sampled']:.3f}, "
+                    f"hit@{budget} exact {m['p_optimum_in_shots']:.3f} sampled {m['sampled']['hit_rate']:.3f}, best-of-{budget} quality {m['sampled']['mean_best_quality']:.4f}, "
                     f"most probable = optimum: {m['most_probable_state'] == opt_dense} ({m['seconds']} s)")
         del sims, e_thin
         t2 = time.time()
-        block["classical_same_budget"] = classical_at_budget(dense_model, e_min, tolerance, budget, seeds)
-        block["classical_task3_hit_rates"] = {name: v["hit_rate_per_try"] for name, v in next(
+        block["classical_same_budget"] = classical_at_budget(dense_model, e_min, e_max, tolerance, budget, seeds)
+        block["classical_task3_hit_rates"] = {name: v["hit_rate_mean"] for name, v in next(
             r for r in task3["results"] if r["n"] == n and r["mode"] == mode and r["eta"] == eta and not r["balance"])["solvers"].items()}
         log(f"  {mode} classical at the same budget: {block['classical_same_budget']} ({time.time() - t2:.0f} s)")
         del e_dense

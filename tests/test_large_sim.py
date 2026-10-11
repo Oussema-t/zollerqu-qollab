@@ -40,8 +40,9 @@ class LargeSimTests(unittest.TestCase):
         self.assertAlmostEqual(m["p_optimum"], 0.1, places=6)
         self.assertEqual(m["most_probable_state"], 3)
         self.assertAlmostEqual(large_sim.dot64(probabilities, energies), 2.0, places=6)
-        hits = large_sim.sampled_hits(probabilities, energies, 0.0, 1e-6, 50, 20, np.random.default_rng(0))
-        self.assertGreater(hits, 0.9)  # 50 shots at p = 0.1 find state 0 almost always
+        hits = large_sim.sampled_hits(probabilities, energies, 0.0, 3.0, 1e-6, 50, 20, np.random.default_rng(0))
+        self.assertGreater(hits["hit_rate"], 0.9)  # 50 shots at p = 0.1 find state 0 almost always
+        self.assertGreater(hits["mean_best_quality"], 0.95)
 
     def test_group_boundary_sizes(self):
         """n not divisible by GROUP (12 = 4+4+4, 13 = 4+4+4+1, 14 = 4+4+4+2) must all work."""

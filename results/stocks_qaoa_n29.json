@@ -1,0 +1,3863 @@
+{
+ "n": 29,
+ "eta": 1.0,
+ "budget": 1000,
+ "repetitions": 200,
+ "tickers": [
+  "AAPL",
+  "GLD",
+  "XOM",
+  "JPM",
+  "TLT",
+  "JNJ",
+  "PG",
+  "XLU",
+  "VNQ",
+  "FCX",
+  "MSFT",
+  "SLV",
+  "CVX",
+  "BAC",
+  "IEF",
+  "PFE",
+  "KO",
+  "INTC",
+  "GDX",
+  "SLB",
+  "GS",
+  "SHY",
+  "XLV",
+  "WMT",
+  "CSCO",
+  "NEM",
+  "USO",
+  "XLF",
+  "XLK"
+ ],
+ "keep_fraction_thinned": 0.6,
+ "kept_links": 244,
+ "total_links": 406,
+ "timestamp_utc": "2026-10-11T00:30:37Z",
+ "note": "exact statevector (complex64) of LR-QAOA with the ramp tuned at 12 assets (not re-tuned); exact optimum by enumerating all 2^n energies; classical heuristics under the same 1,000-evaluation budget; noiseless",
+ "modes": {
+  "long_short": {
+   "exact_dense": {
+    "e_min": -0.010168202221393585,
+    "e_max": 0.350227952003479,
+    "n_optimal": 1,
+    "states": 536870912,
+    "bitstring": "01111000101101010000010000100",
+    "assignment": {
+     "long": [
+      "AAPL",
+      "GLD",
+      "JPM",
+      "TLT",
+      "JNJ",
+      "PG",
+      "VNQ",
+      "FCX",
+      "MSFT",
+      "SLV",
+      "CVX",
+      "IEF",
+      "KO",
+      "SLB",
+      "SHY",
+      "XLV",
+      "WMT",
+      "XLK"
+     ],
+     "short": [
+      "XOM",
+      "XLU",
+      "BAC",
+      "PFE",
+      "INTC",
+      "GDX",
+      "GS",
+      "CSCO",
+      "NEM",
+      "USO",
+      "XLF"
+     ]
+    }
+   },
+   "exact_thinned_surrogate": {
+    "e_min_surrogate": -0.019908849149942398,
+    "dense_score_of_surrogate_optimum": -0.004813259467482567,
+    "same_state_as_dense_optimum": false
+   },
+   "task3_best_found_dense": -0.010168202880224644,
+   "task3_found_exact_optimum": true,
+   "uniform": {
+    "p_optimum": 1.862645149230957e-09,
+    "quality": 0.8761058905357025
+   },
+   "circuits": {
+    "thinned_p1": {
+     "expectation": 0.018934720004785178,
+     "quality": 0.9192474118133355,
+     "p_optimum": 2.775920894482127e-08,
+     "p_within_1pct": 9.115532370194256e-05,
+     "p_optimum_in_shots": 2.7758824033496943e-05,
+     "most_probable_state": 257304960,
+     "most_probable_probability": 4.0670406127026556e-08,
+     "most_probable_energy": -0.004813259467482567,
+     "probability_sum": 1.0000002954813456,
+     "sampled": {
+      "hit_rate": 0.0,
+      "mean_best_quality": 0.9845618786504927,
+      "best_quality_min": 0.9754282077732753
+     },
+     "surrogate_expectation": 0.01798247072734219,
+     "top_states": [
+      {
+       "index": 257304960,
+       "probability": 4.067041814437289e-08,
+       "energy": -0.004813259467482567,
+       "bitstring": "01111010101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 259402112,
+       "probability": 4.000796138825535e-08,
+       "energy": -0.004544752184301615,
+       "bitstring": "01111011101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "SHY",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 257302912,
+       "probability": 3.947781124225003e-08,
+       "energy": -0.0076713659800589085,
+       "bitstring": "01111010101100010000110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 259400064,
+       "probability": 3.8846089012167795e-08,
+       "energy": -0.00740102119743824,
+       "bitstring": "01111011101100010000110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "SHY",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 223750528,
+       "probability": 3.788972691154413e-08,
+       "energy": -0.004379235208034515,
+       "bitstring": "01101010101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "NEM",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "USO",
+         "XLF"
+        ]
+       }
+      }
+     ],
+     "p": 1,
+     "dgamma": 0.3,
+     "dbeta": -0.3,
+     "circuit_model": "thinned",
+     "seconds": 28.0
+    },
+    "thinned_p2": {
+     "expectation": 0.013820807743573155,
+     "quality": 0.9334371089043348,
+     "p_optimum": 1.1630631739523421e-07,
+     "p_within_1pct": 0.0003209790537914229,
+     "p_optimum_in_shots": 0.00011629956080005943,
+     "most_probable_state": 257304960,
+     "most_probable_probability": 2.5924699543243557e-07,
+     "most_probable_energy": -0.004813259467482567,
+     "probability_sum": 1.0000007948077574,
+     "sampled": {
+      "hit_rate": 0.0,
+      "mean_best_quality": 0.9885516706547027,
+      "best_quality_min": 0.9818627987042301
+     },
+     "surrogate_expectation": 0.0122596790350177,
+     "top_states": [
+      {
+       "index": 257304960,
+       "probability": 2.5924720148395863e-07,
+       "energy": -0.004813259467482567,
+       "bitstring": "01111010101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 259402112,
+       "probability": 2.5022703198374074e-07,
+       "energy": -0.004544752184301615,
+       "bitstring": "01111011101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "SHY",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 265693568,
+       "probability": 2.148995434936296e-07,
+       "energy": -0.002700995886698365,
+       "bitstring": "01111110101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 257302912,
+       "probability": 2.1333615052299137e-07,
+       "energy": -0.0076713659800589085,
+       "bitstring": "01111010101100010000110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 261499264,
+       "probability": 2.1283167939145642e-07,
+       "energy": -0.005743477493524551,
+       "bitstring": "01111100101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      }
+     ],
+     "p": 2,
+     "dgamma": 0.5,
+     "dbeta": -0.3,
+     "circuit_model": "thinned",
+     "seconds": 47.3
+    },
+    "thinned_p3": {
+     "expectation": 0.008830117864276626,
+     "quality": 0.9472848978465624,
+     "p_optimum": 1.0537498339545532e-06,
+     "p_within_1pct": 0.0024238526323504725,
+     "p_optimum_in_shots": 0.0010531953891601553,
+     "most_probable_state": 257304960,
+     "most_probable_probability": 5.345953880958982e-06,
+     "most_probable_energy": -0.004813259467482567,
+     "probability_sum": 1.0000002630737592,
+     "sampled": {
+      "hit_rate": 0.0,
+      "mean_best_quality": 0.9927846989880085,
+      "best_quality_min": 0.9871332046130502
+     },
+     "surrogate_expectation": 0.006940785050861731,
+     "top_states": [
+      {
+       "index": 257304960,
+       "probability": 5.345955287339166e-06,
+       "energy": -0.004813259467482567,
+       "bitstring": "01111010101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 259402112,
+       "probability": 4.931432158628013e-06,
+       "energy": -0.004544752184301615,
+       "bitstring": "01111011101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "SHY",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253110656,
+       "probability": 4.538108896667836e-06,
+       "energy": -0.006150068715214729,
+       "bitstring": "01111000101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 521546112,
+       "probability": 4.237023404130014e-06,
+       "energy": -0.0032793686259537935,
+       "bitstring": "11111000101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 257302912,
+       "probability": 4.217332389089279e-06,
+       "energy": -0.0076713659800589085,
+       "bitstring": "01111010101100010000110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      }
+     ],
+     "p": 3,
+     "dgamma": 0.7,
+     "dbeta": -0.4,
+     "circuit_model": "thinned",
+     "seconds": 67.9
+    },
+    "thinned_p4": {
+     "expectation": 0.006751703546922195,
+     "quality": 0.9530519247501226,
+     "p_optimum": 2.220487074244009e-06,
+     "p_within_1pct": 0.00470932746388248,
+     "p_optimum_in_shots": 0.0022180260763011717,
+     "most_probable_state": 257304960,
+     "most_probable_probability": 1.29669032212562e-05,
+     "most_probable_energy": -0.004813259467482567,
+     "probability_sum": 1.0000005703748296,
+     "sampled": {
+      "hit_rate": 0.005,
+      "mean_best_quality": 0.9942369110841347,
+      "best_quality_min": 0.9898461343591759
+     },
+     "surrogate_expectation": 0.0045313165042566664,
+     "top_states": [
+      {
+       "index": 257304960,
+       "probability": 1.2966910617251415e-05,
+       "energy": -0.004813259467482567,
+       "bitstring": "01111010101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253110656,
+       "probability": 1.2008456906187348e-05,
+       "energy": -0.006150068715214729,
+       "bitstring": "01111000101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 259402112,
+       "probability": 1.1738507964764722e-05,
+       "energy": -0.004544752184301615,
+       "bitstring": "01111011101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "SHY",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 255207808,
+       "probability": 1.0867180208151694e-05,
+       "energy": -0.00583375059068203,
+       "bitstring": "01111001101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "SHY",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 257302912,
+       "probability": 1.0819284398166928e-05,
+       "energy": -0.0076713659800589085,
+       "bitstring": "01111010101100010000110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      }
+     ],
+     "p": 4,
+     "dgamma": 0.7,
+     "dbeta": -0.4,
+     "circuit_model": "thinned",
+     "seconds": 86.1
+    },
+    "thinned_p5": {
+     "expectation": 0.004887572802052506,
+     "quality": 0.9582243737982512,
+     "p_optimum": 4.23018567307042e-06,
+     "p_within_1pct": 0.008377879879609812,
+     "p_optimum_in_shots": 0.004221259949984346,
+     "most_probable_state": 257304960,
+     "most_probable_probability": 2.7797488580959895e-05,
+     "most_probable_energy": -0.004813259467482567,
+     "probability_sum": 1.000000787937783,
+     "sampled": {
+      "hit_rate": 0.01,
+      "mean_best_quality": 0.9951715757076789,
+      "best_quality_min": 0.9910769274866986
+     },
+     "surrogate_expectation": 0.0022866072519945853,
+     "top_states": [
+      {
+       "index": 257304960,
+       "probability": 2.7797510483651422e-05,
+       "energy": -0.004813259467482567,
+       "bitstring": "01111010101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253110656,
+       "probability": 2.6694588086684234e-05,
+       "energy": -0.006150068715214729,
+       "bitstring": "01111000101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253108608,
+       "probability": 2.5716737582115456e-05,
+       "energy": -0.007807847112417221,
+       "bitstring": "01111000101100010000110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 259402112,
+       "probability": 2.46902145590866e-05,
+       "energy": -0.004544752184301615,
+       "bitstring": "01111011101100010100110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "SLV",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "SHY",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 257302912,
+       "probability": 2.430813037790358e-05,
+       "energy": -0.0076713659800589085,
+       "bitstring": "01111010101100010000110000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "PFE",
+         "KO",
+         "SLB",
+         "SHY",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "VNQ",
+         "BAC",
+         "INTC",
+         "GDX",
+         "GS",
+         "XLV",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      }
+     ],
+     "p": 5,
+     "dgamma": 0.7,
+     "dbeta": -0.4,
+     "circuit_model": "thinned",
+     "seconds": 105.7
+    },
+    "dense_p1": {
+     "expectation": 0.02047579526832355,
+     "quality": 0.9149713526893061,
+     "p_optimum": 1.8320317649098146e-08,
+     "p_within_1pct": 6.368193615988091e-05,
+     "p_optimum_in_shots": 1.8320149948070075e-05,
+     "most_probable_state": 236234304,
+     "most_probable_probability": 1.8600454369364764e-08,
+     "most_probable_energy": -0.007404781877994537,
+     "probability_sum": 1.0000002940611339,
+     "sampled": {
+      "hit_rate": 0.0,
+      "mean_best_quality": 0.9836443169139102,
+      "best_quality_min": 0.9753520330947406
+     },
+     "surrogate_expectation": null,
+     "top_states": [
+      {
+       "index": 236234304,
+       "probability": 1.8600459839035466e-08,
+       "energy": -0.007404781877994537,
+       "bitstring": "01110000101001010011001000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "XLU",
+         "VNQ",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "XLK"
+        ],
+        "short": [
+         "PG",
+         "FCX",
+         "MSFT",
+         "BAC",
+         "PFE",
+         "GDX",
+         "GS",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 185901572,
+       "probability": 1.8396002943177336e-08,
+       "energy": -0.005558639764785767,
+       "bitstring": "01011000101001010001000000100",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "USO",
+         "XLK"
+        ],
+        "short": [
+         "XOM",
+         "FCX",
+         "BAC",
+         "PFE",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 521445508,
+       "probability": 1.8366026921512457e-08,
+       "energy": -0.009884837083518505,
+       "bitstring": "11111000101001010000010000100",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT"
+        ],
+        "short": [
+         "XOM",
+         "XLU",
+         "BAC",
+         "PFE",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 238331456,
+       "probability": 1.8322852568530834e-08,
+       "energy": -0.007035228423774242,
+       "bitstring": "01110001101001010011001000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "XLU",
+         "VNQ",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SLB",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "XLK"
+        ],
+        "short": [
+         "PG",
+         "FCX",
+         "MSFT",
+         "BAC",
+         "PFE",
+         "GDX",
+         "GS",
+         "SHY",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253141124,
+       "probability": 1.8320323036391528e-08,
+       "energy": -0.010168202221393585,
+       "bitstring": "01111000101101010000010000100",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XOM",
+         "XLU",
+         "BAC",
+         "PFE",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      }
+     ],
+     "p": 1,
+     "dgamma": 0.3,
+     "dbeta": -0.3,
+     "circuit_model": "dense",
+     "seconds": 26.0
+    },
+    "dense_p2": {
+     "expectation": 0.013869682896088436,
+     "quality": 0.9333014938264759,
+     "p_optimum": 7.957302071235418e-08,
+     "p_within_1pct": 0.0002373964528817396,
+     "p_optimum_in_shots": 7.956985804502548e-05,
+     "most_probable_state": 253141124,
+     "most_probable_probability": 7.957302071235418e-08,
+     "most_probable_energy": -0.010168202221393585,
+     "probability_sum": 1.000000796872116,
+     "sampled": {
+      "hit_rate": 0.0,
+      "mean_best_quality": 0.987565449899474,
+      "best_quality_min": 0.978096052265471
+     },
+     "surrogate_expectation": null,
+     "top_states": [
+      {
+       "index": 253141124,
+       "probability": 7.957308412187558e-08,
+       "energy": -0.010168202221393585,
+       "bitstring": "01111000101101010000010000100",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XOM",
+         "XLU",
+         "BAC",
+         "PFE",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 118923652,
+       "probability": 7.955251390967533e-08,
+       "energy": -0.00911660771816969,
+       "bitstring": "00111000101101010000110000100",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLF",
+         "XLK"
+        ],
+        "short": [
+         "XOM",
+         "XLU",
+         "VNQ",
+         "BAC",
+         "PFE",
+         "INTC",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO"
+        ]
+       }
+      },
+      {
+       "index": 119317824,
+       "probability": 7.943897628592822e-08,
+       "energy": -0.008894412778317928,
+       "bitstring": "00111000111001010010101000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "XLU",
+         "FCX",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLF",
+         "XLK"
+        ],
+        "short": [
+         "PG",
+         "VNQ",
+         "MSFT",
+         "BAC",
+         "PFE",
+         "GDX",
+         "SLB",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO"
+        ]
+       }
+      },
+      {
+       "index": 261922944,
+       "probability": 7.92976209140761e-08,
+       "energy": -0.009716766886413097,
+       "bitstring": "01111100111001010000010000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SHY",
+         "XLV",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "BAC",
+         "PFE",
+         "GDX",
+         "SLB",
+         "GS",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 521445508,
+       "probability": 7.914785982165995e-08,
+       "energy": -0.009884837083518505,
+       "bitstring": "11111000101001010000010000100",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT"
+        ],
+        "short": [
+         "XOM",
+         "XLU",
+         "BAC",
+         "PFE",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 2,
+     "dgamma": 0.5,
+     "dbeta": -0.3,
+     "circuit_model": "dense",
+     "seconds": 46.9
+    },
+    "dense_p3": {
+     "expectation": 0.009137899081753557,
+     "quality": 0.9464308897949535,
+     "p_optimum": 7.740842192369448e-07,
+     "p_within_1pct": 0.0017379490771603431,
+     "p_optimum_in_shots": 0.000773784992752713,
+     "most_probable_state": 261922944,
+     "most_probable_probability": 8.254494544630987e-07,
+     "most_probable_energy": -0.009716766886413097,
+     "probability_sum": 1.0000002497561113,
+     "sampled": {
+      "hit_rate": 0.0,
+      "mean_best_quality": 0.9922478008019507,
+      "best_quality_min": 0.9860826982338152
+     },
+     "surrogate_expectation": null,
+     "top_states": [
+      {
+       "index": 261922944,
+       "probability": 8.254496606241446e-07,
+       "energy": -0.009716766886413097,
+       "bitstring": "01111100111001010000010000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SHY",
+         "XLV",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "BAC",
+         "PFE",
+         "GDX",
+         "SLB",
+         "GS",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253535360,
+       "probability": 8.25173003704549e-07,
+       "energy": -0.009970312938094139,
+       "bitstring": "01111000111001010010010000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "VNQ",
+         "FCX",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XLU",
+         "MSFT",
+         "BAC",
+         "PFE",
+         "GDX",
+         "SLB",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 261923840,
+       "probability": 8.196936391868803e-07,
+       "energy": -0.009951802901923656,
+       "bitstring": "01111100111001010010000000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SHY",
+         "XLV",
+         "XLK"
+        ],
+        "short": [
+         "MSFT",
+         "BAC",
+         "PFE",
+         "GDX",
+         "SLB",
+         "GS",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253010308,
+       "probability": 7.980854661582271e-07,
+       "energy": -0.0096526388078928,
+       "bitstring": "01111000101001010000110000100",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "PG",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "INTC",
+         "SLB",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "XOM",
+         "XLU",
+         "VNQ",
+         "BAC",
+         "PFE",
+         "GDX",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      },
+      {
+       "index": 253665344,
+       "probability": 7.908030852377124e-07,
+       "energy": -0.00973015557974577,
+       "bitstring": "01111000111101010000001000000",
+       "assignment": {
+        "long": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "TLT",
+         "JNJ",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "IEF",
+         "KO",
+         "SHY",
+         "XLV",
+         "WMT",
+         "XLK"
+        ],
+        "short": [
+         "PG",
+         "BAC",
+         "PFE",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF"
+        ]
+       }
+      }
+     ],
+     "p": 3,
+     "dgamma": 0.7,
+     "dbeta": -0.4,
+     "circuit_model": "dense",
+     "seconds": 65.1
+    }
+   },
+   "classical_same_budget": {
+    "random sampling": {
+     "hit_rate": 0.0,
+     "mean_best_quality": 0.9771744698860758
+    },
+    "greedy descent (restarted)": {
+     "hit_rate": 0.015,
+     "mean_best_quality": 0.9926691596456908,
+     "mean_restarts": 3.925
+    },
+    "simulated annealing (one run)": {
+     "hit_rate": 0.035,
+     "mean_best_quality": 0.9924084040614416
+    }
+   },
+   "classical_task3_hit_rates": {
+    "random": 0.0,
+    "greedy": 0.18888888888888888,
+    "annealing": 1.0
+   }
+  },
+  "buy_or_skip": {
+   "exact_dense": {
+    "e_min": -0.0062092021107673645,
+    "e_max": 0.3056734800338745,
+    "n_optimal": 1,
+    "states": 536870912,
+    "bitstring": "11111110111101011111111001100",
+    "assignment": {
+     "buy": [
+      "AAPL",
+      "GLD",
+      "TLT",
+      "JNJ",
+      "IEF",
+      "KO",
+      "SHY"
+     ],
+     "skip": [
+      "XOM",
+      "JPM",
+      "PG",
+      "XLU",
+      "VNQ",
+      "FCX",
+      "MSFT",
+      "SLV",
+      "CVX",
+      "BAC",
+      "PFE",
+      "INTC",
+      "GDX",
+      "SLB",
+      "GS",
+      "XLV",
+      "WMT",
+      "CSCO",
+      "NEM",
+      "USO",
+      "XLF",
+      "XLK"
+     ]
+    }
+   },
+   "exact_thinned_surrogate": {
+    "e_min_surrogate": -0.01319500058889389,
+    "dense_score_of_surrogate_optimum": -0.005249476991593838,
+    "same_state_as_dense_optimum": false
+   },
+   "task3_best_found_dense": -0.0062091966716142435,
+   "task3_found_exact_optimum": true,
+   "uniform": {
+    "p_optimum": 1.862645149230957e-09,
+    "quality": 0.7322799687216244
+   },
+   "circuits": {
+    "thinned_p1": {
+     "expectation": 0.004593234448919567,
+     "quality": 0.9653637820304588,
+     "p_optimum": 3.608740161927018e-05,
+     "p_within_1pct": 0.04387357156605434,
+     "p_optimum_in_shots": 0.035444642042027796,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.00048613841245387325,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 1.0000002596717465,
+     "sampled": {
+      "hit_rate": 0.03,
+      "mean_best_quality": 0.9985346300428438,
+      "best_quality_min": 0.996101340092023
+     },
+     "surrogate_expectation": 0.00041092017072336383,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.0004861385386902839,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.00046182554797269404,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534773743,
+       "probability": 0.00037437729770317674,
+       "energy": -0.0006538396701216698,
+       "bitstring": "11111110111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.000361500569852069,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536870895,
+       "probability": 0.0003553816641215235,
+       "energy": -0.0005272179841995239,
+       "bitstring": "11111111111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 1,
+     "dgamma": 1.0,
+     "dbeta": -0.7,
+     "circuit_model": "thinned",
+     "seconds": 25.8
+    },
+    "thinned_p2": {
+     "expectation": 0.0016218929888165055,
+     "quality": 0.974890894724472,
+     "p_optimum": 7.588197924907011e-05,
+     "p_within_1pct": 0.07975442809801768,
+     "p_optimum_in_shots": 0.07307707222549198,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.0007154047466410962,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 0.9999999218175007,
+     "sampled": {
+      "hit_rate": 0.095,
+      "mean_best_quality": 0.9990549387875973,
+      "best_quality_min": 0.9970826409988394
+     },
+     "surrogate_expectation": -0.0034431322117512196,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.0007154046907089651,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.0006642518565058708,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.0005737009923905134,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854509,
+       "probability": 0.0005326799000613391,
+       "energy": -0.0015239627100527287,
+       "bitstring": "11111111111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534773743,
+       "probability": 0.0005107683828100562,
+       "energy": -0.0006538396701216698,
+       "bitstring": "11111110111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 2,
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "circuit_model": "thinned",
+     "seconds": 44.7
+    },
+    "thinned_p3": {
+     "expectation": 0.0010713303308530664,
+     "quality": 0.9766561824095,
+     "p_optimum": 9.24561282819763e-05,
+     "p_within_1pct": 0.09410166085750693,
+     "p_optimum_in_shots": 0.0883146893944795,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.0005730438059434985,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 1.000000038313479,
+     "sampled": {
+      "hit_rate": 0.105,
+      "mean_best_quality": 0.9991582543695757,
+      "best_quality_min": 0.9972899128372222
+     },
+     "surrogate_expectation": -0.004180955418343437,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.0005730438278988004,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.0005254891002550721,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.000490581092890352,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854509,
+       "probability": 0.0004498666967265308,
+       "energy": -0.0015239627100527287,
+       "bitstring": "11111111111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534773743,
+       "probability": 0.00039736845064908266,
+       "energy": -0.0006538396701216698,
+       "bitstring": "11111110111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 3,
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "circuit_model": "thinned",
+     "seconds": 63.1
+    },
+    "thinned_p4": {
+     "expectation": 0.00035149963102810403,
+     "quality": 0.978964199946335,
+     "p_optimum": 0.00013423121162620257,
+     "p_within_1pct": 0.12095599503990931,
+     "p_optimum_in_shots": 0.12562000545013463,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.0009566447615598019,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 1.0000007995630216,
+     "sampled": {
+      "hit_rate": 0.105,
+      "mean_best_quality": 0.9993466125313947,
+      "best_quality_min": 0.997787227588698
+     },
+     "surrogate_expectation": -0.005360006731095427,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.0009566455264575779,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.0008671038085594773,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.0008108285837806761,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854509,
+       "probability": 0.0007349314400926232,
+       "energy": -0.0015239627100527287,
+       "bitstring": "11111111111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534773743,
+       "probability": 0.0006311287288554013,
+       "energy": -0.0006538396701216698,
+       "bitstring": "11111110111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 4,
+     "dgamma": 1.4,
+     "dbeta": -0.5,
+     "circuit_model": "thinned",
+     "seconds": 81.5
+    },
+    "thinned_p5": {
+     "expectation": 0.0007286019559393489,
+     "quality": 0.9777550839982544,
+     "p_optimum": 0.0001183611031950788,
+     "p_within_1pct": 0.11088908111636255,
+     "p_optimum_in_shots": 0.11163102368456823,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.0005604912608470504,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 1.0000003593117264,
+     "sampled": {
+      "hit_rate": 0.12,
+      "mean_best_quality": 0.9993200689688783,
+      "best_quality_min": 0.9978649655394499
+     },
+     "surrogate_expectation": -0.004800889681625311,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.000560491462238133,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.0005067460588179529,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.0005053319036960602,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854509,
+       "probability": 0.00045687257079407573,
+       "energy": -0.0015239627100527287,
+       "bitstring": "11111111111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757295,
+       "probability": 0.00038911166484467685,
+       "energy": -0.0017189313657581806,
+       "bitstring": "11111110111111011111110101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "PG",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 5,
+     "dgamma": 1.3,
+     "dbeta": -0.5,
+     "circuit_model": "thinned",
+     "seconds": 99.5
+    },
+    "dense_p1": {
+     "expectation": 0.00469194006234274,
+     "quality": 0.9650472988812682,
+     "p_optimum": 3.618120690294337e-05,
+     "p_within_1pct": 0.044206570618271095,
+     "p_optimum_in_shots": 0.03553512145659976,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.0005009863392253441,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 1.0000002589948505,
+     "sampled": {
+      "hit_rate": 0.04,
+      "mean_best_quality": 0.9986137766636125,
+      "best_quality_min": 0.9963290923105094
+     },
+     "surrogate_expectation": null,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.0005009864689782262,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.00047553039621561766,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534773743,
+       "probability": 0.00038531620521098375,
+       "energy": -0.0006538396701216698,
+       "bitstring": "11111110111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.00036594594712369144,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536870895,
+       "probability": 0.0003655265609268099,
+       "energy": -0.0005272179841995239,
+       "bitstring": "11111111111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 1,
+     "dgamma": 1.0,
+     "dbeta": -0.7,
+     "circuit_model": "dense",
+     "seconds": 24.7
+    },
+    "dense_p2": {
+     "expectation": 0.0022103582005473126,
+     "quality": 0.9730040787984183,
+     "p_optimum": 6.500418812927261e-05,
+     "p_within_1pct": 0.07175779653750076,
+     "p_optimum_in_shots": 0.06293844105958801,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.0004433107097322284,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 0.9999999342089597,
+     "sampled": {
+      "hit_rate": 0.055,
+      "mean_best_quality": 0.9989605487813182,
+      "best_quality_min": 0.9970665905442129
+     },
+     "surrogate_expectation": null,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.0004433106805663556,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.0004196160880383104,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.00034693643101491034,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534773743,
+       "probability": 0.00034184669493697584,
+       "energy": -0.0006538396701216698,
+       "bitstring": "11111110111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854509,
+       "probability": 0.0003288628940936178,
+       "energy": -0.0015239627100527287,
+       "bitstring": "11111111111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 2,
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "circuit_model": "dense",
+     "seconds": 43.6
+    },
+    "dense_p3": {
+     "expectation": 0.0021194464151811495,
+     "quality": 0.9732955723329135,
+     "p_optimum": 6.830036359156875e-05,
+     "p_within_1pct": 0.07606588147138302,
+     "p_optimum_in_shots": 0.06602228069126526,
+     "most_probable_state": 534757359,
+     "most_probable_probability": 0.0002224542284329754,
+     "most_probable_energy": -0.0009846214670687914,
+     "probability_sum": 1.0000000539267777,
+     "sampled": {
+      "hit_rate": 0.07,
+      "mean_best_quality": 0.9990431630617495,
+      "best_quality_min": 0.9971561520810288
+     },
+     "surrogate_expectation": null,
+     "top_states": [
+      {
+       "index": 534757359,
+       "probability": 0.00022245424042921513,
+       "energy": -0.0009846214670687914,
+       "bitstring": "11111110111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854511,
+       "probability": 0.00021137644944246858,
+       "energy": -0.0008751028217375278,
+       "bitstring": "11111111111111011111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534757357,
+       "probability": 0.0001877890172181651,
+       "energy": -0.0016242400743067265,
+       "bitstring": "11111110111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 536854509,
+       "probability": 0.00017869091243483126,
+       "energy": -0.0015239627100527287,
+       "bitstring": "11111111111111011111111101101",
+       "assignment": {
+        "buy": [
+         "GLD",
+         "TLT",
+         "IEF"
+        ],
+        "skip": [
+         "AAPL",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "SHY",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      },
+      {
+       "index": 534773743,
+       "probability": 0.00017752185522112995,
+       "energy": -0.0006538396701216698,
+       "bitstring": "11111110111111111111111101111",
+       "assignment": {
+        "buy": [
+         "TLT",
+         "SHY"
+        ],
+        "skip": [
+         "AAPL",
+         "GLD",
+         "XOM",
+         "JPM",
+         "JNJ",
+         "PG",
+         "XLU",
+         "VNQ",
+         "FCX",
+         "MSFT",
+         "SLV",
+         "CVX",
+         "BAC",
+         "IEF",
+         "PFE",
+         "KO",
+         "INTC",
+         "GDX",
+         "SLB",
+         "GS",
+         "XLV",
+         "WMT",
+         "CSCO",
+         "NEM",
+         "USO",
+         "XLF",
+         "XLK"
+        ]
+       }
+      }
+     ],
+     "p": 3,
+     "dgamma": 1.4,
+     "dbeta": -0.6,
+     "circuit_model": "dense",
+     "seconds": 62.0
+    }
+   },
+   "classical_same_budget": {
+    "random sampling": {
+     "hit_rate": 0.0,
+     "mean_best_quality": 0.965191273811661
+    },
+    "greedy descent (restarted)": {
+     "hit_rate": 0.61,
+     "mean_best_quality": 0.9998413389495522,
+     "mean_restarts": 2.975
+    },
+    "simulated annealing (one run)": {
+     "hit_rate": 0.61,
+     "mean_best_quality": 0.9998820573059937
+    }
+   },
+   "classical_task3_hit_rates": {
+    "random": 0.0,
+    "greedy": 0.5333333333333333,
+    "annealing": 0.6777777777777777
+   }
+  }
+ },
+ "seconds": 956.7
+}
