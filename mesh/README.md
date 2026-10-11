@@ -95,6 +95,8 @@ Qollab's IonQ simulators accept **one circuit per job**. So `qollab/main.py` is 
 - Grades every shot and prints the results next to the predictions.
 - Ends with a `RAW COUNTS` line; save it as `qollab/results_ionq/<date>_<circuit>.json`.
 
+**Recorded run (IonQ Forte 1 noise model on Qollab, 2026-10-11):** `varqite_zy_equal`, 1,000 shots. 27.8 % (±1.4 %) of the shots were the exact optimum, about 570× random guessing (0.05 %). The noiseless prediction was 75 % and our noise estimates 54–55 %, so the real noise is about twice as strong as we estimated. Counts and the Qollab console export are in `qollab/results_ionq/`.
+
 **How the circuits were chosen** (from the existing 12-qubit results, no new training): `scripts/ionq_selection_extract.py` → `scripts/ionq_selection_evaluate.py` → `qollab/selected_circuits.json` → `scripts/make_qollab_main.py`. The full table of 104 candidates is in [`results/ionq_selection/candidates_table.md`](results/ionq_selection/candidates_table.md). It gives noiseless scores, two-qubit gates measured on IonQ Forte 1, the crude estimate, an approximate Aer noise check and samples to solution.
 
 **Earlier versions**
