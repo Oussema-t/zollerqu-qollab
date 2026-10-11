@@ -1,0 +1,62 @@
+{
+  "n_sweep_circuits": 31,
+  "max_dev_per_M": {
+    "1": 0.028143496990678973,
+    "4": 0.01527481910865014,
+    "16": 0.025625564903189568
+  },
+  "max_dev_overall": 0.028143496990678973,
+  "fitted_c": 7.305685852755278,
+  "calls_over_sqrtN_per_m": {
+    "6": 6.893910356249202,
+    "8": 7.673367671926807,
+    "10": 7.4182047629303085,
+    "12": 7.218433194106445
+  },
+  "dh_best_cost": 62.733103854467736,
+  "dh_best_sites": [
+    2,
+    3,
+    4,
+    7
+  ],
+  "dh_oracle_calls": 170,
+  "dh_grover_iterations": 128,
+  "dh_rounds": 41,
+  "N": 495,
+  "brute_force": {
+    "cost": 62.733103854467736,
+    "sites": [
+      2,
+      3,
+      4,
+      7
+    ],
+    "evaluations": 495
+  },
+  "greedy": {
+    "cost": 64.5107159303427,
+    "sites": [
+      1,
+      2,
+      4,
+      9
+    ],
+    "evaluations": 42
+  },
+  "local_search": {
+    "cost": 62.733103854467736,
+    "sites": [
+      2,
+      3,
+      4,
+      7
+    ],
+    "local_minima": 5,
+    "evaluations": 1876,
+    "restarts": 20
+  },
+  "total_population": 205865.0,
+  "n_blocks": 158,
+  "min_site_site_time": 4.1
+}
