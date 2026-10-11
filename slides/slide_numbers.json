@@ -1,0 +1,304 @@
+{
+ "note": "every number shown on the slides, with the file and key it was read from (or the formula)",
+ "pair_of_best_portfolio": {
+  "buy": [
+   "AAPL",
+   "TLT"
+  ],
+  "pair_correlation": -0.30861122200066116
+ },
+ "numbers": {
+  "shots": {
+   "value": 1000,
+   "source": "results/ionq_B_cvar_p3_20261011-052116.json: sum(counts)"
+  },
+  "hits": {
+   "value": 7,
+   "source": "results/ionq_B_cvar_p3_20261011-052116.json: summary[0].p_optimum x shots"
+  },
+  "p_noisy": {
+   "value": 0.007,
+   "source": "results/ionq_B_cvar_p3_20261011-052116.json: summary[0].p_optimum"
+  },
+  "within5_noisy": {
+   "value": 0.251,
+   "source": "results/ionq_B_cvar_p3_20261011-052116.json: summary[0].p_within_5pct"
+  },
+  "quality_noisy": {
+   "value": 0.8522217354275409,
+   "source": "results/ionq_B_cvar_p3_20261011-052116.json: summary[0].quality"
+  },
+  "job_id": {
+   "value": "01a12ae8-10d0-7b59-b033-84768af07a7b",
+   "source": "results/ionq_B_cvar_p3_20261011-052116.json: run.job_id"
+  },
+  "backend": {
+   "value": "ionq_simulator",
+   "source": "results/ionq_B_cvar_p3_20261011-052116.json: backend"
+  },
+  "p_noisy_lo": {
+   "value": 0.002818858759620524,
+   "source": "Clopper-Pearson 95 % interval of hits/shots"
+  },
+  "p_noisy_hi": {
+   "value": 0.014369194978918632,
+   "source": "Clopper-Pearson 95 % interval of hits/shots"
+  },
+  "qubits": {
+   "value": 12,
+   "source": "results/stocks_fair_budget_n12.json: n"
+  },
+  "states": {
+   "value": 4096,
+   "source": "2^n"
+  },
+  "p_random": {
+   "value": 0.000244140625,
+   "source": "results/stocks_fair_budget_n12.json: modes.buy_or_skip.rows['p = 0 control (uniform)'].p_optimum_per_shot"
+  },
+  "hit1000_random_12": {
+   "value": 0.2166458858594944,
+   "source": "results/stocks_fair_budget_n12.json: ...rows['p = 0 control (uniform)'].hit_rate_exact"
+  },
+  "hit1000_greedy_12": {
+   "value": 1.0,
+   "source": "results/stocks_fair_budget_n12.json: ...rows['greedy descent (restarted)'].hit_rate"
+  },
+  "hit1000_sa_12": {
+   "value": 1.0,
+   "source": "results/stocks_fair_budget_n12.json: ...rows['simulated annealing (one run)'].hit_rate"
+  },
+  "training_circuits": {
+   "value": 4860,
+   "source": "results/stocks_fair_budget_n12.json: ...rows['CVaR-QAOA (0.1) p=3'].offline_tuning_circuits"
+  },
+  "budget": {
+   "value": 1000,
+   "source": "results/stocks_fair_budget_n12.json: budget"
+  },
+  "budget_repetitions": {
+   "value": 200,
+   "source": "results/stocks_fair_budget_n12.json: repetitions"
+  },
+  "p_noiseless": {
+   "value": 0.05768940876157691,
+   "source": "qollab/circuit_candidates.json: rows['B CVaR 0.1 p=3'].p_optimum_noiseless"
+  },
+  "within5_noiseless": {
+   "value": 0.6362392454374104,
+   "source": "qollab/circuit_candidates.json: rows['B CVaR 0.1 p=3'].p_within_5pct_noiseless"
+  },
+  "gates_circuit": {
+   "value": 198,
+   "source": "qollab/circuit_candidates.json: rows['B CVaR 0.1 p=3'].two_qubit_gates"
+  },
+  "greedy_median": {
+   "value": 73.0,
+   "source": "qollab/circuit_candidates.json: classical_evaluations_to_solution.buy_or_skip.greedy_median"
+  },
+  "sa_median": {
+   "value": 1516.0,
+   "source": "qollab/circuit_candidates.json: classical_evaluations_to_solution.buy_or_skip.annealing_median"
+  },
+  "classical_runs": {
+   "value": 50,
+   "source": "qollab/circuit_candidates.json: classical_evaluations_to_solution.buy_or_skip.runs"
+  },
+  "circuits_compared": {
+   "value": 58,
+   "source": "qollab/circuit_candidates.json: rows without the control"
+  },
+  "selected_other": {
+   "value": 4,
+   "source": "qollab/selected_circuits.json: batch has 5 circuits, 1 run so far"
+  },
+  "median_random": {
+   "value": 2838.7842638794186,
+   "source": "ln(0.5) / ln(1 - p), p = 1/4096"
+  },
+  "median_noisy": {
+   "value": 98.6740464466617,
+   "source": "ln(0.5) / ln(1 - p), p = hits/shots"
+  },
+  "median_noisy_lo": {
+   "value": 47.89100469510014,
+   "source": "same, upper end of the 95 % interval of p"
+  },
+  "median_noisy_hi": {
+   "value": 245.54964897472982,
+   "source": "same, lower end of the 95 % interval of p"
+  },
+  "median_noiseless": {
+   "value": 11.665149226817302,
+   "source": "ln(0.5) / ln(1 - p), noiseless p"
+  },
+  "ratio_random": {
+   "value": 28.672,
+   "source": "p_noisy / p_random"
+  },
+  "ratio_random_lo": {
+   "value": 11.546045479405667,
+   "source": "interval end / p_random"
+  },
+  "ratio_random_hi": {
+   "value": 58.85622263365072,
+   "source": "interval end / p_random"
+  },
+  "noise_factor": {
+   "value": 8.241344108796701,
+   "source": "p_noiseless / p_noisy"
+  },
+  "gates_all_12": {
+   "value": 66,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.n12.buy_or_skip.routing_p1.all_to_all_two_qubit_gates"
+  },
+  "gates_hh_12": {
+   "value": 285,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.n12.buy_or_skip.routing_p1.heavy_hex_two_qubit_gates.median"
+  },
+  "gates_hh_min_12": {
+   "value": 276,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.n12.buy_or_skip.routing_p1.heavy_hex_two_qubit_gates.min"
+  },
+  "gates_hh_max_12": {
+   "value": 288,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.n12.buy_or_skip.routing_p1.heavy_hex_two_qubit_gates.max"
+  },
+  "gates_ratio_12": {
+   "value": 4.318181818181818,
+   "source": "heavy-hex median / all-to-all"
+  },
+  "gates_all_29": {
+   "value": 244,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.large.buy_or_skip.routing_p1.all_to_all_two_qubit_gates"
+  },
+  "gates_hh_29": {
+   "value": 1576,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.large.buy_or_skip.routing_p1.heavy_hex_two_qubit_gates.median"
+  },
+  "gates_hh_min_29": {
+   "value": 1510,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.large.buy_or_skip.routing_p1.heavy_hex_two_qubit_gates.min"
+  },
+  "gates_hh_max_29": {
+   "value": 1597,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.large.buy_or_skip.routing_p1.heavy_hex_two_qubit_gates.max"
+  },
+  "gates_ratio_29": {
+   "value": 6.459016393442623,
+   "source": "heavy-hex median / all-to-all"
+  },
+  "routing_seeds": {
+   "value": 5,
+   "source": "results/stocks_qaoa_tuning_n12.json: ...routing_p1.heavy_hex_seeds"
+  },
+  "qiskit": {
+   "value": "2.5.2",
+   "source": "results/stocks_qaoa_tuning_n12.json: meta.versions.qiskit"
+  },
+  "pairs_12": {
+   "value": 66,
+   "source": "results/stocks_qaoa_tuning_n12.json: meta.kept_links"
+  },
+  "pairs_29": {
+   "value": 244,
+   "source": "results/stocks_qaoa_tuning_n12.json: circuits.large.buy_or_skip.pair_terms"
+  },
+  "train_first": {
+   "value": "2006-06-02",
+   "source": "results/stocks_qaoa_tuning_n12.json: meta.training_first"
+  },
+  "train_last": {
+   "value": "2014-05-30",
+   "source": "results/stocks_qaoa_tuning_n12.json: meta.training_last"
+  },
+  "date_tuning": {
+   "value": "2026-10-10",
+   "source": "results/stocks_qaoa_tuning_n12.json: meta.timestamp_utc"
+  },
+  "date_n29": {
+   "value": "2026-10-11",
+   "source": "results/stocks_qaoa_n29.json: timestamp_utc"
+  },
+  "scale_qaoa_12": {
+   "value": 0.9999999883877713,
+   "source": "results/stocks_qaoa_tuning_n12.json: models['buy_or_skip|balance_off'].lr['3'].best.p_optimum_in_shots"
+  },
+  "scale_qaoa_16": {
+   "value": 0.8888499536222204,
+   "source": "results/stocks_qaoa_tuning_n12.json: transfer.tuned_size.modes.buy_or_skip.transferred['3'].p_optimum_in_shots"
+  },
+  "scale_qaoa_20": {
+   "value": 0.6555538817432598,
+   "source": "results/stocks_qaoa_tuning_n12.json: transfer.larger_size_dense.modes.buy_or_skip.transferred['3'].p_optimum_in_shots"
+  },
+  "scale_qaoa_29": {
+   "value": 0.06602228069126526,
+   "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.circuits.dense_p3.p_optimum_in_shots"
+  },
+  "scale_random_16": {
+   "value": 0.015143078261349197,
+   "source": "results/stocks_qaoa_tuning_n12.json: transfer.tuned_size.modes.buy_or_skip.uniform_p0.p_optimum_in_shots"
+  },
+  "scale_random_20": {
+   "value": 0.0009532201678953411,
+   "source": "results/stocks_qaoa_tuning_n12.json: transfer.larger_size_dense.modes.buy_or_skip.uniform_p0.p_optimum_in_shots"
+  },
+  "scale_random_29": {
+   "value": 1.8626434162838379e-06,
+   "source": "results/stocks_qaoa_n29.json: 1 - (1 - modes.buy_or_skip.uniform.p_optimum)^budget"
+  },
+  "scale_greedy_29": {
+   "value": 0.61,
+   "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.classical_same_budget['greedy descent (restarted)'].hit_rate"
+  },
+  "scale_sa_29": {
+   "value": 0.61,
+   "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.classical_same_budget['simulated annealing (one run)'].hit_rate"
+  },
+  "states_29": {
+   "value": 536870912,
+   "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.exact_dense.states"
+  },
+  "n29_repetitions": {
+   "value": 200,
+   "source": "results/stocks_qaoa_n29.json: repetitions"
+  },
+  "mesh_qubits": {
+   "value": 12,
+   "source": "mesh branch, mesh/qollab/selected_circuits.json: n"
+  },
+  "mesh_circuit": {
+   "value": "varQITE ZY",
+   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: name = 'varQITE ZY (paper, all pairs)'"
+  },
+  "mesh_gates": {
+   "value": 66,
+   "source": "mesh branch, mesh/qollab/selected_circuits.json: circuits['varQITE ZY (paper, all pairs)'].gates.two_qubit"
+  },
+  "mesh_p_noisy": {
+   "value": 0.278,
+   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: summary[0].p_opt"
+  },
+  "mesh_shots": {
+   "value": 1000,
+   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: shots"
+  },
+  "mesh_p_random": {
+   "value": 0.00048828125,
+   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: comparison.random_guessing_p_opt"
+  },
+  "mesh_ratio": {
+   "value": 569.344,
+   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: comparison.gain_over_random"
+  },
+  "mesh_p_noiseless": {
+   "value": 0.7501245422257501,
+   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: predictions.p_opt"
+  },
+  "mesh_backend": {
+   "value": "ionq_simulator on Qollab (IonQ Forte 1 noise model selected in Select QPU)",
+   "source": "mesh branch, mesh/qollab/results_ionq/2026-10-11_varqite_zy_equal_ionq_simulator.json: backend"
+  }
+ }
+}
