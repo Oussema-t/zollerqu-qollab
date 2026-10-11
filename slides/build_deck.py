@@ -117,6 +117,10 @@ def collect():
     put("classical_runs", classical["runs"], f"{CANDIDATES_FILE}: classical_evaluations_to_solution.{MODE}.runs")
     trained = [r for r in cand["rows"] if r["family"] != "control"]
     put("circuits_compared", len(trained), f"{CANDIDATES_FILE}: rows without the control")
+    best12 = max(trained, key=lambda r: r["p_optimum_noiseless"])
+    if best12["name"] != CIRCUIT or max(trained, key=lambda r: r["crude_noisy_p_optimum"])["name"] != CIRCUIT:
+        raise ValueError(f"the circuit sent to IonQ ({CIRCUIT}) is no longer the best 12-qubit candidate ({best12['name']})")
+    put("best12_name", best12["name"], f"{CANDIDATES_FILE}: row with the highest p_optimum_noiseless (also the highest crude noisy estimate)")
     put("selected_other", 4, "qollab/selected_circuits.json: batch has 5 circuits, 1 run so far")
 
     def median_shots(p):
@@ -160,6 +164,11 @@ def collect():
     put("scale_greedy_29", big["modes"][MODE]["classical_same_budget"]["greedy descent (restarted)"]["hit_rate"], f"{N29_FILE}: modes.{MODE}.classical_same_budget['greedy descent (restarted)'].hit_rate")
     put("scale_sa_29", big["modes"][MODE]["classical_same_budget"]["simulated annealing (one run)"]["hit_rate"], f"{N29_FILE}: modes.{MODE}.classical_same_budget['simulated annealing (one run)'].hit_rate")
     put("states_29", big["modes"][MODE]["exact_dense"]["states"], f"{N29_FILE}: modes.{MODE}.exact_dense.states")
+    runs29 = big["modes"][MODE]["circuits"]
+    key29 = max(runs29, key=lambda k: runs29[k]["p_optimum"])
+    put("best29_run", key29, f"{N29_FILE}: modes.{MODE}.circuits, entry with the highest p_optimum (all entries are LR-QAOA)")
+    put("best29_layers", runs29[key29]["p"], f"{N29_FILE}: modes.{MODE}.circuits.{key29}.p")
+    put("best29_hit1000", runs29[key29]["p_optimum_in_shots"], f"{N29_FILE}: modes.{MODE}.circuits.{key29}.p_optimum_in_shots")
     put("n29_repetitions", big["repetitions"], f"{N29_FILE}: repetitions")
 
     return n, src
@@ -698,7 +707,7 @@ def build_slides(n, figures, tickers, buy, corr):
         f"Data: weekly prices of 12 US stocks and funds, {n['train_first'][:4]}-{n['train_last'][:4]} (Kaggle Huge Stock Market Dataset, CC0)"], notes=(
         "Banks and funds build portfolios every day. They want low risk and a good return. "
         "Risk comes from assets that fall together, so the choices interact. "
-        f"Twelve assets give {n['states']:,} possible portfolios; twenty-nine give more than five hundred million."))
+        f"Twelve assets give {n['states']:,} portfolios; twenty-nine give over five hundred million."))
     y = s.bullets(MX, 1.85, 5.2, [["Banks and funds build", "portfolios every day"], ["They want low risk", "and a good return"],
                                   ["Risk comes from assets", "that fall together"]], size=22, gap=0.3)
     s.text(MX, 5.02, 5.2, ["Every extra asset", "doubles the choices"], size=22, bold=True)
@@ -715,7 +724,7 @@ def build_slides(n, figures, tickers, buy, corr):
     s = Slide(3, "FORMULATION", "One qubit per asset, one Ising energy", source=[
         f"Exact best portfolio found by checking all {n['states']:,} portfolios (classical); risk and return from {n['train_first'][:4]}-{n['train_last'][:4]} data"], notes=(
         "Each asset becomes one qubit: zero means buy, one means skip. "
-        f"Risk minus return becomes an Ising energy with one coupling for every pair of assets, {n['pairs_12']} couplings. "
+        f"Risk minus return becomes an Ising energy with one coupling per pair of assets: {n['pairs_12']} couplings. "
         f"For twelve assets we can check every portfolio, so we know the exact best one: Apple plus long-term Treasury bonds."))
     s.text(MX, 1.75, 6.3, ["Score to minimise: risk minus return"], size=MIN_PT, color=MUTED)
     s.image(figures["score"], MX, 2.05, 6.2, 1.45, "Formula: J of x equals x transposed C x over n squared V ref (the risk), minus eta times mu transposed x over n sigma ref (the return).")
@@ -728,20 +737,22 @@ def build_slides(n, figures, tickers, buy, corr):
 
     # 4 ---------------------------------------------------------------- quantum method
     s = Slide(4, "QUANTUM METHOD", "QAOA circuits, trained offline, one IonQ job", source=[
-        f"{n['circuits_compared']} circuits and a random-guess control scored by noiseless simulation (server), 12 qubits"], notes=(
-        "The circuit is QAOA: Hadamard gates, a cost layer with one ZZ gate per pair, then a mixer, repeated three times. "
-        f"We compared {n['circuits_compared']} circuits from seven method families, all trained offline on a classical simulator. "
-        "The best one, CVaR-QAOA, went to IonQ as a single job."))
+        f"12 qubits: {n['circuits_compared']} circuits + a random-guess control, noiseless simulation · 16-29 qubits: server simulation"], notes=(
+        "The circuit is QAOA: Hadamard gates, a cost layer with one ZZ gate per pair, then a mixer. "
+        f"We compared {n['circuits_compared']} circuits from seven families, all trained offline. "
+        "At twelve qubits the best is CVaR-QAOA, which went to IonQ as a single job. "
+        "At twenty-nine qubits we use linear-ramp QAOA, with angles reused from twelve."))
     s.image(figures["circuit"], MX, 1.62, CW, 2.6, "Circuit sketch: four of the twelve qubit lines. Each starts with an H gate, passes a cost layer block (one ZZ gate per pair, 66, and one Z rotation per qubit) and a mixer block (RX on every qubit), repeated three times, then is measured; 1,000 shots give 1,000 portfolios.")
     card_w, gap_w, y0, card_h = (CW - 0.5) / 3, 0.25, 4.4, 1.72
-    cards = [("7 method families", WHITE, [f"{n['circuits_compared']} circuits compared, from", "linear-ramp and CVaR QAOA", "to imaginary-time evolution"]),
-             ("Trained offline", WHITE, ["Angles tuned on an exact", "classical simulator, never", "on the IonQ backend"]),
-             ("One circuit per job", AMBER, ["CVaR-QAOA, 3 layers:", f"12 qubits, {n['gates_circuit']} two-qubit", f"gates, {shots:,} shots"])]
-    for k, (head, color, body) in enumerate(cards):
+    cards = [("COMPARED", "7 method families", WHITE, [f"{n['circuits_compared']} circuits, trained offline", "on a classical simulator"]),
+             ("BEST AT 12 QUBITS", "CVaR-QAOA", AMBER, [f"3 layers, {n['gates_circuit']} two-qubit gates,", "sent to IonQ as one job"]),
+             ("AT 16, 20, 29 QUBITS", "Linear-ramp QAOA", WHITE, ["Angles reused from 12 qubits,", "no new training"])]
+    for k, (label, head, color, body) in enumerate(cards):
         x = MX + k * (card_w + gap_w)
         s.rect(x, y0, card_w, card_h)
-        yy = s.text(x + 0.2, y0 + 0.17, card_w - 0.4, [head], size=22, bold=True, color=color)
-        s.text(x + 0.2, yy + 0.05, card_w - 0.4, body, size=MIN_PT, color=MUTED)
+        yy = s.text(x + 0.2, y0 + 0.16, card_w - 0.4, [label], size=MIN_PT, bold=True, color=TEAL)
+        yy = s.text(x + 0.2, yy + 0.03, card_w - 0.4, [head], size=22, bold=True, color=color)
+        s.text(x + 0.2, yy + 0.04, card_w - 0.4, body, size=MIN_PT, color=MUTED)
     slides.append(s)
 
     # 5 ---------------------------------------------------------------- why IonQ
@@ -858,7 +869,7 @@ def write_notes(slides, figure_sources, pending, unverified):
     lines += ["## Figures and the result files behind them", "", "| Figure | Used on | Result files |", "|---|---|---|"]
     lines += [f"| `{path}` | slide {slide} | {source} |" for path, slide, source in figure_sources]
     lines += ["", "## Open points", ""] + [f"- {p}" for p in pending]
-    lines += ["", "## Not verified from the files", ""] + [f"- {u}" for u in unverified]
+    lines += ["", "## Caveats and things not verified from the files", ""] + [f"- {u}" for u in unverified]
     lines += ["", "Rebuild everything with `./venv/bin/python slides/build_deck.py` (reads `results/` and `qollab/`; nothing is simulated)."]
     (OUT / "speaker_notes.md").write_text("\n".join(lines) + "\n")
     return total
@@ -910,6 +921,10 @@ def main():
         pending.append(f"Links are not on the slides ({', '.join(missing)}): set LINKS in slides/build_deck.py to print them on the closing slide. "
                        "The GitHub repository is private and is not linked.")
     unverified = [
+        f"Slide 4, best circuit per size: at 12 qubits CVaR-QAOA (3 layers) has the highest hit rate of all {n['circuits_compared']} circuits. At 16, 20 and 29 qubits "
+        "only linear-ramp QAOA was simulated, so no other family was compared there. "
+        f"Its best 29-qubit run has {n['best29_layers']} layers ({100 * n['best29_hit1000']:.1f} % of runs find the best portfolio, run '{n['best29_run']}'); "
+        f"slide 7 shows the 3-layer run ({100 * n['scale_qaoa_29']:.1f} %) so that every size uses the same settings.",
         f"The stocks run file records the backend only as '{n['backend']}'. That the IonQ Forte 1 noise model was the simulator selected in the Qollab "
         "Run dialog is taken from the team, not from the file (the measured rate is far below the noiseless one, so a noise model was active).",
         "One IonQ job of 1,000 shots: no repeat run, so run-to-run variation on the noise model is not measured; the 95 % interval covers sampling error only.",

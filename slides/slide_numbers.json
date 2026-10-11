@@ -108,6 +108,10 @@
    "value": 58,
    "source": "qollab/circuit_candidates.json: rows without the control"
   },
+  "best12_name": {
+   "value": "B CVaR 0.1 p=3",
+   "source": "qollab/circuit_candidates.json: row with the highest p_optimum_noiseless (also the highest crude noisy estimate)"
+  },
   "selected_other": {
    "value": 4,
    "source": "qollab/selected_circuits.json: batch has 5 circuits, 1 run so far"
@@ -259,6 +263,18 @@
   "states_29": {
    "value": 536870912,
    "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.exact_dense.states"
+  },
+  "best29_run": {
+   "value": "thinned_p4",
+   "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.circuits, entry with the highest p_optimum (all entries are LR-QAOA)"
+  },
+  "best29_layers": {
+   "value": 4,
+   "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.circuits.thinned_p4.p"
+  },
+  "best29_hit1000": {
+   "value": 0.12562000545013463,
+   "source": "results/stocks_qaoa_n29.json: modes.buy_or_skip.circuits.thinned_p4.p_optimum_in_shots"
   },
   "n29_repetitions": {
    "value": 200,

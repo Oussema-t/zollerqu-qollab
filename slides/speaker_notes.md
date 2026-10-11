@@ -1,6 +1,6 @@
 # Speaker notes: Portfolio Selection with QAOA (ZollerQu, stocks project)
 
-Spoken script for all 9 slides: **374 words** (about 2:46-2:53 at 130-135 words per minute; target 330-380 words).
+Spoken script for all 9 slides: **379 words** (about 2:48-2:55 at 130-135 words per minute; target 330-380 words).
 
 Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advantage or speed-up claim, no wall-clock comparison.
 
@@ -12,13 +12,13 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 2: Which assets should a fund buy?
 
-**Script (39 words):** Banks and funds build portfolios every day. They want low risk and a good return. Risk comes from assets that fall together, so the choices interact. Twelve assets give 4,096 possible portfolios; twenty-nine give more than five hundred million.
+**Script (37 words):** Banks and funds build portfolios every day. They want low risk and a good return. Risk comes from assets that fall together, so the choices interact. Twelve assets give 4,096 portfolios; twenty-nine give over five hundred million.
 
 **Source line on the slide:** Data: weekly prices of 12 US stocks and funds, 2006-2014 (Kaggle Huge Stock Market Dataset, CC0)
 
 ## Slide 3: One qubit per asset, one Ising energy
 
-**Script (48 words):** Each asset becomes one qubit: zero means buy, one means skip. Risk minus return becomes an Ising energy with one coupling for every pair of assets, 66 couplings. For twelve assets we can check every portfolio, so we know the exact best one: Apple plus long-term Treasury bonds.
+**Script (47 words):** Each asset becomes one qubit: zero means buy, one means skip. Risk minus return becomes an Ising energy with one coupling per pair of assets: 66 couplings. For twelve assets we can check every portfolio, so we know the exact best one: Apple plus long-term Treasury bonds.
 
 **Alt text** (`slides/figures/formula_score.png`): Formula: J of x equals x transposed C x over n squared V ref (the risk), minus eta times mu transposed x over n sigma ref (the return).
 
@@ -30,11 +30,11 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 
 ## Slide 4: QAOA circuits, trained offline, one IonQ job
 
-**Script (47 words):** The circuit is QAOA: Hadamard gates, a cost layer with one ZZ gate per pair, then a mixer, repeated three times. We compared 58 circuits from seven method families, all trained offline on a classical simulator. The best one, CVaR-QAOA, went to IonQ as a single job.
+**Script (55 words):** The circuit is QAOA: Hadamard gates, a cost layer with one ZZ gate per pair, then a mixer. We compared 58 circuits from seven families, all trained offline. At twelve qubits the best is CVaR-QAOA, which went to IonQ as a single job. At twenty-nine qubits we use linear-ramp QAOA, with angles reused from twelve.
 
 **Alt text** (`slides/figures/circuit_sketch.png`): Circuit sketch: four of the twelve qubit lines. Each starts with an H gate, passes a cost layer block (one ZZ gate per pair, 66, and one Z rotation per qubit) and a mixer block (RX on every qubit), repeated three times, then is measured; 1,000 shots give 1,000 portfolios.
 
-**Source line on the slide:** 58 circuits and a random-guess control scored by noiseless simulation (server), 12 qubits
+**Source line on the slide:** 12 qubits: 58 circuits + a random-guess control, noiseless simulation · 16-29 qubits: server simulation
 
 ## Slide 5: All-to-all links: 4.3× fewer two-qubit gates
 
@@ -90,8 +90,9 @@ Wording rules used: "noisy simulator" / "noise model" for the IonQ run, no advan
 - No placeholder is left on the slides. Slide 8 is shown together with a live Qollab session (no screenshot).
 - Links are not on the slides (Qollab project, Demo video): set LINKS in slides/build_deck.py to print them on the closing slide. The GitHub repository is private and is not linked.
 
-## Not verified from the files
+## Caveats and things not verified from the files
 
+- Slide 4, best circuit per size: at 12 qubits CVaR-QAOA (3 layers) has the highest hit rate of all 58 circuits. At 16, 20 and 29 qubits only linear-ramp QAOA was simulated, so no other family was compared there. Its best 29-qubit run has 4 layers (12.6 % of runs find the best portfolio, run 'thinned_p4'); slide 7 shows the 3-layer run (6.6 %) so that every size uses the same settings.
 - The stocks run file records the backend only as 'ionq_simulator'. That the IonQ Forte 1 noise model was the simulator selected in the Qollab Run dialog is taken from the team, not from the file (the measured rate is far below the noiseless one, so a noise model was active).
 - One IonQ job of 1,000 shots: no repeat run, so run-to-run variation on the noise model is not measured; the 95 % interval covers sampling error only.
 - Heavy-hex gate counts come from Qiskit's router on a generic heavy-hex map (5 seeds); a better router or a real device layout could give other numbers.
