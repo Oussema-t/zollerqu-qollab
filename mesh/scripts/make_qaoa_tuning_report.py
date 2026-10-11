@@ -193,7 +193,13 @@ if __name__ == "__main__":
     figs = [figure_n12(d, t) for d, t in ((small, "4 calibration meshes"), (large, "18 calibration meshes")) if d]
     figs += [figure_optimisers(d, t) for d, t in ((small, "4 calibration meshes"), (large, "18 calibration meshes")) if d]
     records = scaling_records()
-    runs = big_runs(DIR / "hpc" / "hpc_n24") | big_runs(DIR / "hpc" / "hpc_n29") | big_runs(ROOT / "results" / "hpc_n29")
+    runs = {}
+    for folder in (DIR / "hpc" / "hpc_n24", DIR / "hpc" / "hpc_n29", ROOT / "results" / "hpc_n29"):   # tuned runs and the first 29-qubit run
+        for key, slot in big_runs(folder).items():
+            if key in runs:                       # same size and scenario: keep both sets of QAOA settings (classical numbers are identical)
+                runs[key]["quantum"].update({f"{label} [first 29-qubit run]": v for label, v in slot["quantum"].items()})
+            else:
+                runs[key] = slot
     if records or runs:
         figs.append(figure_scaling(records, runs))
 

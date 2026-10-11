@@ -1,0 +1,356 @@
+{
+ "protocol": "Which QAOA settings really improve QAOA? 12 qubits (larger sizes: scripts/qaoa_scaling.py).\n\nLeakage-free protocol: every parameter is chosen on CALIBRATION meshes only (mesh seeds 101 / 102, never scored), then frozen and\napplied unchanged to the TEST instances (the 18 scored instances at 12 qubits: 9 cases x 2 device scenarios, mesh seed 7).\nCalibration set 'small' = the Task 04 calibration meshes (cases '2 main' and '6 three sources': 4 instances per scenario);\n'large' = all 9 cases on both calibration seeds (18 instances per scenario), to reduce over-fitting of the 2p free angles.\nThe Hamiltonian, the balance weights (lambda 10 / 3.98), the target shares and the energy normalisation are the notebook's, unchanged.\n\nSettings compared, per scenario and depth p in {1, 2, 3, 4, 5, 6, 8}:\n  - LR-QAOA, re-calibrated for each p: the (dgamma, dbeta) grid of Task 04, chosen by mean energy ('energy') or by mean\n    P(cost <= 1.05 optimum) ('success');\n  - all 2p angles optimised jointly on the calibration set (objective: mean P(within 5 %)), with COBYLA, Nelder-Mead, Powell,\n    L-BFGS-B and SPSA under the SAME budget of calibration-objective evaluations, all started from the success-calibrated LR angles;\n  - warm-start QAOA (Egger et al. 2021, rounded spectral start, mixer A), LR success-calibrated and fully optimised (COBYLA).\nQuiver: not installed in either Python environment of this project (checked: no 'quiver' package), so it is not compared.\nReferences from the existing benchmark (no recomputation): per-instance QAOA + COBYLA p = 2 and the classical baselines.",
+ "budget": 1500,
+ "layers": [
+  2
+ ],
+ "calibration": "large",
+ "quiver": "not installed (no 'quiver' package in either environment); not compared",
+ "scenarios": {
+  "CPU + GPU (GPU 4x)": {
+   "rows": [
+    {
+     "method": "LR-QAOA (energy-calibrated)",
+     "p": 2,
+     "angles": [
+      0.52,
+      1.04,
+      0.44999999999999996,
+      0.22499999999999998
+     ],
+     "dgamma": 1.04,
+     "dbeta": 0.44999999999999996,
+     "calibration_p_near": 0.007035254461686105,
+     "calibration_evaluations": 3000,
+     "test": {
+      "p_opt": 0.0055572032181398605,
+      "p_near": 0.009220222363926587,
+      "mean_ratio": 0.9707090219228367,
+      "hit_opt": 0.9848541675975747,
+      "hit_near": 0.997222866958523,
+      "per_instance": [
+       0.009045245982446538,
+       0.009380826778473277,
+       0.005048103933181639,
+       0.012982634939955202,
+       0.013343419065393224,
+       0.004851614783977862,
+       0.017902241473419234,
+       0.005213957159246149,
+       0.005213957159246149
+      ]
+     }
+    },
+    {
+     "method": "LR-QAOA (success-calibrated)",
+     "p": 2,
+     "angles": [
+      1.0,
+      2.0,
+      0.44999999999999996,
+      0.22499999999999998
+     ],
+     "dgamma": 2.0,
+     "dbeta": 0.44999999999999996,
+     "calibration_p_near": 0.007675495570182763,
+     "calibration_evaluations": 3000,
+     "test": {
+      "p_opt": 0.006084959521058618,
+      "p_near": 0.011560542888436618,
+      "mean_ratio": 0.942747981229912,
+      "hit_opt": 0.9849372765781772,
+      "hit_near": 0.9989528014789124,
+      "per_instance": [
+       0.007589459788914282,
+       0.009061245904360951,
+       0.006512518451181515,
+       0.011731293847486524,
+       0.01111121282593306,
+       0.00500060679100298,
+       0.037178538572928944,
+       0.00793000490706065,
+       0.00793000490706065
+      ]
+     }
+    },
+    {
+     "method": "QAOA, all angles optimised (COBYLA)",
+     "p": 2,
+     "angles": [
+      0.8320756067160943,
+      5.9146158458736355,
+      0.5490756298625646,
+      0.2593386299733165
+     ],
+     "calibration_p_near": 0.01566508947579999,
+     "calibration_evaluations": 1500,
+     "test": {
+      "p_opt": 0.011623014004946293,
+      "p_near": 0.018679679606029845,
+      "mean_ratio": 0.9571242648088992,
+      "hit_opt": 0.9978077564008463,
+      "hit_near": 0.9999852353052844,
+      "per_instance": [
+       0.021664607997103597,
+       0.017877303898344646,
+       0.011465484589274056,
+       0.026632109480792705,
+       0.012128190316316062,
+       0.0090038947741752,
+       0.032515232738894166,
+       0.018415146329684082,
+       0.018415146329684082
+      ]
+     }
+    },
+    {
+     "method": "QAOA, all angles optimised (Nelder-Mead)",
+     "p": 2,
+     "angles": [
+      0.8587919145125227,
+      7.625002578692066,
+      0.5298519183662108,
+      0.273212048184802
+     ],
+     "calibration_p_near": 0.016795434505707838,
+     "calibration_evaluations": 247,
+     "test": {
+      "p_opt": 0.012845793519538483,
+      "p_near": 0.018812052455186936,
+      "mean_ratio": 0.9538757807562068,
+      "hit_opt": 0.9997452639153289,
+      "hit_near": 0.9999886117261858,
+      "per_instance": [
+       0.01886492108371351,
+       0.02010507955179781,
+       0.013016565055194598,
+       0.028856426540148673,
+       0.010783384060660994,
+       0.009378242228294467,
+       0.02592420498071301,
+       0.02118982429807969,
+       0.02118982429807969
+      ]
+     }
+    },
+    {
+     "method": "QAOA, all angles optimised (Powell)",
+     "p": 2,
+     "angles": [
+      0.8587921753734029,
+      7.625001893389391,
+      0.529851614550995,
+      0.2732120617700522
+     ],
+     "calibration_p_near": 0.01679543450572454,
+     "calibration_evaluations": 368,
+     "test": {
+      "p_opt": 0.012845795911543202,
+      "p_near": 0.0188120523059957,
+      "mean_ratio": 0.9538757542729395,
+      "hit_opt": 0.9997452669905083,
+      "hit_near": 0.9999886116982964,
+      "per_instance": [
+       0.018864943714288047,
+       0.020105069746889165,
+       0.013016560115093063,
+       0.028856429570924533,
+       0.010783397548444143,
+       0.00937823601141322,
+       0.02592419420230834,
+       0.021189819922300398,
+       0.021189819922300398
+      ]
+     }
+    },
+    {
+     "method": "QAOA, all angles optimised (L-BFGS-B)",
+     "p": 2,
+     "angles": [
+      0.8587921119411026,
+      7.625000775356473,
+      0.5298515996282689,
+      0.2732117641840894
+     ],
+     "calibration_p_near": 0.016795434505749454,
+     "calibration_evaluations": 125,
+     "test": {
+      "p_opt": 0.012845794869007103,
+      "p_near": 0.01881205745865087,
+      "mean_ratio": 0.953875780601943,
+      "hit_opt": 0.9997452684182614,
+      "hit_near": 0.9999886116937299,
+      "per_instance": [
+       0.018864962919507334,
+       0.02010506931044475,
+       0.013016559760632557,
+       0.028856439940211934,
+       0.010783402318340468,
+       0.009378234360725728,
+       0.02592423803808005,
+       0.021189805239957518,
+       0.021189805239957518
+      ]
+     }
+    },
+    {
+     "method": "QAOA, all angles optimised (SPSA)",
+     "p": 2,
+     "angles": [
+      0.9640960738024302,
+      2.0353491002326827,
+      0.4146960841406113,
+      0.26082835508878344
+     ],
+     "calibration_p_near": 0.0079788063226733,
+     "calibration_evaluations": 1500,
+     "test": {
+      "p_opt": 0.006366362113486768,
+      "p_near": 0.011827684176633994,
+      "mean_ratio": 0.9410917685558924,
+      "hit_opt": 0.9843642741808202,
+      "hit_near": 0.9990376391841335,
+      "per_instance": [
+       0.007667991551760016,
+       0.009121738819524328,
+       0.006633215543777072,
+       0.011929733258648047,
+       0.012194361476921394,
+       0.005033998201653855,
+       0.03677322530443464,
+       0.00854744671649329,
+       0.00854744671649329
+      ]
+     }
+    },
+    {
+     "method": "warm start, LR (success-calibrated)",
+     "p": 2,
+     "angles": [
+      1.0,
+      2.0,
+      0.44999999999999996,
+      0.22499999999999998
+     ],
+     "calibration_p_near": 0.21545665726185403,
+     "calibration_evaluations": 3000,
+     "test": {
+      "p_opt": 0.19868503030715198,
+      "p_near": 0.22642591824002148,
+      "mean_ratio": 0.9755210086054862,
+      "hit_opt": 0.9296585561256011,
+      "hit_near": 1.0,
+      "per_instance": [
+       0.23787129040767985,
+       0.18118439157537047,
+       0.1995996380354661,
+       0.2470516161263288,
+       0.32172080618020676,
+       0.2086542887617216,
+       0.16651775114528392,
+       0.23761674096406793,
+       0.23761674096406793
+      ]
+     },
+     "seeded_by": "classical spectral split"
+    },
+    {
+     "method": "warm start, all angles optimised (COBYLA)",
+     "p": 2,
+     "angles": [
+      0.9501405250206931,
+      4.337783840110036,
+      0.5844450798094796,
+      0.25364020332929804
+     ],
+     "calibration_p_near": 0.2575293300474099,
+     "calibration_evaluations": 1500,
+     "test": {
+      "p_opt": 0.24043195583159177,
+      "p_near": 0.2734003642832958,
+      "mean_ratio": 0.9714505157683244,
+      "hit_opt": 0.9170337634556935,
+      "hit_near": 1.0,
+      "per_instance": [
+       0.28492092188434087,
+       0.2255198139999528,
+       0.2618151179712551,
+       0.29316027460462313,
+       0.300851246306788,
+       0.2502148129349995,
+       0.20136838168711396,
+       0.3213763545802943,
+       0.3213763545802943
+      ]
+     },
+     "seeded_by": "classical spectral split"
+    }
+   ],
+   "references": {
+    "uniform random sampling": 0.2877777777777778,
+    "random with target share": 0.74,
+    "simulated annealing": 0.8744444444444445,
+    "local search (restarts)": 0.9955555555555556,
+    "spectral bisection": 1.0,
+    "QAOA + COBYLA p=2, trained per instance (existing)": 0.9991379666759658,
+    "per-shot QAOA + COBYLA p=2 (existing)": 0.010836424664740711
+   },
+   "test_instances": [
+    [
+     "1 control",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "2 main",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "3 hard",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "4 structural",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "5 L uniform",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "6 three sources",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "7 materials",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "8 coupling",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ],
+    [
+     "9 priority",
+     12,
+     7,
+     "CPU + GPU (GPU 4x)"
+    ]
+   ]
+  }
+ }
+}

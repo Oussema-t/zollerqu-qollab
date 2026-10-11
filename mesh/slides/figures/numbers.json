@@ -189,6 +189,22 @@
      "before_p5": 0.00034584105003868337
     }
    },
+   "n29": {
+    "CPU + GPU": {
+     "qaoa_p8": 0.9960895113983744,
+     "spectral": 1.0,
+     "annealing": 0.4283333333333333,
+     "local": 0.4549999999999999,
+     "instances": 6
+    },
+    "equal devices": {
+     "qaoa_p8": 0.8788094909340981,
+     "spectral": 0.5,
+     "annealing": 0.10000000000000002,
+     "local": 0.049999999999999996,
+     "instances": 6
+    }
+   },
    "gates12_p8": 528,
    "calibration_meshes": 18,
    "test_meshes_12": 9

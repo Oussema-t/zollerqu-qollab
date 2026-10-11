@@ -1,0 +1,3 @@
+[    66 s] notebook loaded; n = 20, 2 equal devices, p = [8], budget 150; 12-qubit settings from tuning_n12_large_calibration.json
+[    71 s] 4 calibration and 6 test instances built; classical baselines done
+[  3022 s] p = 8: calibration 2.36e-02 -> 2.46e-02 (150 evaluations, 2936 s); TEST P(near) transferred 1.22e-02, re-optimised 1.23e-02; hit@1000 0.999 / 0.999

@@ -1,0 +1,3 @@
+[   118 s] notebook loaded
+[   376 s] 2 equal devices, p = 2: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0097); its TEST mean P(near) 0.0037, hit@1000 0.765
+[   376 s] saved /root/mesh/results/qaoa_tuning/tuning_n12_large_calibration.s0.p2.json

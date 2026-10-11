@@ -324,6 +324,19 @@ def tuned_n(scenario, n, p):
 
 
 SC = {"2 equal devices": "equal devices", "CPU + GPU (GPU 4x)": "CPU + GPU"}
+
+
+def n29_summary():
+    """29 qubits with the settings frozen from n = 20 (results/qaoa_tuning/hpc/hpc_n29): hit@1000 of tuned QAOA p = 8 and of the classical methods."""
+    out = {}
+    for path in sorted((ROOT / "results" / "qaoa_tuning" / "hpc" / "hpc_n29").glob("*_seed*_*.json")):
+        rec = json.loads(path.read_text())
+        slot = out.setdefault(SC[rec["scenario"]], dict(qaoa_p8=[], spectral=[], annealing=[], local=[]))
+        slot["qaoa_p8"].append(next(q["hit_near"] for q in rec["quantum"] if q["p"] == 8))
+        slot["spectral"].append(rec["classical"]["spectral bisection"]["hit_near"])
+        slot["annealing"].append(rec["classical"]["simulated annealing"]["hit_near"])
+        slot["local"].append(rec["classical"]["local search (restarts)"]["hit_near"])
+    return {s: {k: float(np.mean(v)) for k, v in d.items()} | dict(instances=len(d["qaoa_p8"])) for s, d in out.items()}
 P_SHOW = 6                                                # the deepest depth finished at every size
 fig, axes = plt.subplots(1, 2, figsize=(11.5, 6.4))
 ax = axes[0]
@@ -367,6 +380,7 @@ numbers["tuning"] = dict(
                      warm_p8=tuned12(s, 8, "warm")["p_near"], warm_p8_hit=tuned12(s, 8, "warm")["hit_near"]) for s in SC},
     n20={SC[s]: dict(p=P_SHOW, p_near=tuned_n(s, 20, P_SHOW)["p_near"], hit=tuned_n(s, 20, P_SHOW)["hit_near"],
                      p5=tuned_n(s, 20, 5)["p_near"], before_p5=earlier[s]["best_fixed"]["p_near_n20"]) for s in SC if tuned_n(s, 20, P_SHOW)},
+    n29=n29_summary(),
     gates12_p8=8 * 66, calibration_meshes=18, test_meshes_12=len(tuning["scenarios"]["2 equal devices"]["test_instances"]))
 SOURCES["fig_tuning.png"] = ("results/qaoa_tuning/tuning_n12_large_calibration.json (12 qubits, HPC), results/qaoa_tuning/scaling/n16_*, n20_* "
                              "(HPC), scripts/q29_choice.json (the earlier best setting at 20 qubits); noiseless simulation")

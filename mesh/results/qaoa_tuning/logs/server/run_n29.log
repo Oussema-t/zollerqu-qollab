@@ -1,0 +1,77 @@
+[   60.3 s] notebook cells loaded (frozen regions: {'loaded': 4, 'created': 0}); LR deltas 2 equal devices: (0.26, 0.2); CPU + GPU (GPU 4x): (0.9600000000000001, 0.5499999999999999)
+[   60.3 s] settings from scripts/q29_choice_tuned.json; results to results/qaoa_tuning/hpc/hpc_n29
+/root/mesh/scripts/run_29_qubits.py:435: DeprecationWarning: This process (pid=14347) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+[   60.3 s] started 2_main_seed7_equal.json
+[   60.3 s] started 2_main_seed7_cpu_gpu.json
+[   60.3 s] started 9_priority_seed7_equal.json
+[   60.3 s] started 9_priority_seed7_cpu_gpu.json
+[   67.7 s] 2 main seed 7 CPU + GPU (GPU 4x): optimum 0.068456 (2 state(s)), 3 states within 5 %
+[   67.8 s] 9 priority seed 7 2 equal devices: optimum 0.066874 (2 state(s)), 4 states within 5 %
+[   67.9 s] 2 main seed 7 2 equal devices: optimum 0.135999 (2 state(s)), 4 states within 5 %
+[   67.9 s] 9 priority seed 7 CPU + GPU (GPU 4x): optimum 0.042434 (1 state(s)), 1 states within 5 %
+[  268.7 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 9.778e-06, P(optimum) 9.778e-06, 141 s
+[  270.6 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 1.729e-03, P(optimum) 1.174e-03, 142 s
+[  277.4 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 9.395e-05, P(optimum) 5.396e-05, 136 s
+[  281.3 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 1.290e-04, P(optimum) 6.867e-05, 139 s
+[  526.2 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 1.291e-03, P(optimum) 1.291e-03, 233 s
+[  529.7 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 1.270e-02, P(optimum) 8.493e-03, 235 s
+[  532.8 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 7.904e-04, P(optimum) 3.685e-04, 226 s
+[  541.0 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 7.262e-04, P(optimum) 3.114e-04, 230 s
+[  908.9 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 5.698e-03, P(optimum) 5.698e-03, 358 s
+[  909.2 s] finished 9_priority_seed7_cpu_gpu.json (exit status 0)
+[  909.2 s] started 2_main_seed8_equal.json
+[  914.0 s] 2 main seed 8 2 equal devices: optimum 0.142205 (2 state(s)), 4 states within 5 %
+[  918.1 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 2.486e-02, P(optimum) 1.574e-02, 364 s
+[  918.4 s] finished 2_main_seed7_cpu_gpu.json (exit status 0)
+[  918.4 s] started 2_main_seed8_cpu_gpu.json
+[  920.7 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 3.051e-03, P(optimum) 1.208e-03, 358 s
+[  921.0 s] finished 9_priority_seed7_equal.json (exit status 0)
+[  921.0 s] started 9_priority_seed8_equal.json
+[  923.4 s] 2 main seed 8 CPU + GPU (GPU 4x): optimum 0.064564 (1 state(s)), 1 states within 5 %
+[  925.9 s] 9 priority seed 8 2 equal devices: optimum 0.061602 (2 state(s)), 2 states within 5 %
+[  935.9 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 4.302e-03, P(optimum) 1.719e-03, 365 s
+[  936.1 s] finished 2_main_seed7_equal.json (exit status 0)
+[  936.1 s] started 9_priority_seed8_cpu_gpu.json
+[  940.5 s] 9 priority seed 8 CPU + GPU (GPU 4x): optimum 0.045760 (1 state(s)), 1 states within 5 %
+[ 1126.1 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 6.730e-04, P(optimum) 6.730e-04, 140 s
+[ 1126.6 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 9.501e-05, P(optimum) 3.660e-05, 135 s
+[ 1137.4 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 1.415e-05, P(optimum) 1.415e-05, 137 s
+[ 1142.5 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 4.162e-05, P(optimum) 4.162e-05, 142 s
+[ 1383.4 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 5.328e-03, P(optimum) 5.328e-03, 232 s
+[ 1384.4 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 6.925e-04, P(optimum) 3.326e-04, 227 s
+[ 1396.5 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 1.998e-04, P(optimum) 1.998e-04, 229 s
+[ 1401.1 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 1.166e-04, P(optimum) 1.166e-04, 234 s
+[ 1769.5 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 1.185e-02, P(optimum) 1.185e-02, 361 s
+[ 1769.8 s] finished 2_main_seed8_cpu_gpu.json (exit status 0)
+[ 1769.8 s] started 2_main_seed9_equal.json
+[ 1774.8 s] 2 main seed 9 2 equal devices: optimum 0.127617 (2 state(s)), 2 states within 5 %
+[ 1776.5 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 4.832e-03, P(optimum) 3.057e-03, 361 s
+[ 1776.8 s] finished 2_main_seed8_equal.json (exit status 0)
+[ 1776.8 s] started 2_main_seed9_cpu_gpu.json
+[ 1781.4 s] 2 main seed 9 CPU + GPU (GPU 4x): optimum 0.069919 (1 state(s)), 1 states within 5 %
+[ 1790.2 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 3.929e-03, P(optimum) 3.929e-03, 364 s
+[ 1790.5 s] finished 9_priority_seed8_cpu_gpu.json (exit status 0)
+[ 1790.5 s] started 9_priority_seed9_equal.json
+[ 1793.8 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 1.032e-03, P(optimum) 1.032e-03, 367 s
+[ 1794.1 s] finished 9_priority_seed8_equal.json (exit status 0)
+[ 1794.1 s] started 9_priority_seed9_cpu_gpu.json
+[ 1795.5 s] 9 priority seed 9 2 equal devices: optimum 0.072758 (2 state(s)), 4 states within 5 %
+[ 1798.7 s] 9 priority seed 9 CPU + GPU (GPU 4x): optimum 0.053804 (1 state(s)), 3 states within 5 %
+[ 1984.0 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 5.939e-04, P(optimum) 5.939e-04, 140 s
+[ 1986.5 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 6.161e-05, P(optimum) 6.161e-05, 135 s
+[ 1998.6 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 1.261e-04, P(optimum) 9.863e-05, 141 s
+[ 2003.5 s]   tuned QAOA p = 3 (angles re-optimised at n = 20): P(within 5 %) 1.043e-05, P(optimum) 4.816e-06, 136 s
+[ 2241.5 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 5.745e-03, P(optimum) 5.745e-03, 233 s
+[ 2244.5 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 3.990e-04, P(optimum) 3.990e-04, 227 s
+[ 2255.3 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 2.072e-03, P(optimum) 1.023e-03, 233 s
+[ 2260.5 s]   tuned QAOA p = 5 (angles re-optimised at n = 20): P(within 5 %) 1.650e-04, P(optimum) 8.750e-05, 228 s
+[ 2629.2 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 1.015e-02, P(optimum) 1.015e-02, 363 s
+[ 2629.5 s] finished 2_main_seed9_cpu_gpu.json (exit status 0)
+[ 2636.8 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 4.172e-03, P(optimum) 4.172e-03, 362 s
+[ 2637.1 s] finished 2_main_seed9_equal.json (exit status 0)
+[ 2639.7 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 7.382e-03, P(optimum) 2.687e-03, 361 s
+[ 2639.9 s] finished 9_priority_seed9_cpu_gpu.json (exit status 0)
+[ 2650.4 s]   tuned QAOA p = 8 (angles re-optimised at n = 20): P(within 5 %) 1.247e-03, P(optimum) 7.197e-04, 362 s
+[ 2650.7 s] finished 9_priority_seed9_equal.json (exit status 0)
+[ 2650.7 s] all instances done

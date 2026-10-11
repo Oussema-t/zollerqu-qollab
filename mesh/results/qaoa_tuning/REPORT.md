@@ -99,22 +99,109 @@ Noise estimate: Task 04's crude model (0.5 % error per two-qubit gate, global de
 
 References on the same 9 test meshes (existing benchmark, not recomputed): uniform random sampling: 0.288; random with target share: 0.740; simulated annealing: 0.874; local search (restarts): 0.996; spectral bisection: 1.000; QAOA + COBYLA p=2, trained per instance (existing): 0.999; per-shot QAOA + COBYLA p=2 (existing): 1.08 %
 
+## Larger sizes: 16 and 20 qubits (test = cases 2 and 9, mesh seeds 7-9)
+
+| n | scenario | p | setting | training evals x meshes | test P(opt) | test P(within 5 %) | hit@1000 within 5 % | 2q gates | depth |
+|---|---|---|---|---|---|---|---|---|---|
+| 16 | 2 equal devices | 1 | transferred from 12 qubits | 0 x 0 | 0.01 % | 0.02 % | 0.166 | 120 | 17 |
+| 16 | 2 equal devices | 1 | re-optimised at n = 16 | 98 x 18 | 0.02 % | 0.02 % | 0.201 | 120 | 17 |
+| 16 | 2 equal devices | 2 | transferred from 12 qubits | 0 x 0 | 0.02 % | 0.03 % | 0.217 | 240 | 33 |
+| 16 | 2 equal devices | 2 | re-optimised at n = 16 | 105 x 18 | 0.07 % | 0.09 % | 0.555 | 240 | 33 |
+| 16 | 2 equal devices | 3 | transferred from 12 qubits | 0 x 0 | 0.25 % | 0.33 % | 0.940 | 360 | 49 |
+| 16 | 2 equal devices | 3 | re-optimised at n = 16 | 300 x 18 | 0.27 % | 0.36 % | 0.949 | 360 | 49 |
+| 16 | 2 equal devices | 4 | transferred from 12 qubits | 0 x 0 | 0.50 % | 0.63 % | 0.997 | 480 | 65 |
+| 16 | 2 equal devices | 4 | re-optimised at n = 16 | 300 x 18 | 0.53 % | 0.68 % | 0.997 | 480 | 65 |
+| 16 | 2 equal devices | 5 | transferred from 12 qubits | 0 x 0 | 0.86 % | 1.10 % | 1.000 | 600 | 81 |
+| 16 | 2 equal devices | 5 | re-optimised at n = 16 | 300 x 18 | 0.89 % | 1.15 % | 1.000 | 600 | 81 |
+| 16 | 2 equal devices | 6 | transferred from 12 qubits | 0 x 0 | 1.28 % | 1.63 % | 1.000 | 720 | 97 |
+| 16 | 2 equal devices | 6 | re-optimised at n = 16 | 300 x 18 | 1.31 % | 1.69 % | 1.000 | 720 | 97 |
+| 16 | 2 equal devices | 8 | transferred from 12 qubits | 0 x 0 | 2.27 % | 2.87 % | 1.000 | 960 | 129 |
+| 16 | 2 equal devices | 8 | re-optimised at n = 16 | 300 x 18 | 2.34 % | 2.96 % | 1.000 | 960 | 129 |
+| 16 | CPU + GPU (GPU 4x) | 1 | transferred from 12 qubits | 0 x 0 | 0.05 % | 0.09 % | 0.500 | 120 | 18 |
+| 16 | CPU + GPU (GPU 4x) | 1 | re-optimised at n = 16 | 160 x 18 | 0.05 % | 0.09 % | 0.513 | 120 | 18 |
+| 16 | CPU + GPU (GPU 4x) | 2 | transferred from 12 qubits | 0 x 0 | 0.44 % | 0.52 % | 0.972 | 240 | 35 |
+| 16 | CPU + GPU (GPU 4x) | 2 | re-optimised at n = 16 | 105 x 18 | 0.44 % | 0.53 % | 0.965 | 240 | 35 |
+| 16 | CPU + GPU (GPU 4x) | 3 | transferred from 12 qubits | 0 x 0 | 1.35 % | 1.51 % | 1.000 | 360 | 52 |
+| 16 | CPU + GPU (GPU 4x) | 3 | re-optimised at n = 16 | 224 x 18 | 1.30 % | 1.48 % | 1.000 | 360 | 52 |
+| 16 | CPU + GPU (GPU 4x) | 4 | transferred from 12 qubits | 0 x 0 | 2.58 % | 2.90 % | 1.000 | 480 | 69 |
+| 16 | CPU + GPU (GPU 4x) | 4 | re-optimised at n = 16 | 300 x 18 | 2.52 % | 2.83 % | 1.000 | 480 | 69 |
+| 16 | CPU + GPU (GPU 4x) | 5 | transferred from 12 qubits | 0 x 0 | 3.93 % | 4.48 % | 1.000 | 600 | 86 |
+| 16 | CPU + GPU (GPU 4x) | 5 | re-optimised at n = 16 | 300 x 18 | 3.86 % | 4.42 % | 1.000 | 600 | 86 |
+| 16 | CPU + GPU (GPU 4x) | 6 | transferred from 12 qubits | 0 x 0 | 5.14 % | 5.98 % | 1.000 | 720 | 103 |
+| 16 | CPU + GPU (GPU 4x) | 6 | re-optimised at n = 16 | 300 x 18 | 4.92 % | 5.79 % | 1.000 | 720 | 103 |
+| 16 | CPU + GPU (GPU 4x) | 8 | transferred from 12 qubits | 0 x 0 | 6.87 % | 8.50 % | 1.000 | 960 | 137 |
+| 16 | CPU + GPU (GPU 4x) | 8 | re-optimised at n = 16 | 300 x 18 | 6.38 % | 8.26 % | 1.000 | 960 | 137 |
+| 20 | 2 equal devices | 1 | transferred from 12 qubits | 0 x 0 | 8.2e-03 % | 8.2e-03 % | 0.075 | 190 | 21 |
+| 20 | 2 equal devices | 1 | re-optimised at n = 20 | 135 x 4 | 8.3e-03 % | 8.3e-03 % | 0.079 | 190 | 21 |
+| 20 | 2 equal devices | 2 | transferred from 12 qubits | 0 x 0 | 6.4e-03 % | 6.4e-03 % | 0.061 | 380 | 41 |
+| 20 | 2 equal devices | 2 | re-optimised at n = 20 | 90 x 4 | 8.4e-03 % | 8.4e-03 % | 0.073 | 380 | 41 |
+| 20 | 2 equal devices | 3 | transferred from 12 qubits | 0 x 0 | 0.08 % | 0.08 % | 0.533 | 570 | 61 |
+| 20 | 2 equal devices | 3 | re-optimised at n = 20 | 150 x 4 | 0.10 % | 0.10 % | 0.609 | 570 | 61 |
+| 20 | 2 equal devices | 4 | transferred from 12 qubits | 0 x 0 | 0.16 % | 0.16 % | 0.750 | 760 | 81 |
+| 20 | 2 equal devices | 4 | re-optimised at n = 20 | 150 x 4 | 0.19 % | 0.19 % | 0.798 | 760 | 81 |
+| 20 | 2 equal devices | 5 | transferred from 12 qubits | 0 x 0 | 0.36 % | 0.36 % | 0.944 | 950 | 101 |
+| 20 | 2 equal devices | 5 | re-optimised at n = 20 | 150 x 4 | 0.39 % | 0.39 % | 0.935 | 950 | 101 |
+| 20 | 2 equal devices | 6 | transferred from 12 qubits | 0 x 0 | 0.58 % | 0.58 % | 0.979 | 1140 | 121 |
+| 20 | 2 equal devices | 6 | re-optimised at n = 20 | 150 x 4 | 0.62 % | 0.62 % | 0.981 | 1140 | 121 |
+| 20 | 2 equal devices | 8 | transferred from 12 qubits | 0 x 0 | 1.22 % | 1.22 % | 0.999 | 1520 | 161 |
+| 20 | 2 equal devices | 8 | re-optimised at n = 20 | 150 x 4 | 1.23 % | 1.23 % | 0.999 | 1520 | 161 |
+| 20 | CPU + GPU (GPU 4x) | 1 | transferred from 12 qubits | 0 x 0 | 9.3e-03 % | 9.8e-03 % | 0.093 | 190 | 22 |
+| 20 | CPU + GPU (GPU 4x) | 1 | re-optimised at n = 20 | 150 x 4 | 0.02 % | 0.02 % | 0.152 | 190 | 22 |
+| 20 | CPU + GPU (GPU 4x) | 2 | transferred from 12 qubits | 0 x 0 | 0.11 % | 0.11 % | 0.604 | 380 | 43 |
+| 20 | CPU + GPU (GPU 4x) | 2 | re-optimised at n = 20 | 105 x 4 | 0.08 % | 0.08 % | 0.504 | 380 | 43 |
+| 20 | CPU + GPU (GPU 4x) | 3 | transferred from 12 qubits | 0 x 0 | 0.35 % | 0.36 % | 0.898 | 570 | 64 |
+| 20 | CPU + GPU (GPU 4x) | 3 | re-optimised at n = 20 | 150 x 4 | 0.22 % | 0.27 % | 0.726 | 570 | 64 |
+| 20 | CPU + GPU (GPU 4x) | 4 | transferred from 12 qubits | 0 x 0 | 0.68 % | 0.72 % | 0.945 | 760 | 85 |
+| 20 | CPU + GPU (GPU 4x) | 4 | re-optimised at n = 20 | 150 x 4 | 0.60 % | 0.74 % | 0.885 | 760 | 85 |
+| 20 | CPU + GPU (GPU 4x) | 5 | transferred from 12 qubits | 0 x 0 | 1.19 % | 1.28 % | 0.993 | 950 | 106 |
+| 20 | CPU + GPU (GPU 4x) | 5 | re-optimised at n = 20 | 150 x 4 | 1.05 % | 1.26 % | 0.962 | 950 | 106 |
+| 20 | CPU + GPU (GPU 4x) | 6 | transferred from 12 qubits | 0 x 0 | 1.77 % | 1.89 % | 1.000 | 1140 | 127 |
+| 20 | CPU + GPU (GPU 4x) | 6 | re-optimised at n = 20 | 150 x 4 | 1.49 % | 1.69 % | 0.996 | 1140 | 127 |
+| 20 | CPU + GPU (GPU 4x) | 8 | transferred from 12 qubits | 0 x 0 | 3.00 % | 3.18 % | 1.000 | 1520 | 169 |
+| 20 | CPU + GPU (GPU 4x) | 8 | re-optimised at n = 20 | 150 x 4 | 2.52 % | 2.80 % | 1.000 | 1520 | 169 |
+
+Classical baselines on the same test meshes (hit rate of a within-5 % split per 1,000-evaluation run): n = 16, 2 equal devices, local search (restarts): 0.43; n = 16, 2 equal devices, random with target share: 0.06; n = 16, 2 equal devices, simulated annealing: 0.32; n = 16, 2 equal devices, spectral bisection: 0.33; n = 16, 2 equal devices, uniform random sampling: 0.04; n = 16, CPU + GPU, local search (restarts): 0.99; n = 16, CPU + GPU, random with target share: 0.22; n = 16, CPU + GPU, simulated annealing: 0.54; n = 16, CPU + GPU, spectral bisection: 1.00; n = 16, CPU + GPU, uniform random sampling: 0.02; n = 20, 2 equal devices, local search (restarts): 0.25; n = 20, 2 equal devices, random with target share: 0.00; n = 20, 2 equal devices, simulated annealing: 0.21; n = 20, 2 equal devices, spectral bisection: 0.50; n = 20, 2 equal devices, uniform random sampling: 0.00; n = 20, CPU + GPU, local search (restarts): 0.75; n = 20, CPU + GPU, random with target share: 0.10; n = 20, CPU + GPU, simulated annealing: 0.41; n = 20, CPU + GPU, spectral bisection: 1.00; n = 20, CPU + GPU, uniform random sampling: 0.00
+
 ## 24 and 29 qubits (settings frozen from n <= 20; run_29_qubits.py engine)
 
 | n | scenario | setting | test meshes | mean P(within 5 %) | mean hit@1000 | 2q gates |
 |---|---|---|---|---|---|---|
-| 29 | 2 equal devices | LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20) | 6 | 7.5e-04 % | 0.0074 | 2030 |
-| 29 | 2 equal devices | QAOA + COBYLA p = 2, angles transferred from n = 20 | 6 | 1.9e-05 % | 0.0002 | 812 |
-| 29 | 2 equal devices | LR-QAOA p = 2 (scaling-table row) | 6 | 9.8e-06 % | 0.0001 | 812 |
+| 24 | 2 equal devices | tuned QAOA p = 3 (angles re-optimised at n = 20) | 6 | 0.06 % | 0.3814 | 828 |
+| 24 | 2 equal devices | tuned QAOA p = 5 (angles re-optimised at n = 20) | 6 | 0.29 % | 0.8107 | 1380 |
+| 24 | 2 equal devices | tuned QAOA p = 8 (angles re-optimised at n = 20) | 6 | 1.17 % | 0.9884 | 2208 |
+| 24 | 2 equal devices | uniform random guess | 6 | 3.6e-05 % | | 0 |
+| 24 | 2 equal devices | classical: uniform random sampling (hit rate per 1,000-evaluation run) | 6 | | 0.00 | 0 |
+| 24 | 2 equal devices | classical: random with target share (hit rate per 1,000-evaluation run) | 6 | | 0.00 | 0 |
+| 24 | 2 equal devices | classical: simulated annealing (hit rate per 1,000-evaluation run) | 6 | | 0.17 | 0 |
+| 24 | 2 equal devices | classical: local search (restarts) (hit rate per 1,000-evaluation run) | 6 | | 0.17 | 0 |
+| 24 | 2 equal devices | classical: spectral bisection (hit rate per 1,000-evaluation run) | 6 | | 0.50 | 0 |
+| 24 | CPU + GPU (GPU 4x) | tuned QAOA p = 3 (angles re-optimised at n = 20) | 6 | 0.17 % | 0.5858 | 828 |
+| 24 | CPU + GPU (GPU 4x) | tuned QAOA p = 5 (angles re-optimised at n = 20) | 6 | 1.15 % | 0.9089 | 1380 |
+| 24 | CPU + GPU (GPU 4x) | tuned QAOA p = 8 (angles re-optimised at n = 20) | 6 | 2.84 % | 1.0000 | 2208 |
+| 24 | CPU + GPU (GPU 4x) | uniform random guess | 6 | 8.9e-06 % | | 0 |
+| 24 | CPU + GPU (GPU 4x) | classical: uniform random sampling (hit rate per 1,000-evaluation run) | 6 | | 0.00 | 0 |
+| 24 | CPU + GPU (GPU 4x) | classical: random with target share (hit rate per 1,000-evaluation run) | 6 | | 0.09 | 0 |
+| 24 | CPU + GPU (GPU 4x) | classical: simulated annealing (hit rate per 1,000-evaluation run) | 6 | | 0.36 | 0 |
+| 24 | CPU + GPU (GPU 4x) | classical: local search (restarts) (hit rate per 1,000-evaluation run) | 6 | | 0.49 | 0 |
+| 24 | CPU + GPU (GPU 4x) | classical: spectral bisection (hit rate per 1,000-evaluation run) | 6 | | 0.83 | 0 |
+| 29 | 2 equal devices | tuned QAOA p = 3 (angles re-optimised at n = 20) | 6 | 6.7e-03 % | 0.0643 | 1218 |
+| 29 | 2 equal devices | tuned QAOA p = 5 (angles re-optimised at n = 20) | 6 | 0.05 % | 0.3708 | 2030 |
+| 29 | 2 equal devices | tuned QAOA p = 8 (angles re-optimised at n = 20) | 6 | 0.31 % | 0.8788 | 3248 |
+| 29 | 2 equal devices | LR-QAOA (paper default 0.6/0.3), p = 5 (best fixed schedule at n = 20) [first 29-qubit run] | 6 | 7.5e-04 % | 0.0074 | 2030 |
+| 29 | 2 equal devices | QAOA + COBYLA p = 2, angles transferred from n = 20 [first 29-qubit run] | 6 | 1.9e-05 % | 0.0002 | 812 |
+| 29 | 2 equal devices | LR-QAOA p = 2 (scaling-table row) [first 29-qubit run] | 6 | 9.8e-06 % | 0.0001 | 812 |
 | 29 | 2 equal devices | uniform random guess | 6 | 6.2e-07 % | | 0 |
 | 29 | 2 equal devices | classical: uniform random sampling (hit rate per 1,000-evaluation run) | 6 | | 0.00 | 0 |
 | 29 | 2 equal devices | classical: random with target share (hit rate per 1,000-evaluation run) | 6 | | 0.00 | 0 |
 | 29 | 2 equal devices | classical: simulated annealing (hit rate per 1,000-evaluation run) | 6 | | 0.10 | 0 |
 | 29 | 2 equal devices | classical: local search (restarts) (hit rate per 1,000-evaluation run) | 6 | | 0.05 | 0 |
 | 29 | 2 equal devices | classical: spectral bisection (hit rate per 1,000-evaluation run) | 6 | | 0.50 | 0 |
-| 29 | CPU + GPU (GPU 4x) | LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20) | 6 | 7.1e-04 % | 0.0070 | 2030 |
-| 29 | CPU + GPU (GPU 4x) | QAOA + COBYLA p = 2, angles transferred from n = 20 | 6 | 4.6e-04 % | 0.0046 | 812 |
-| 29 | CPU + GPU (GPU 4x) | LR-QAOA p = 2 (scaling-table row) | 6 | 2.0e-04 % | 0.0020 | 812 |
+| 29 | CPU + GPU (GPU 4x) | tuned QAOA p = 3 (angles re-optimised at n = 20) | 6 | 0.05 % | 0.3216 | 1218 |
+| 29 | CPU + GPU (GPU 4x) | tuned QAOA p = 5 (angles re-optimised at n = 20) | 6 | 0.45 % | 0.7836 | 2030 |
+| 29 | CPU + GPU (GPU 4x) | tuned QAOA p = 8 (angles re-optimised at n = 20) | 6 | 1.06 % | 0.9961 | 3248 |
+| 29 | CPU + GPU (GPU 4x) | LR-QAOA (success-calibrated), p = 5 (best fixed schedule at n = 20) [first 29-qubit run] | 6 | 7.1e-04 % | 0.0070 | 2030 |
+| 29 | CPU + GPU (GPU 4x) | QAOA + COBYLA p = 2, angles transferred from n = 20 [first 29-qubit run] | 6 | 4.6e-04 % | 0.0046 | 812 |
+| 29 | CPU + GPU (GPU 4x) | LR-QAOA p = 2 (scaling-table row) [first 29-qubit run] | 6 | 2.0e-04 % | 0.0020 | 812 |
 | 29 | CPU + GPU (GPU 4x) | uniform random guess | 6 | 3.1e-07 % | | 0 |
 | 29 | CPU + GPU (GPU 4x) | classical: uniform random sampling (hit rate per 1,000-evaluation run) | 6 | | 0.00 | 0 |
 | 29 | CPU + GPU (GPU 4x) | classical: random with target share (hit rate per 1,000-evaluation run) | 6 | | 0.01 | 0 |

@@ -29,6 +29,9 @@ OUT = ROOT / "results" / "qaoa_tuning" / "scaling"
 OUT.mkdir(parents=True, exist_ok=True)
 TEST_CASES, TEST_SEEDS = ["2 main", "9 priority"], [7, 8, 9]
 DEFAULT_BUDGET = {16: 300, 20: 150}
+# depths run at 24 / 29 qubits, fixed from the 12-qubit results only: p = 3 (first depth with hit@1000 = 100 % on both scenarios),
+# p = 5 (best depth under Task 04's noise estimate), p = 8 (best noiseless depth); three depths keep the 29-qubit run near 45 min
+BIG_DEPTHS = (3, 5, 8)
 T0 = time.time()
 
 _spec = importlib.util.spec_from_file_location("qaoa_tuning", ROOT / "scripts" / "qaoa_tuning.py")
@@ -134,11 +137,13 @@ def run(n, scenario_index, layers, budget):
 
 
 def choose():
-    """Settings for n = 24 and 29 from the n <= 20 calibration scores only (rule fixed before any n = 24 / 29 result exists):
-    per scenario, the re-optimised n = 20 angles at every depth that was run, plus the single best depth by n = 20 calibration score."""
+    """Settings for n = 24 and 29 (rule fixed before any n = 24 / 29 result exists): per scenario, the angles re-optimised at
+    n = 20 on calibration meshes for the depths in BIG_DEPTHS; the best of them by n = 20 calibration score is recorded."""
     choice = {}
     for path in sorted(OUT.glob("n20_*_p*.json")):
         rec = json.loads(path.read_text())
+        if rec["p"] not in BIG_DEPTHS:
+            continue
         m = rec["methods"]["re-optimised at n = 20"]
         choice.setdefault(rec["scenario"], {"configs": []})["configs"].append(
             dict(label=f"tuned QAOA p = {rec['p']} (angles re-optimised at n = 20)", role=f"tuned p{rec['p']}", p=rec["p"],

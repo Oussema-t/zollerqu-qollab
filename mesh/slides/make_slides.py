@@ -186,7 +186,7 @@ slide("SCALING  ·  HONEST COMPARISON", "Bigger meshes: classical methods win", 
     text(8.3, 5.5, 4.7, f"Caveats: varQITE first needed {N['zy_training_circuits']:,}\nnoiseless training circuits. A shot is not\nthe same work as a classical evaluation.", size=18),
 ], notes="Now the honest part. As the mesh grows, classical methods win: at twenty-nine regions, simulated without noise, our best circuit finds a near-best split in under one percent of runs, spectral bisection in half or more. On IonQ's simulator we needed four shots per optimum against eleven hundred classical evaluations. But varQITE first needed seven thousand six hundred training circuits, and a shot is not the same work as a classical evaluation.")
 
-t12, t20 = N["tuning"]["n12"], N["tuning"]["n20"]
+t12, t20, t29 = N["tuning"]["n12"], N["tuning"]["n20"], N["tuning"]["n29"]
 eq12, cg12 = t12["equal devices"], t12["CPU + GPU"]
 slide("IMPROVING QAOA  ·  HPC", f"Tuning QAOA itself: about {eq12['p8'] / eq12['before']:.0f}x more near-best answers", [
     text(0.6, 1.6, 4.7, "QAOA types we built", size=20, colour=ACCENT, bold=True),
@@ -195,9 +195,11 @@ slide("IMPROVING QAOA  ·  HPC", f"Tuning QAOA itself: about {eq12['p8'] / eq12[
                           "device-choice QAOA (many devices)", size=16),
     source(0.6, 5.75, 4.7, f"settings chosen on {N['tuning']['calibration_meshes']} separate calibration\nmeshes, then frozen; scored on unseen meshes"),
     image("fig_tuning.png", 5.35, 1.45, 7.6, 4.23, ALT["fig_tuning.png"]),
-    text(5.45, 5.72, 7.5, f"12 qubits, 8 layers: {pct(eq12['p8'])} / {pct(cg12['p8'])} near-best (before {pct(eq12['before'], 2)} / {pct(cg12['before'], 2)})\n"
+    text(5.45, 5.55, 7.5, f"12 qubits, 8 layers: {pct(eq12['p8'])} / {pct(cg12['p8'])} near-best (before {pct(eq12['before'], 2)} / {pct(cg12['before'], 2)})\n"
                           f"20 qubits, {t20['equal devices']['p']} layers: {pct(t20['equal devices']['p_near'], 2)} / {pct(t20['CPU + GPU']['p_near'], 2)} (before "
-                          f"{pct(t20['equal devices']['before_p5'], 3)} / {pct(t20['CPU + GPU']['before_p5'], 3)})", size=15),
+                          f"{pct(t20['equal devices']['before_p5'], 3)} / {pct(t20['CPU + GPU']['before_p5'], 3)})\n"
+                          f"29 qubits, 8 layers, found in 1,000 tries: {pct(t29['equal devices']['qaoa_p8'], 0)} / {pct(t29['CPU + GPU']['qaoa_p8'], 0)} "
+                          f"(spectral {pct(t29['equal devices']['spectral'], 0)} / {pct(t29['CPU + GPU']['spectral'], 0)})", size=14),
     source(5.45, 6.45, 7.5, "per shot, equal devices / CPU + GPU; noiseless simulation, HPC server, 11 Oct 2026;\ndeeper circuits lose more under noise (0.5 % per gate estimate: best at 5 layers)"),
 ], notes="Then we tuned QAOA on separate calibration meshes, comparing seven QAOA types. At twelve qubits the best setting gives about twenty times more near-best answers per shot, and it still helps at twenty qubits.", title_size=32)
 

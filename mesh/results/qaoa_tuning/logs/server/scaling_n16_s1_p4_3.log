@@ -1,0 +1,4 @@
+[   234 s] notebook loaded; n = 16, CPU + GPU (GPU 4x), p = [4, 3], budget 300; 12-qubit settings from tuning_n12_large_calibration.json
+[   246 s] 18 calibration and 6 test instances built; classical baselines done
+[  1015 s] p = 4: calibration 2.68e-02 -> 2.74e-02 (300 evaluations, 768 s); TEST P(near) transferred 2.90e-02, re-optimised 2.83e-02; hit@1000 1.000 / 1.000
+[  1399 s] p = 3: calibration 1.34e-02 -> 1.39e-02 (224 evaluations, 382 s); TEST P(near) transferred 1.51e-02, re-optimised 1.48e-02; hit@1000 1.000 / 1.000

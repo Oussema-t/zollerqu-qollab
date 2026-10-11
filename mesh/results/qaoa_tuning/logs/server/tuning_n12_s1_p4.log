@@ -1,0 +1,3 @@
+[   145 s] notebook loaded
+[   619 s] CPU + GPU (GPU 4x), p = 4: best on calibration = QAOA, all angles optimised (L-BFGS-B) (0.0552); its TEST mean P(near) 0.0620, hit@1000 1.000
+[   619 s] saved /root/mesh/results/qaoa_tuning/tuning_n12_large_calibration.s1.p4.json
