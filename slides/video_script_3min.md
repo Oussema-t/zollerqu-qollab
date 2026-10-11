@@ -2,7 +2,7 @@
 
 275 words. At a calm 115 words per minute plus 10 s of clicking in the demo, this takes about **2:33**, leaving about 27 s spare before the 3:00 limit.
 
-Read only these lines; do not read the slides aloud. Move to the next slide as soon as the last word is said. Checkpoint: if you are past **1:30** when slide 8 starts, speak a little faster.
+Read only these lines; do not read the slides aloud. Move to the next slide as soon as the last word is said. Checkpoint: if you are past **1:40** when slide 8 starts, speak a little faster.
 
 | slide | title | start | time | words |
 |---|---|---|---|---|
