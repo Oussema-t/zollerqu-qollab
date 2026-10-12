@@ -1,3 +1,4 @@
+from qiskit import transpile
 import json
 
 import numpy as np
@@ -89,6 +90,22 @@ def test_live_run_is_one_circuit_that_finds_the_optimum():
     exact = json.loads(bridge.cost_table_json(json.dumps(PARAMS)))
     assert out["cost"] == exact["best_cost"] and out["exact"] is True
     assert out["share"] > 0.9 and out["theory"] > 0.99 and out["j"] == 3
+
+
+def test_ionq_gets_high_level_gates():
+    """IonQ takes controlled phases and Toffolis as single gates; sending them undecomposed keeps the job small."""
+    from qiskit.providers.basic_provider import BasicSimulator
+
+    class Spy:
+        name = "ionq_simulator"
+
+        def run(self, circuits, shots):
+            self.sent = circuits
+            return BasicSimulator().run(transpile(circuits, basis_gates=["rz", "sx", "x", "cx"]), shots=shots)
+    spy = Spy()
+    bridge.run_sweep(spy, json.dumps(PARAMS), 10, True)
+    ops = spy.sent.count_ops()
+    assert "cp" in ops and "ccx" not in ops and all(len(i.qubits) <= 2 for i in spy.sent.data if i.operation.name != "measure")
 
 
 def test_run_sweep_one_circuit_is_submitted_bare():

@@ -30,6 +30,16 @@ def to_basis(circuits):
     return transpile(circuits, basis_gates=BASIS, optimization_level=1)
 
 
+# IonQ's API takes these as single gates (controlled phases and rotations; nothing on more than 2 qubits): far fewer gates
+# and a far smaller job than the rz, sx, x, cx unrolling, which IonQ's job size limit rejects.
+IONQ_BASIS = ["cp", "crx", "cry", "crz", "cx", "cz", "h", "p", "rx", "ry", "rz", "s", "sdg", "swap", "sx",
+              "sxdg", "t", "tdg", "x", "y", "z"]
+
+
+def to_ionq(circuits):
+    return transpile(circuits, basis_gates=IONQ_BASIS, optimization_level=1)
+
+
 def index_from_key(key):
     return int(key.replace(" ", ""), 2)
 

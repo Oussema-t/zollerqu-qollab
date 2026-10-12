@@ -15,6 +15,7 @@ per-pair integers; the cost of every placement is computed only for the classica
 """
 import json
 import math
+import re
 from pathlib import Path
 
 import numpy as np
@@ -125,9 +126,18 @@ def live_result(params_json, counts_json):
                        "theory": search.success_theory(s["M"], s["N"], j)})
 
 
+def _is_ionq(backend):
+    return bool(re.search("ionq|aria|forte", str(getattr(backend, "name", "")), re.I))
+
+
 def run_sweep(backend, params_json, shots, live=False):
-    """Run the sweep circuits as one job on backend (a single circuit bare, as IonQ requires); counts per circuit in plan order."""
-    circuits = sweep_circuits_py(params_json, live)
+    """Run the sweep circuits as one job on backend (a single circuit bare, as IonQ requires); counts per circuit in plan order.
+    IonQ gets high-level gates, the other backends the rz, sx, x, cx unrolling."""
+    if _is_ionq(backend):
+        _, _, mdl, cost = _setup(params_json)
+        circuits = search.to_ionq(search.sweep_circuits(mdl, _plan(cost, live)))
+    else:
+        circuits = sweep_circuits_py(params_json, live)
     result = backend.run(circuits[0] if len(circuits) == 1 else circuits, shots=int(shots)).result()
     return json.dumps([result.get_counts(i) for i in range(len(circuits))])
 

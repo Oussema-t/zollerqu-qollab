@@ -81,7 +81,7 @@ function dhSummary(dh, exact) {
 // The m select names the C(m,k) placements; the selected option carries the bridge's count.
 function labelM(k, nFeasible) {
   for (const o of $('m').options) {
-    const slow = o.value === '6' ? ', fast' : ', slow';
+    const slow = Number(o.value) <= 6 ? ', fast' : ', slow';
     o.textContent = `${o.value} candidate locations (C(${o.value},${k})${o.selected ? ` = ${nFeasible}` : ''} placements${slow})`;
   }
 }
