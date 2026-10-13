@@ -23,7 +23,7 @@ Every number below is read from a result file in the project's branch. Three kin
 |---|---|
 | **IonQ noise model** | IonQ's noisy simulator (Forte 1 noise model), run through Qollab |
 | **Noiseless** | Exact simulation on a classical computer, with no errors |
-| **Local Aer** | Qiskit Aer on a laptop, used as a stand-in where no IonQ run was recorded |
+| **Local Aer** | Qiskit Aer on a laptop: the saved runs of projects 3 and 4, which also run live on Qollab |
 
 No result comes from a real quantum computer, and **no project claims a quantum advantage**. At these sizes classical methods solve every problem here quickly; where they beat the circuits, the results say so.
 
@@ -91,13 +91,15 @@ Pairs of numbers are equal devices / CPU + GPU.
 
 ## 3. Store placement by quantum minimum finding
 
-Branch [`placement`](https://github.com/Oussema-t/zollerqu-qollab/tree/placement) · [project README](https://github.com/Oussema-t/zollerqu-qollab/blob/placement/README.md) · [demo video](https://github.com/Oussema-t/zollerqu-qollab/blob/placement/docs/demo.mp4)
+[**Run it on Qollab**](https://qollab.xyz/u/tusharp/zollerqu-placement-store-place) · Branch [`placement`](https://github.com/Oussema-t/zollerqu-qollab/tree/placement) · [project README](https://github.com/Oussema-t/zollerqu-qollab/blob/placement/README.md) · [demo video](https://github.com/Oussema-t/zollerqu-qollab/blob/placement/docs/demo.mp4)
 
 **Problem.** Where should k stores open among m candidate sites? The instance is real: 158 census block groups of Champaign County, Illinois (2020 census, 205,865 people) and road driving times. The cost mixes travel time, staffing, crowding and warehouse trips.
 
 **Method.** Dürr–Høyer minimum finding: a Grover search with a threshold that tightens round by round. The search starts in a Dicke state, so it covers exactly the C(m,k) placements that the classical exact method scores. The oracle computes each placement's cost inside the circuit with a quantum adder; it never reads a list of costs. The project is an interactive Qollab page with a map, sliders for every cost weight, and three classical baselines (exact brute force, greedy, local search).
 
-**Recorded results** (Local Aer; no IonQ run is recorded in the branch)
+**Live on Qollab.** The page runs in the browser on every Qollab backend, including IonQ's simulators. Pressing "Run quantum search" sends one circuit: the last search of the Dürr–Høyer loop, whose threshold marks only the cheapest placement. At the default size (6 sites, 2 stores, 15 placements, 16 qubits) theory gives a 93.7 % chance of measuring the exact optimum after 3 Grover iterations. IonQ accepts one circuit per job, so the full loop and the theory check are shown from the saved run.
+
+**Recorded results.** The saved run in the repository is from Local Aer. No IonQ result is saved in the branch, so none is quoted here.
 
 | Experiment | Result |
 |---|---|
@@ -130,7 +132,9 @@ Branch [`unlocked`](https://github.com/Oussema-t/zollerqu-qollab/tree/unlocked) 
 3. **A T state on a patch.** The resource state for the T gate, which the code cannot apply directly.
 4. **Teleporting the T state** from one patch to another through a Bell measurement, on 27 qubits.
 
-**Recorded results** (Local Aer with a depolarizing noise model, 500 shots per circuit; no IonQ run is recorded in the branch). The value is the share of shots reading logical 1.
+**Live on Qollab.** Lessons 1 to 3 (9, 18 and 9 qubits) run live on every backend. Lesson 4 needs 27 qubits, so it runs live on the 29-qubit IonQ Forte simulators; IonQ accepts one circuit per job, so there the page runs the teleportation circuit and shows the other lessons from the saved run.
+
+**Recorded results.** The saved run in the repository is from Local Aer with a depolarizing noise model, 500 shots per circuit. No IonQ result is saved in the branch, so none is quoted here. The value is the share of shots reading logical 1.
 
 | Lesson | Qubits | Ideal | Encoded, after correction | Bare qubits | Shots corrected |
 |---|---|---|---|---|---|
